@@ -1,8 +1,6 @@
 package io.gaultier.controlledandroid.control;
 
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 /**
  * Created by q on 16/10/16.
@@ -12,7 +10,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
     T mController;
 
-
+/*
     @Override
     protected final void onCreate(Bundle bundle) {
 
@@ -20,7 +18,6 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
         createView();
 
-        mController = obtainController(bundle);
 
         initializeControllerFromId();
 
@@ -37,7 +34,10 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
                 onInitializationFailure();
             }
         }
+
+        mController = obtainController(bundle);
     }
+
 
 
     private T obtainController(Bundle bundle) {
@@ -48,7 +48,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
     }
 
 
-    protected abstract void createView();
+
 
 
     @Override
@@ -56,4 +56,8 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
         ControllerManager.getInstance().unregister(mController);
         super.finish();
     }
+    */
+
+
+    protected abstract void createView();
 }

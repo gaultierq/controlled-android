@@ -26,4 +26,10 @@ public class ControllerManager {
     public <T extends AbstractActivityController> void register(T controller) {
         managedControllers.put(controller.getId(), controller);
     }
+
+    public void startActivity(AbstractController a) {
+
+    }
 }
+
+
