@@ -7,9 +7,11 @@ import android.util.SparseArray;
 
 import org.parceler.Parcels;
 
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.gaultier.controlledandroid.Assert;
+import io.gaultier.controlledandroid.Log;
 
 /**
  * Created by q on 16/10/16.
@@ -18,6 +20,7 @@ import io.gaultier.controlledandroid.Assert;
 public class ControllerManager {
 
     private static final ControllerManager INSTANCE = new ControllerManager();
+    private static final String TAG = "ControllerManager";
 
     private ControllerManager() {}
 
@@ -28,8 +31,16 @@ public class ControllerManager {
         return INSTANCE;
     }
 
-    public <T extends AbstractController> void unmanage(T controller) {
-        managedControllers.remove(controller.getId());
+    public void unmanage(Collection<AbstractController> controllerIds) {
+        if (controllerIds != null) {
+            for (AbstractController c : controllerIds) {
+                AbstractController ctrl = getManagedController(c.getId());
+                Assert.ensure(ctrl != null);
+                Log.i(TAG, "Un-managing controller: ", ctrl);
+                managedControllers.remove(c.getId());
+            }
+            logSize();
+        }
     }
 
     public <T extends AbstractController> void manage(T controller) {
@@ -37,10 +48,12 @@ public class ControllerManager {
         Assert.ensure(controller.getId() == AbstractController.INVALID_CONTROLLER_ID);
         controller.setId(generateControllerId());
         managedControllers.put(controller.getId(), controller);
+        Log.i(TAG, "Managing controller: ", controller);
+        logSize();
     }
 
-    public void startActivity(AbstractController a) {
-
+    private void logSize() {
+        Log.i(TAG, "Managed controllers: ", managedControllers.size());
     }
 
     public AbstractController getManagedController(int controllerId) {
@@ -55,13 +68,12 @@ public class ControllerManager {
         Parcelable wrappedController = savedInstanceState.getParcelable(AbstractController.CONTROLLER);
         T controller = Parcels.<T>unwrap(wrappedController);
         Assert.ensure(controller != null);
-        //changing the controller ID
-        controller.setId(AbstractController.INVALID_CONTROLLER_ID);
         return controller;
     }
 
     private int generateControllerId() {
         return counter.incrementAndGet();
+
     }
 
 
@@ -73,6 +85,11 @@ public class ControllerManager {
     public <T extends AbstractController> void saveController2(Intent intent, AbstractActivityController controller) {
         intent.putExtra(AbstractController.CONTROLLER_ID, controller.getId());
         intent.putExtra(AbstractController.CONTROLLER, Parcels.wrap(controller));
+    }
+
+    public void addFragmentController(AbstractFragmentController fragController, ControlledActivity activity) {
+        activity.getController().addFragmentControllers(fragController);
+        Log.i(TAG, "Fragment controller", fragController, " added to activity controller.", "size=", activity.getController().getFragmentControllers().size());
     }
 }
 

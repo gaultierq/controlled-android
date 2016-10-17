@@ -9,7 +9,7 @@ import io.gaultier.controlledandroid.control.AbstractActivityController;
  */
 @Parcel
 public class TotoActivityController extends AbstractActivityController {
-    private boolean progress;
+    boolean progress;
 
     public boolean isProgress() {
         return progress;

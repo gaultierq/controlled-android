@@ -10,36 +10,52 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="io.gaultier.controlledandroid.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello and welcome to Toto activity! Enjoy your time here."
-        android:id="@+id/textView" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
-
-        <ProgressBar
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/progressBar"
-            android:layout_gravity="right"
-            android:layout_alignTop="@+id/btnConnect"
-            android:layout_alignRight="@+id/btnConnect"
-            android:layout_alignEnd="@+id/btnConnect" />
+            android:text="Hello and welcome to Toto activity! Enjoy your time here."
+            android:id="@+id/textView" />
 
-        <Button
+
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Connect"
-            android:id="@+id/btnConnect"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="30dp"
-            android:width="200dp"
-            android:focusable="false"
-            android:onClick="doConnect"
-            android:focusableInTouchMode="false" />
-    </RelativeLayout>
+            android:layout_gravity="center_horizontal">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar"
+                android:layout_gravity="right"
+                android:layout_alignTop="@+id/btnConnect"
+                android:layout_alignRight="@+id/btnConnect"
+                android:layout_alignEnd="@+id/btnConnect" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Connect"
+                android:id="@+id/btnConnect"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="30dp"
+                android:width="200dp"
+                android:focusable="false"
+                android:onClick="doConnect"
+                android:focusableInTouchMode="false" />
+        </RelativeLayout>
+
+
+
+        <fragment
+            android:name="layout.BlankFragment"
+            android:id="@+id/fooFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+
 </RelativeLayout>

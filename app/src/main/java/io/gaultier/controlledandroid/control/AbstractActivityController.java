@@ -3,12 +3,20 @@ package io.gaultier.controlledandroid.control;
 import android.app.Activity;
 import android.content.Intent;
 
+import org.parceler.Transient;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by q on 16/10/16.
  */
 
 public abstract class AbstractActivityController extends AbstractController {
 
+    @Transient
+    Set<AbstractController> fragmentControllers = new HashSet<>();
 
     public <T extends ControlledActivity> void  startActivity(Activity activity, Class<T> activityClass) {
         ControllerManager manager = ControllerManager.getInstance();
@@ -19,4 +27,12 @@ public abstract class AbstractActivityController extends AbstractController {
         activity.startActivity(intent);
     }
 
+    public Collection<AbstractController> getFragmentControllers() {
+        return fragmentControllers;
+    }
+
+
+    public void addFragmentControllers(AbstractFragmentController fragmentControllerId) {
+        fragmentControllers.add(fragmentControllerId);
+    }
 }

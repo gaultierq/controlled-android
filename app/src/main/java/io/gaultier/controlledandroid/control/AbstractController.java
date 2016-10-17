@@ -1,5 +1,7 @@
 package io.gaultier.controlledandroid.control;
 
+import org.parceler.Transient;
+
 /**
  * Created by q on 16/10/16.
  */
@@ -9,7 +11,7 @@ public class AbstractController {
     public static final String CONTROLLER_ID = "CONTROLLER_ID";
     public static final String CONTROLLER = "CONTROLLER";
 
-
+    @Transient
     int id;
 
 

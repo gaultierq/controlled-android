@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import java.util.Collections;
+
 import io.gaultier.controlledandroid.Assert;
 import io.gaultier.controlledandroid.Log;
 
@@ -24,10 +26,10 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
         super.onCreate(savedInstanceState);
 
+        controller = obtainController(savedInstanceState);
+
         //inflating the view
         createView();
-
-        controller = obtainController(savedInstanceState);
 
         updateView();
     }
@@ -117,12 +119,19 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
     @Override
     public void finish() {
-        ControllerManager.getInstance().unmanage(controller);
+        Log.i(TAG, this , " finish");
         super.finish();
+        ControllerManager.getInstance().unmanage(controller.getFragmentControllers());
+
+        ControllerManager.getInstance().unmanage(Collections.<AbstractController>singleton(controller));
     }
 
 
     protected abstract void createView();
 
     protected abstract void updateView();
+
+    public T getController() {
+        return controller;
+    }
 }

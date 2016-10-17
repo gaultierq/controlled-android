@@ -19,7 +19,11 @@ public class TotoActivity extends ControlledActivity<TotoActivityController> {
 
     public void doConnect(View view) {
         //do async stuff
-        controller.setProgress(true);
+        controller.setProgress(view.getVisibility() == View.GONE);
         updateView();
+    }
+
+    public void onButtonClicked(View view) {
+
     }
 }
