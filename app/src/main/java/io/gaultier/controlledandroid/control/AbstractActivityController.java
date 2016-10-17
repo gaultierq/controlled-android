@@ -1,5 +1,8 @@
 package io.gaultier.controlledandroid.control;
 
+import android.app.Activity;
+import android.content.Intent;
+
 /**
  * Created by q on 16/10/16.
  */
@@ -7,11 +10,13 @@ package io.gaultier.controlledandroid.control;
 public abstract class AbstractActivityController extends AbstractController {
 
 
-    public void startActivity() {
-        //Intent intent = new Intent(this, DisplayMessageActivity.class);
-        //EditText editText = (EditText) findViewById(R.id.edit_message);
-        //String message = editText.getText().toString();
-        //intent.putExtra(EXTRA_MESSAGE, message);
-        //startActivity(intent);
+    public <T extends ControlledActivity> void  startActivity(Activity activity, Class<T> activityClass) {
+        ControllerManager manager = ControllerManager.getInstance();
+        Intent intent = new Intent(activity, activityClass);
+        manager.manage(this);
+
+        manager.saveController2(intent, this);
+        activity.startActivity(intent);
     }
+
 }

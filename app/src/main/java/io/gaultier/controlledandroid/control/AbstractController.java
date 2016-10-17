@@ -5,12 +5,20 @@ package io.gaultier.controlledandroid.control;
  */
 public class AbstractController {
 
-    String id;
+    public static final int INVALID_CONTROLLER_ID = 0;
+    public static final String CONTROLLER_ID = "CONTROLLER_ID";
+    public static final String CONTROLLER = "CONTROLLER";
 
 
-    public String getId() {
+    int id;
+
+
+    public int getId() {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 
 }
