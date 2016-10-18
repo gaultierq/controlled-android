@@ -14,15 +14,15 @@ import io.gaultier.controlledandroid.control.AbstractFragmentController;
  */
 
 @Parcel
-public class BlankFragmentController extends AbstractFragmentController {
+public class BlankFragmentController2 extends AbstractFragmentController {
 
     int clicknumber = 0;
     Date creationDate = new Date();
 
-    public int color;
+    public int color2;
     {
         Random rand = new Random();
-        color = Color.rgb(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255));
+        color2 = Color.rgb(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255));
     }
 
 }

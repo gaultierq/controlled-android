@@ -15,7 +15,7 @@ import static io.gaultier.controlledandroid.control.AbstractController.INVALID_C
  * Created by q on 16/10/16.
  */
 
-public abstract class ControlledActivity<T extends AbstractActivityController> extends AppCompatActivity {
+public abstract class ControlledActivity<T extends AbstractActivityController> extends AppCompatActivity implements ControlledElement<T> {
 
     private static final String TAG = "ControlledActivity";
 
@@ -86,36 +86,24 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
     private T obtainController(Bundle savedInstanceState) {
         if (controller == null) {
-            //1. is there a managed controller for this activity ?
-            int controllerId = obtainControllerId(savedInstanceState);
-            Assert.ensure(controllerId != INVALID_CONTROLLER_ID);
-            ControllerManager manager = ControllerManager.getInstance();
-
-            if (manager.isManaged(controllerId)) {
-                controller = (T) manager.getManagedController(controllerId);
-            }
-            else {
-                //killed activity
-                controller = manager.restoreController(savedInstanceState);
-                manager.manage(controller);
-            }
+            controller = ControllerManager.obtainController(savedInstanceState, getIntent().getExtras(), this, ControllerManager.getInstance());
         }
         return controller;
     }
 
-    private int obtainControllerId(Bundle savedInstanceState) {
-        int res = readControllerIdInternal(savedInstanceState);
-        Assert.ensure(res != INVALID_CONTROLLER_ID);
-        return res;
-    }
-
-    private int readControllerIdInternal(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            int res = savedInstanceState.getInt(AbstractController.CONTROLLER_ID, INVALID_CONTROLLER_ID);
-            return res;
-        }
-        return getIntent().getIntExtra(AbstractController.CONTROLLER_ID, INVALID_CONTROLLER_ID);
-    }
+//    private int obtainControllerId(Bundle savedInstanceState) {
+//        int res = readControllerIdInternal(savedInstanceState);
+//        Assert.ensure(res != INVALID_CONTROLLER_ID);
+//        return res;
+//    }
+//
+//    private int readControllerIdInternal(Bundle savedInstanceState) {
+//        if (savedInstanceState != null) {
+//            int res = savedInstanceState.getInt(AbstractController.CONTROLLER_ID, INVALID_CONTROLLER_ID);
+//            return res;
+//        }
+//        return getIntent().getIntExtra(AbstractController.CONTROLLER_ID, INVALID_CONTROLLER_ID);
+//    }
 
 
     @Override
@@ -123,7 +111,6 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
         Log.i(TAG, this , " finish");
         super.finish();
         ControllerManager.getInstance().unmanage(controller.getFragmentControllers());
-
         ControllerManager.getInstance().unmanage(Collections.<AbstractController>singleton(controller));
     }
 
@@ -132,17 +119,17 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
     protected abstract void updateView();
 
+
+    @Override
+    public String toString() {
+        return ControllerManager.toString(this);
+    }
+
     public T getController() {
         return controller;
     }
 
-
-    @Override
-    public String toString() {
-        return "["+"controlled-" + getClass().getSimpleName() + "-" + getControllerId()+"]";
-    }
-
-    private int getControllerId() {
+    public int getControllerId() {
         return controller != null ? controller.getId() : INVALID_CONTROLLER_ID;
     }
 }

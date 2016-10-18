@@ -35,4 +35,9 @@ public class TotoActivity extends ControlledActivity<TotoActivityController> {
         ft.add(R.id.toto_container, newFragment).commit();
 
     }
+
+    @Override
+    public TotoActivityController makeController() {
+        return new TotoActivityController();
+    }
 }

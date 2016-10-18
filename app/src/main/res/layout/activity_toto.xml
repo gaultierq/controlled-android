@@ -61,7 +61,7 @@
         </LinearLayout>
 
         <fragment
-            android:name="layout.BlankFragment"
+            android:name="layout.BlankFragment2"
             android:id="@+id/initialFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

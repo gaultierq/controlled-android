@@ -13,6 +13,7 @@ import java.util.Set;
  * Created by q on 16/10/16.
  */
 
+
 public abstract class AbstractActivityController extends AbstractController {
 
     @Transient
