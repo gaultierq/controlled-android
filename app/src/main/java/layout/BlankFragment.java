@@ -22,6 +22,7 @@ public class BlankFragment extends ControlledFragment<BlankFragmentController> {
     @Override
     protected void updateView(View v) {
         ((Button)v.findViewById(R.id.blank_button)).setText("Click number = " + getController().clicknumber);
+        v.setBackgroundColor(getController().color);
     }
 
     @Override
@@ -40,8 +41,6 @@ public class BlankFragment extends ControlledFragment<BlankFragmentController> {
                 updateView();
             }
         });
-        Random rand = new Random();
-        v.setBackgroundColor(Color.rgb(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255)));
         return v;
     }
 }

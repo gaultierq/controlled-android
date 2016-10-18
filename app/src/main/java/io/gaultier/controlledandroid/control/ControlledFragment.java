@@ -127,7 +127,7 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
                 Assert.ensure(controller != null);
                 manager.manage(controller);
             }
-            
+
             manager.addFragmentController(controller, ((ControlledActivity)getActivity()));
 
         }

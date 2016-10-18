@@ -22,7 +22,9 @@ public class ControllerManager {
     private static final ControllerManager INSTANCE = new ControllerManager();
     private static final String TAG = "ControllerManager";
 
-    private ControllerManager() {}
+    private ControllerManager() {
+        Log.i(TAG, "Creating instance");
+    }
 
     private final SparseArray<AbstractController> managedControllers = new SparseArray<>();
     private final AtomicInteger counter = new AtomicInteger();
@@ -88,8 +90,10 @@ public class ControllerManager {
     }
 
     public void addFragmentController(AbstractFragmentController fragController, ControlledActivity activity) {
-        activity.getController().addFragmentControllers(fragController);
-        Log.i(TAG, "Fragment controller", fragController, " added to activity controller.", "size=", activity.getController().getFragmentControllers().size());
+        boolean added = activity.getController().addFragmentControllers(fragController);
+        if (added) {
+            Log.i(TAG, "Fragment controller", fragController, " added to activity controller.", "size=", activity.getController().getFragmentControllers().size());
+        }
     }
 }
 

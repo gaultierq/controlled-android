@@ -32,7 +32,7 @@ public abstract class AbstractActivityController extends AbstractController {
     }
 
 
-    public void addFragmentControllers(AbstractFragmentController fragmentControllerId) {
-        fragmentControllers.add(fragmentControllerId);
+    public boolean addFragmentControllers(AbstractFragmentController fragmentControllerId) {
+        return fragmentControllers.add(fragmentControllerId);
     }
 }

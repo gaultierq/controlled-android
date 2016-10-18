@@ -24,9 +24,10 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
 
+        controller = obtainController(savedInstanceState);
+
         super.onCreate(savedInstanceState);
 
-        controller = obtainController(savedInstanceState);
 
         //inflating the view
         createView();
