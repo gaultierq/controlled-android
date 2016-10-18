@@ -12,7 +12,9 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" android:orientation="vertical">
+        android:layout_height="match_parent" android:orientation="vertical"
+        android:id="@+id/toto_container"
+        >
 
         <TextView
             android:layout_width="wrap_content"
@@ -21,40 +23,49 @@
             android:id="@+id/textView" />
 
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
-
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/progressBar"
-                android:layout_gravity="right"
-                android:layout_alignTop="@+id/btnConnect"
-                android:layout_alignRight="@+id/btnConnect"
-                android:layout_alignEnd="@+id/btnConnect" />
+            android:orientation="horizontal">
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Connect"
                 android:id="@+id/btnConnect"
-                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="30dp"
                 android:width="200dp"
                 android:focusable="false"
                 android:onClick="doConnect"
                 android:focusableInTouchMode="false" />
-        </RelativeLayout>
 
 
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar"
+
+                 />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+1 fragment"
+                android:id="@+id/addNewFragment"
+                android:layout_marginTop="30dp"
+                android:width="200dp"
+                android:focusable="false"
+                android:onClick="doAddFragment"
+                android:focusableInTouchMode="false" />
+
+        </LinearLayout>
 
         <fragment
             android:name="layout.BlankFragment"
-            android:id="@+id/fooFragment"
+            android:id="@+id/initialFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
 
 

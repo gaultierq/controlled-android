@@ -71,7 +71,6 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
     public void onSaveInstanceState(Bundle outState) {
         Log.i(TAG, this , " onSaveInstanceState");
         super.onSaveInstanceState(outState);
-
         // saving controller
         ControllerManager.getInstance().saveController(outState, controller);
     }
@@ -128,6 +127,7 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
                 Assert.ensure(controller != null);
                 manager.manage(controller);
             }
+            
             manager.addFragmentController(controller, ((ControlledActivity)getActivity()));
 
         }
@@ -155,6 +155,15 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
     protected final void updateView() {
         updateView(getView());
+    }
+
+    @Override
+    public String toString() {
+        return "["+"controlled-" + getClass().getSimpleName() + "-" + getControllerId()+"]";
+    }
+
+    private int getControllerId() {
+        return controller != null ? controller.getId() : INVALID_CONTROLLER_ID;
     }
 
 }

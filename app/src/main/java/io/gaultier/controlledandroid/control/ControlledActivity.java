@@ -134,4 +134,14 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
     public T getController() {
         return controller;
     }
+
+
+    @Override
+    public String toString() {
+        return "["+"controlled-" + getClass().getSimpleName() + "-" + getControllerId()+"]";
+    }
+
+    private int getControllerId() {
+        return controller != null ? controller.getId() : INVALID_CONTROLLER_ID;
+    }
 }

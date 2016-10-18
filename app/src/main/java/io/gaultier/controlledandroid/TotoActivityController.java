@@ -11,11 +11,4 @@ import io.gaultier.controlledandroid.control.AbstractActivityController;
 public class TotoActivityController extends AbstractActivityController {
     boolean progress;
 
-    public boolean isProgress() {
-        return progress;
-    }
-
-    public void setProgress(boolean progress) {
-        this.progress = progress;
-    }
 }

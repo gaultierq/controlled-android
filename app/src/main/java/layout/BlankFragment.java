@@ -1,10 +1,13 @@
 package layout;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import java.util.Random;
 
 import io.gaultier.controlledandroid.R;
 import io.gaultier.controlledandroid.control.ControlledFragment;
@@ -37,6 +40,8 @@ public class BlankFragment extends ControlledFragment<BlankFragmentController> {
                 updateView();
             }
         });
+        Random rand = new Random();
+        v.setBackgroundColor(Color.rgb(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255)));
         return v;
     }
 }
