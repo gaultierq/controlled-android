@@ -10,8 +10,8 @@ import org.parceler.Parcels;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.gaultier.controlledandroid.Assert;
-import io.gaultier.controlledandroid.Log;
+import io.gaultier.controlledandroid.util.Assert;
+import io.gaultier.controlledandroid.util.Log;
 
 /**
  * Created by q on 16/10/16.

@@ -1,4 +1,4 @@
-package io.gaultier.controlledandroid;
+package io.gaultier.controlledandroid.util;
 
 /**
  * Created by q on 17/10/16.

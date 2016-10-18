@@ -8,8 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import io.gaultier.controlledandroid.Assert;
-import io.gaultier.controlledandroid.Log;
+import io.gaultier.controlledandroid.util.Assert;
+import io.gaultier.controlledandroid.util.Log;
 
 import static io.gaultier.controlledandroid.control.AbstractController.INVALID_CONTROLLER_ID;
 

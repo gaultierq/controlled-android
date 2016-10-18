@@ -1,4 +1,4 @@
-package io.gaultier.controlledandroid;
+package layout;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -6,8 +6,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import io.gaultier.controlledandroid.R;
 import io.gaultier.controlledandroid.control.ControlledActivity;
-import layout.BlankFragment;
 
 public class TotoActivity extends ControlledActivity<TotoActivityController> {
 

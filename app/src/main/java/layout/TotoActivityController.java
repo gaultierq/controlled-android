@@ -1,4 +1,4 @@
-package io.gaultier.controlledandroid;
+package layout;
 
 import org.parceler.Parcel;
 
