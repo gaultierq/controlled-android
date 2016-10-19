@@ -124,7 +124,7 @@ public class ControllerManager {
         Parcelable wrappedController = savedInstanceState.getParcelable(AbstractController.CONTROLLER);
         T controller = Parcels.<T>unwrap(wrappedController);
         Assert.ensure(controller != null);
-        Log.i(TAG, "controller ", controller, "restored from savedInstanceState: ", savedInstanceState);
+        //Log.i(TAG, "controller ", controller, "restored from savedInstanceState: ", savedInstanceState);
         return controller;
     }
 
@@ -146,10 +146,7 @@ public class ControllerManager {
     }
 
     public void addFragmentController(AbstractFragmentController fragController, ControlledActivity activity) {
-        boolean added = activity.getController().addFragmentControllers(fragController);
-        if (added) {
-            Log.i(TAG, "Fragment controller", fragController, " added to activity controller.", "size=", activity.getController().getFragmentControllers().size());
-        }
+        activity.getController().addFragmentControllers(fragController);
     }
 }
 

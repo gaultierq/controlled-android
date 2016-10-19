@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import io.gaultier.controlledandroid.R;
 import io.gaultier.controlledandroid.control.ControlledFragment;
-import io.gaultier.controlledandroid.util.Assert;
 
 public class BlankFragment2 extends ControlledFragment<BlankFragmentController2> {
 
@@ -43,11 +42,5 @@ public class BlankFragment2 extends ControlledFragment<BlankFragmentController2>
         v.setBackgroundColor(getController().color2);
         ((TextView)v.findViewById(R.id.creation)).setText(getController().creationDate.toString());
         return v;
-    }
-
-    @Override
-    protected void myassert() {
-        getController();
-        Assert.ensure(getController() instanceof BlankFragmentController2);
     }
 }

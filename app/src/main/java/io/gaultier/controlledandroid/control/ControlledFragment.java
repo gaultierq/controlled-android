@@ -33,10 +33,6 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
     }
 
-    protected void myassert() {
-
-    }
-
     @Override
     public void onResume() {
         Log.i(TAG, this , " onResume");
@@ -61,18 +57,13 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
             controller = ControllerManager.obtainController(savedInstanceState, getArguments(), this, manager);
             Log.i(TAG, "controller obtained:", "controller=", controller, "for fragment", getClass().getSimpleName(), "with savedinstancestate:", savedInstanceState);
-            myassert();
             manager.addFragmentController(controller, ((ControlledActivity)getActivity()));
         }
 
         return controller;
     }
 
-
-
     protected abstract void updateView(View v);
-
-    public abstract T makeController();
 
 
     protected abstract View createView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
