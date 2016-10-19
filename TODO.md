@@ -1,0 +1,2 @@
+- ControlManager: rm Random, use init 
+- ControlManager: rm singleton 
