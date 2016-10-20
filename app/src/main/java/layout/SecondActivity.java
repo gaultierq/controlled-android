@@ -4,21 +4,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 
 import io.gaultier.controlledandroid.R;
 import io.gaultier.controlledandroid.control.ControlledActivity;
 
-public class TotoActivity extends ControlledActivity<TotoActivityController> {
+public class SecondActivity extends ControlledActivity<SecondActivityController> {
 
     @Override
     protected void createView() {
-        setContentView(R.layout.activity_toto);
+        setContentView(R.layout.activity_second);
     }
 
     @Override
     protected void updateView() {
-        ((ProgressBar) findViewById(R.id.progressBar)).setVisibility(controller.progress ? View.VISIBLE : View.GONE);
+        findViewById(R.id.progressBar).setVisibility(controller.progress ? View.VISIBLE : View.GONE);
         ((Button) findViewById(R.id.btnConnect)).setText(controller.progress ? "disconnect" : "connect");
 
     }
@@ -37,7 +36,7 @@ public class TotoActivity extends ControlledActivity<TotoActivityController> {
     }
 
     @Override
-    public TotoActivityController makeController() {
-        return new TotoActivityController();
+    public SecondActivityController makeController() {
+        return new SecondActivityController();
     }
 }

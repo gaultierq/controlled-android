@@ -9,5 +9,5 @@ import io.gaultier.controlledandroid.control.AbstractActivityController;
  */
 
 @Parcel
-public class MainActivityController extends AbstractActivityController {
+public class FirstActivityController extends AbstractActivityController {
 }

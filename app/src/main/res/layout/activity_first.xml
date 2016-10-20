@@ -26,6 +26,6 @@
         android:layout_marginLeft="45dp"
         android:layout_marginStart="45dp"
         android:layout_marginTop="85dp"
-        android:onClick="lauchToto"
+        android:onClick="lauchSecondActivity"
         android:id="@+id/button" />
 </RelativeLayout>

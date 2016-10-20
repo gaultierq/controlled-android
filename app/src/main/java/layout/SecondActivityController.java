@@ -8,7 +8,7 @@ import io.gaultier.controlledandroid.control.AbstractActivityController;
  * Created by q on 16/10/16.
  */
 @Parcel
-public class TotoActivityController extends AbstractActivityController {
+public class SecondActivityController extends AbstractActivityController {
     boolean progress;
 
 }
