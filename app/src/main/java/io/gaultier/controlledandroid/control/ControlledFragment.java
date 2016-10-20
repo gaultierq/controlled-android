@@ -16,7 +16,7 @@ import static io.gaultier.controlledandroid.control.AbstractController.INVALID_C
  * Created by q on 16/10/16.
  */
 
-public abstract class ControlledFragment<T extends AbstractFragmentController> extends Fragment implements ControlledElement<T> {
+public abstract class ControlledFragment<T extends AbstractController> extends Fragment implements ControlledElement<T> {
 
     private static final String TAG = "ControlledFragment";
 
@@ -24,49 +24,15 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
     @Override
     public final void onCreate(Bundle savedInstanceState) {
+
         Log.i(TAG, this , " onCreate");
-        Assert.ensure(getActivity() instanceof ControlledActivity,
-                "ControlledFragment can only exist in ControlledActivity"
-        );
-        super.onCreate(savedInstanceState);
+        Assert.ensure(getActivity() instanceof ControlledActivity,  "ControlledFragment can only exist in ControlledActivity");
+
         controller = obtainController(savedInstanceState);
 
+        super.onCreate(savedInstanceState);
+
     }
-
-    @Override
-    public void onResume() {
-        Log.i(TAG, this , " onResume");
-        super.onResume();
-        Assert.ensureNotNull(controller);
-        updateView();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        Log.i(TAG, this , " onSaveInstanceState");
-        super.onSaveInstanceState(outState);
-
-        // saving controller state
-        ControllerManager.getInstance().saveController(outState, controller);
-    }
-
-    private T obtainController(Bundle savedInstanceState) {
-        if (controller == null) {
-            ControllerManager manager = ControllerManager.getInstance();
-            //Debug.waitForDebugger();
-
-            controller = ControllerManager.obtainController(savedInstanceState, getArguments(), this, manager);
-            Log.i(TAG, "controller obtained:", "controller=", controller, "for fragment", getClass().getSimpleName(), "with savedinstancestate:", savedInstanceState);
-            manager.addFragmentController(controller, ((ControlledActivity)getActivity()));
-        }
-
-        return controller;
-    }
-
-    protected abstract void updateView(View v);
-
-
-    protected abstract View createView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
 
     @Override
     public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -74,6 +40,10 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
         updateView(view);
         return view;
     }
+
+    protected abstract View createView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
+
+    protected abstract void updateView(View v);
 
     protected final void updateView() {
         updateView(getView());
@@ -91,5 +61,34 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
     public int getControllerId() {
         return controller != null ? controller.getId() : INVALID_CONTROLLER_ID;
     }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Assert.ensureNotNull(controller);
+        updateView();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // saving controller state
+        ControllerManager.getInstance().saveController(outState, controller);
+    }
+
+    private T obtainController(Bundle savedInstanceState) {
+        if (controller == null) {
+            ControllerManager manager = ControllerManager.getInstance();
+            controller = ControllerManager.obtainController(savedInstanceState, getArguments(), this, manager);
+
+            Log.i(TAG, this, "managing subcontroller", controller);
+            ((ControlledActivity)getActivity()).getController().manageSubController(controller);
+        }
+
+        return controller;
+    }
+
 
 }

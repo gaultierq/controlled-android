@@ -1,9 +1,11 @@
 package layout;
 
+import android.app.Activity;
 import android.view.View;
 
 import io.gaultier.controlledandroid.R;
 import io.gaultier.controlledandroid.control.ControlledActivity;
+import io.gaultier.controlledandroid.control.ControllerManager;
 
 public class FirstActivity extends ControlledActivity<FirstActivityController> {
 
@@ -20,7 +22,7 @@ public class FirstActivity extends ControlledActivity<FirstActivityController> {
 
     public void lauchSecondActivity(View v) {
         SecondActivityController ctrl = new SecondActivityController();
-        ctrl.startActivity(this, SecondActivity.class);
+        ControllerManager.startActivity((Activity) this, SecondActivity.class, ctrl);
     }
 
     @Override

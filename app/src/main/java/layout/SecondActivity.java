@@ -19,7 +19,6 @@ public class SecondActivity extends ControlledActivity<SecondActivityController>
     protected void updateView() {
         findViewById(R.id.progressBar).setVisibility(controller.progress ? View.VISIBLE : View.GONE);
         ((Button) findViewById(R.id.btnConnect)).setText(controller.progress ? "disconnect" : "connect");
-
     }
 
     public void doConnect(View view) {
