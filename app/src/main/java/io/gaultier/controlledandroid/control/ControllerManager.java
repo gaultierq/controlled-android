@@ -69,7 +69,7 @@ public class ControllerManager {
             // fragment created programatically (already managed)
             // -> find controller
             controllerId = arguments.getInt(AbstractController.CONTROLLER_ID, INVALID_CONTROLLER_ID);
-            Assert.ensure(controllerId != INVALID_CONTROLLER_ID, "Creating fragments via controllers");
+            Assert.ensure(controllerId != INVALID_CONTROLLER_ID, "This controller should have an id " + arguments);
             Assert.ensure(manager.isManaged(controllerId), "expecting a managed controller");
             controller = (T) manager.getManagedController(controllerId);
         }
@@ -94,13 +94,27 @@ public class ControllerManager {
             Class<T> toActivityClass,
             AbstractController toActivityController) {
 
-        ControllerManager manager = getInstance();
         Intent intent = new Intent(fromActivity, toActivityClass);
-        manager.manage(toActivityController);
 
-        intent.putExtras(manager.saveController(new Bundle(), toActivityController));
+        getInstance().manage(toActivityController);
+        intent.putExtras(ControllerManager.saveController(new Bundle(), toActivityController));
         fromActivity.startActivity(intent);
     }
+
+
+    public <T extends ControlledFragment> T createNewManagedFragment(Class<T> clazz, AbstractController fragmentController) {
+        try {
+            Assert.ensure(!fragmentController.hasId());
+            T res = clazz.newInstance();
+            manage(fragmentController);
+            res.setArguments(ControllerManager.saveController(new Bundle(), fragmentController));
+            return res;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public void unmanage(Collection<AbstractController> controllers) {
         for (AbstractController ctrl : controllers) {
@@ -117,9 +131,8 @@ public class ControllerManager {
     public <T extends AbstractController> void manage(T controller) {
         Assert.ensure(controller != null);
         Assert.ensure(controller.getId() == AbstractController.INVALID_CONTROLLER_ID);
-        Log.i(TAG, "Managing controller: ", controller);
-
         controller.assignId(generateControllerId());
+        Log.i(TAG, "Managing controller: ", controller);
         managedControllers.put(controller.getId(), controller);
         controller.assignStatus(ControllerStatus.MANAGED);
         logSize();
@@ -155,7 +168,7 @@ public class ControllerManager {
 
     }
 
-    public <T extends AbstractController> Bundle saveController(Bundle outState, T controller) {
+    public static <T extends AbstractController> Bundle saveController(Bundle outState, T controller) {
         outState.putInt(AbstractController.CONTROLLER_ID, controller.getId());
         outState.putParcelable(AbstractController.CONTROLLER, Parcels.wrap(controller));
         return outState;

@@ -67,4 +67,12 @@ public class AbstractController {
     public boolean isReady() {
         return status.isAtLeast(ControllerStatus.ACTIVE);
     }
+
+    public boolean hasId() {
+        boolean res = status.isAtLeast(ControllerStatus.WITH_ID);
+        Assert.ensure(res == (id != INVALID_CONTROLLER_ID));
+        return res;
+    }
+
+
 }
