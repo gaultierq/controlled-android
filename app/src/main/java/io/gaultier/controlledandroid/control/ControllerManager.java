@@ -31,8 +31,11 @@ public class ControllerManager {
     private final SparseArray<AbstractController> managedControllers = new SparseArray<>();
 
     private final AtomicInteger counter = new AtomicInteger();
+
+    //TODO: get rid of random
     private final int session = new Random().nextInt(10000);
 
+    //TODO: let the controller know its fragment
 
     private ControllerManager() {
         Log.i(TAG, "Creating instance");
@@ -113,7 +116,6 @@ public class ControllerManager {
             throw new RuntimeException(e);
         }
     }
-
 
     public void unmanage(Collection<AbstractController> controllers) {
         for (AbstractController ctrl : controllers) {
