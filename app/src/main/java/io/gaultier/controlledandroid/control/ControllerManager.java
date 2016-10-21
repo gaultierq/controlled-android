@@ -102,13 +102,12 @@ public class ControllerManager {
     }
 
 
-    public <T extends ControlledFragment> T createNewManagedFragment(Class<T> clazz, AbstractController fragmentController) {
+    public <T extends ControlledFragment> T createNewManagedFragment(T frag, AbstractController fragmentController) {
         try {
             Assert.ensure(!fragmentController.hasId());
-            T res = clazz.newInstance();
             manage(fragmentController);
-            res.setArguments(ControllerManager.saveController(new Bundle(), fragmentController));
-            return res;
+            frag.setArguments(ControllerManager.saveController(new Bundle(), fragmentController));
+            return frag;
         }
         catch (Exception e) {
             throw new RuntimeException(e);
