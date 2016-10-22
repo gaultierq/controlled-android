@@ -25,8 +25,8 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     @Override
     public final void onCreate(Bundle savedInstanceState) {
 
-        Log.i(TAG, this , " onCreate");
-        Assert.ensure(getActivity() instanceof ControlledActivity,  "ControlledFragment can only exist in ControlledActivity");
+        Log.i(TAG, this, " onCreate");
+        Assert.ensure(getActivity() instanceof ControlledActivity, "ControlledFragment can only exist in ControlledActivity");
 
         super.onCreate(savedInstanceState);
 
@@ -34,9 +34,9 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     @Override
     public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = createView(inflater, container, savedInstanceState);
-
         controller = obtainController(savedInstanceState);
+
+        View view = createView(inflater, container, savedInstanceState);
 
         return view;
     }
@@ -76,6 +76,8 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         updateView();
     }
 
+
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -90,7 +92,9 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
             controller = ControllerManager.obtainController(savedInstanceState, getArguments(), this, manager);
 
             Log.i(TAG, this, "managing subcontroller", controller);
-            ((ControlledActivity)getActivity()).getController().manageSubController(controller);
+
+            AbstractController c = ((ControlledActivity) getActivity()).getController();
+            c.manageSubController(this.controller);
         }
 
         return controller;
