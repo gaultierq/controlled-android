@@ -28,15 +28,17 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         Log.i(TAG, this , " onCreate");
         Assert.ensure(getActivity() instanceof ControlledActivity,  "ControlledFragment can only exist in ControlledActivity");
 
-        controller = obtainController(savedInstanceState);
-
         super.onCreate(savedInstanceState);
 
     }
 
     @Override
     public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return createView(inflater, container, savedInstanceState);
+        View view = createView(inflater, container, savedInstanceState);
+
+        controller = obtainController(savedInstanceState);
+
+        return view;
     }
 
     @Override

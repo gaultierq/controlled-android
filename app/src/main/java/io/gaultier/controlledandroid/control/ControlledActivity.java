@@ -20,22 +20,28 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
 
     protected T controller;
 
+    // notes: android views do not have their savedStated restored yet (wait on resume)
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
 
-        controller = obtainController(savedInstanceState);
-
         super.onCreate(savedInstanceState);
 
-        //inflating the view
         createView();
 
-        updateView();
+        controller = obtainController(savedInstanceState);
     }
 
+    //inflating the view "state-less" (controller not available yet)
     protected abstract void createView();
 
-    protected abstract void updateView();
+    //use the controller and the state-full components (ex: a view pager), to configure the views
+    protected void prepareView() {
+        // nothing by default
+    }
+
+    protected void refreshView() {
+        //nothing
+    }
 
     private T obtainController(Bundle savedInstanceState) {
         if (controller == null) {
@@ -68,13 +74,6 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        Assert.ensureNotNull(controller);
-        updateView();
-    }
-
-    @Override
     public void finish() {
         super.finish();
         ControllerManager.getInstance().unmanage(Collections.<AbstractController>singleton(controller));
@@ -83,6 +82,13 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     @Override
     public String toString() {
         return ControllerManager.toString(this);
+    }
+
+    @Override
+    protected final void onResume() {
+        super.onResume();
+        Assert.ensureNotNull(controller);
+        prepareView();
     }
 
 }

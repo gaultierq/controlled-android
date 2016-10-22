@@ -16,7 +16,7 @@ public class SecondActivity extends ControlledActivity<SecondActivityController>
     }
 
     @Override
-    protected void updateView() {
+    protected void refreshView() {
         findViewById(R.id.progressBar).setVisibility(controller.progress ? View.VISIBLE : View.GONE);
         ((Button) findViewById(R.id.btnConnect)).setText(controller.progress ? "disconnect" : "connect");
     }
@@ -24,7 +24,7 @@ public class SecondActivity extends ControlledActivity<SecondActivityController>
     public void doConnect(View view) {
         //do async stuff
         controller.progress = !controller.progress;
-        updateView();
+        refreshView();
     }
 
     public void doAddFragment(View view) {

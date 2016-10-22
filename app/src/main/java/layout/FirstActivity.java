@@ -15,10 +15,6 @@ public class FirstActivity extends ControlledActivity<FirstActivityController> {
         setContentView(R.layout.activity_first);
     }
 
-    @Override
-    protected void updateView() {
-        //nothing to update
-    }
 
     public void lauchSecondActivity(View v) {
         SecondActivityController ctrl = new SecondActivityController();
