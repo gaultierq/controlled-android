@@ -5,7 +5,7 @@ package io.gaultier.controlledandroid.control;
  */
 interface ControlledElement<T extends AbstractController> {
     
-    public abstract T makeController();
+    public T makeController();
 
     public T getController();
 

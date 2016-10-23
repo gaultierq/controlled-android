@@ -24,18 +24,20 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
 
+        controller = obtainController(savedInstanceState);
+
         super.onCreate(savedInstanceState);
 
         createView();
 
-        controller = obtainController(savedInstanceState);
+        //controller can be used by view from here
     }
 
     //inflating the view "state-less" (controller not available yet)
     protected abstract void createView();
 
     //use the controller and the state-full components (ex: a view pager), to configure the views
-    protected void prepareView() {
+    protected void prepareView(T controller) {
         // nothing by default
     }
 
@@ -80,6 +82,19 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        controller.setViewPrepared(false);
+    }
+
+
+    //    @Override
+//    public void onDestroyView() {
+//        super.onDestroyView();
+//        controller.setViewPrepared(false);
+//    }
+
+    @Override
     public String toString() {
         return ControllerManager.toString(this);
     }
@@ -88,7 +103,12 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     protected final void onResume() {
         super.onResume();
         Assert.ensureNotNull(controller);
-        prepareView();
+        prepareViewInternal(controller);
     }
+    private void prepareViewInternal(T controller) {
+        prepareView(controller);
+        getController().setViewPrepared(true);
+    }
+
 
 }

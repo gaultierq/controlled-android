@@ -31,7 +31,6 @@ public class SecondActivity extends ControlledActivity<SecondActivityController>
         Fragment newFragment = new BlankFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.toto_container, newFragment).commit();
-
     }
 
     @Override

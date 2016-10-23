@@ -24,8 +24,10 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     @Override
     public final void onCreate(Bundle savedInstanceState) {
+        controller = obtainController(savedInstanceState);
 
         Log.i(TAG, this, " onCreate");
+
         Assert.ensure(getActivity() instanceof ControlledActivity, "ControlledFragment can only exist in ControlledActivity");
 
         super.onCreate(savedInstanceState);
@@ -34,7 +36,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     @Override
     public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        controller = obtainController(savedInstanceState);
+
 
         View view = createView(inflater, container, savedInstanceState);
 
@@ -49,10 +51,20 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     protected abstract View createView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
 
-    protected abstract void updateView(View v);
+
+    protected void updateView(View v) {
+    }
 
     protected final void updateView() {
         updateView(getView());
+    }
+
+    private void prepareViewInternal(View fragmentView, T fragmentController) {
+        prepareView(fragmentView, fragmentController);
+        fragmentController.setViewPrepared(true);
+    }
+
+    protected void prepareView(View fragmentView, T fragmentController) {
     }
 
     @Override
@@ -68,15 +80,12 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         return controller != null ? controller.getId() : INVALID_CONTROLLER_ID;
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
         Assert.ensureNotNull(controller);
-        updateView();
+        prepareViewInternal(getView(), getController());
     }
-
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -84,6 +93,12 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
         // saving controller state
         ControllerManager.getInstance().saveController(outState, controller);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        controller.setViewPrepared(false);
     }
 
     private T obtainController(Bundle savedInstanceState) {

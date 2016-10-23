@@ -48,7 +48,7 @@ public class ControllerManager {
     // return a managed controller
     public static <T extends AbstractController> T obtainController(final Bundle savedInstanceState,
                                                                     Bundle arguments,
-                                                                    ControlledElement<T> factory,
+                                                                    ControlledElement<T> element,
                                                                     ControllerManager manager) {
         T controller;
         int controllerId;
@@ -79,7 +79,7 @@ public class ControllerManager {
         else {
             // creation by system (main activity, fragment)
             // -> create controller
-            controller = factory.makeController();
+            controller = element.makeController();
             Assert.ensure(controller != null);
             manager.manage(controller);
         }

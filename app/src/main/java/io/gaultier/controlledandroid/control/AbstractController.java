@@ -13,6 +13,7 @@ import io.gaultier.controlledandroid.util.Assert;
  */
 
 public class AbstractController {
+    // make all class transient
 
     public static final int INVALID_CONTROLLER_ID = 0;
     public static final String CONTROLLER_ID = "CONTROLLER_ID";
@@ -28,6 +29,9 @@ public class AbstractController {
 
     @Transient
     Set<AbstractController> subControllers = new HashSet<AbstractController>();
+
+    @Transient
+    boolean viewPrepared;
 
     public int getId() {
         return id;
@@ -75,4 +79,16 @@ public class AbstractController {
     }
 
 
+    public void setViewPrepared(boolean viewPrepared) {
+        this.viewPrepared = viewPrepared;
+    }
+
+    public boolean isViewPrepared() {
+        for (AbstractController c : subControllers) {
+            if (!c.isViewPrepared()) {
+                return false;
+            }
+        }
+        return viewPrepared;
+    }
 }
