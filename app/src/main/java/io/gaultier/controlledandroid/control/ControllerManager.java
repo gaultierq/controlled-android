@@ -105,7 +105,7 @@ public class ControllerManager {
     }
 
 
-    public <T extends ControlledFragment> T createNewManagedFragment(T frag, AbstractController fragmentController) {
+    public <T extends ControlledFragment> T managedNewFragment(T frag, AbstractController fragmentController) {
         try {
             Assert.ensure(!fragmentController.hasId());
             manage(fragmentController);

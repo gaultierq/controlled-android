@@ -115,5 +115,8 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         return controller;
     }
 
+    public final String tag() {
+        return getClass().getSimpleName() + getControllerId();
+    }
 
 }
