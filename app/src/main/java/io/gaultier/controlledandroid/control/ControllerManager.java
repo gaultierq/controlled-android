@@ -84,6 +84,7 @@ public class ControllerManager {
             manager.manage(controller);
         }
         Assert.ensure(controller.isManaged());
+
         return controller;
     }
 

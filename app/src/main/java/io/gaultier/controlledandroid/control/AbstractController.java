@@ -18,7 +18,6 @@ public class AbstractController {
     public static final int INVALID_CONTROLLER_ID = 0;
     public static final String CONTROLLER_ID = "CONTROLLER_ID";
     public static final String CONTROLLER = "CONTROLLER";
-    private static final String TAG = "AbstractController";
 
 
     @Transient
@@ -30,8 +29,9 @@ public class AbstractController {
     @Transient
     Set<AbstractController> subControllers = new HashSet<AbstractController>();
 
-    @Transient
-    boolean viewPrepared;
+    // numer of view created with this controller
+    int viewCreationCount;
+
 
     public int getId() {
         return id;
@@ -78,17 +78,7 @@ public class AbstractController {
         return res;
     }
 
-
-    public void setViewPrepared(boolean viewPrepared) {
-        this.viewPrepared = viewPrepared;
-    }
-
-    public boolean isViewPrepared() {
-        for (AbstractController c : subControllers) {
-            if (!c.isViewPrepared()) {
-                return false;
-            }
-        }
-        return viewPrepared;
+    public boolean isFirstInflate() {
+        return viewCreationCount == 0;
     }
 }

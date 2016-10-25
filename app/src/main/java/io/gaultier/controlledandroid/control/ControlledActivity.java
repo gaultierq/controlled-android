@@ -30,6 +30,8 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
 
         createView();
 
+        controller.viewCreationCount ++;
+
         //controller can be used by view from here
     }
 
@@ -84,7 +86,6 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        controller.setViewPrepared(false);
     }
 
 
@@ -107,7 +108,6 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     }
     private void prepareViewInternal(T controller) {
         prepareView(controller);
-        getController().setViewPrepared(true);
     }
 
 

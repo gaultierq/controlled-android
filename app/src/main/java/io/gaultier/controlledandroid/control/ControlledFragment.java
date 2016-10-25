@@ -38,7 +38,9 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
 
-        View view = createView(inflater, container, savedInstanceState);
+        View view = createView(inflater, container);
+
+        controller.viewCreationCount ++;
 
         return view;
     }
@@ -49,7 +51,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         updateView(view);
     }
 
-    protected abstract View createView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
+    protected abstract View createView(LayoutInflater inflater, @Nullable ViewGroup container);
 
 
     protected void updateView(View v) {
@@ -61,7 +63,6 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     private void prepareViewInternal(View fragmentView, T fragmentController) {
         prepareView(fragmentView, fragmentController);
-        fragmentController.setViewPrepared(true);
     }
 
     protected void prepareView(View fragmentView, T fragmentController) {
@@ -98,7 +99,6 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        controller.setViewPrepared(false);
     }
 
     private T obtainController(Bundle savedInstanceState) {

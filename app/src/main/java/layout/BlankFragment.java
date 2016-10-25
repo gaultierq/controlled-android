@@ -1,6 +1,5 @@
 package layout;
 
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,7 @@ public class BlankFragment extends ControlledFragment<BlankFragmentController> {
     }
 
     @Override
-    public View createView(LayoutInflater inflater, ViewGroup container,  Bundle savedInstanceState) {
+    public View createView(LayoutInflater inflater, ViewGroup container) {
 
         View v = inflater.inflate(R.layout.fragment_blank, container, false);
         v.findViewById(R.id.blank_button).setOnClickListener(new View.OnClickListener() {
