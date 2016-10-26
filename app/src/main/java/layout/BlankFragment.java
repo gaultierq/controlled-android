@@ -17,7 +17,7 @@ public class BlankFragment extends ControlledFragment<BlankFragmentController> {
     }
 
     @Override
-    protected void updateView(View v) {
+    protected void refresh(View v) {
         ((Button)v.findViewById(R.id.blank_button)).setText("Click number = " + getController().clicknumber);
     }
 
@@ -34,7 +34,7 @@ public class BlankFragment extends ControlledFragment<BlankFragmentController> {
             @Override
             public void onClick(View v) {
                 getController().clicknumber ++;
-                updateView();
+                refresh();
             }
         });
 

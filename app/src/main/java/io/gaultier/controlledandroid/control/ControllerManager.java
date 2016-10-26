@@ -84,6 +84,7 @@ public class ControllerManager {
             manager.manage(controller);
         }
         Assert.ensure(controller.isManaged());
+        controller.setManagedElement(element);
 
         return controller;
     }
@@ -118,13 +119,18 @@ public class ControllerManager {
         }
     }
 
+    public void unmanage(AbstractController ctrl) {
+        Log.i(TAG, "Unmanaging controller: ", ctrl);
+        unmanage(ctrl.getSubControllers());
+        ctrl.assignStatus(ControllerStatus.UNACTIVE);
+        managedControllers.remove(ctrl.getId());
+        ctrl.cleanup();
+        ctrl.assignStatus(ControllerStatus.UNMANAGED);
+    }
+
     public void unmanage(Collection<AbstractController> controllers) {
         for (AbstractController ctrl : controllers) {
-            Log.i(TAG, "Unmanaging controller: ", ctrl);
-            unmanage(ctrl.getSubControllers());
-            ctrl.assignStatus(ControllerStatus.UNACTIVE);
-            managedControllers.remove(ctrl.getId());
-            ctrl.assignStatus(ControllerStatus.UNMANAGED);
+            unmanage(ctrl);
         }
         logSize();
     }

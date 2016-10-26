@@ -29,8 +29,14 @@ public class AbstractController {
     @Transient
     Set<AbstractController> subControllers = new HashSet<AbstractController>();
 
+    @Transient
+    protected AbstractController parentController;
+
     // numer of view created with this controller
     int viewCreationCount;
+
+    @Transient
+    private ControlledElement managedElement;
 
 
     public int getId() {
@@ -56,6 +62,7 @@ public class AbstractController {
     public void manageSubController(AbstractController subCtrl) {
         if (!subCtrl.isReady()) {
             subControllers.add(subCtrl);
+            subCtrl.parentController = this;
             subCtrl.assignStatus(ControllerStatus.ACTIVE);
         }
     }
@@ -80,5 +87,22 @@ public class AbstractController {
 
     public boolean isFirstInflate() {
         return viewCreationCount == 0;
+    }
+
+    public void cleanup() {
+        parentController = null;
+    }
+
+    // one of my sub-controller tells me to check something
+    public void notifyChange(AbstractController controller) {
+
+    }
+
+    public ControlledElement getManagedElement() {
+        return managedElement;
+    }
+
+    public <T extends AbstractController> void setManagedElement(ControlledElement<T> managedElement) {
+        this.managedElement = managedElement;
     }
 }

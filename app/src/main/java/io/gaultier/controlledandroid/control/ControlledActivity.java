@@ -43,7 +43,7 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
         // nothing by default
     }
 
-    protected void refreshView() {
+    public void refresh() {
         //nothing
     }
 

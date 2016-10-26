@@ -48,17 +48,17 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        updateView(view);
+        refresh(view);
     }
 
     protected abstract View createView(LayoutInflater inflater, @Nullable ViewGroup container);
 
 
-    protected void updateView(View v) {
+    protected void refresh(View v) {
     }
 
-    protected final void updateView() {
-        updateView(getView());
+    public final void refresh() {
+        refresh(getView());
     }
 
     private void prepareViewInternal(View fragmentView, T fragmentController) {
