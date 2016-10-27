@@ -22,6 +22,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     private T controller;
 
+
     @Override
     public final void onCreate(Bundle savedInstanceState) {
         controller = obtainController(savedInstanceState);
@@ -62,6 +63,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     }
 
     private void prepareViewInternal(View fragmentView, T fragmentController) {
+        controller.reset();
         prepareView(fragmentView, fragmentController);
     }
 
@@ -93,7 +95,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         super.onSaveInstanceState(outState);
 
         // saving controller state
-        ControllerManager.getInstance().saveController(outState, controller);
+        getManager().saveController(outState, controller);
     }
 
     @Override
@@ -103,8 +105,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     private T obtainController(Bundle savedInstanceState) {
         if (controller == null) {
-            ControllerManager manager = ControllerManager.getInstance();
-            controller = ControllerManager.obtainController(savedInstanceState, getArguments(), this, manager);
+            controller = ControllerManager.obtainController(savedInstanceState, getArguments(), this, getManager());
 
             Log.i(TAG, this, "managing subcontroller", controller);
 
@@ -117,6 +118,11 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     public final String tag() {
         return getClass().getSimpleName() + getControllerId();
+    }
+
+    @Override
+    public ControllerManager getManager() {
+        return ((ControlledActivity)getActivity()).getManager();
     }
 
 }

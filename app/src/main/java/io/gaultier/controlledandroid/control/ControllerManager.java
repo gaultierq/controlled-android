@@ -5,11 +5,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.util.SparseArray;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 
 import org.parceler.Parcels;
 
+import java.lang.ref.WeakReference;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,23 +32,46 @@ public class ControllerManager {
 
     private static final String TAG = "ControllerManager";
 
-    private static final ControllerManager INSTANCE = new ControllerManager();
+    private static ControllerManager INSTANCE;
 
-    private final SparseArray<AbstractController> managedControllers = new SparseArray<>();
+    private final Map<Integer, AbstractController> managedControllers = new HashMap<>();
 
     private final AtomicInteger counter = new AtomicInteger();
 
     //TODO: get rid of random
     private final int session = new Random().nextInt(10000);
+    private FragmentManager.OnBackStackChangedListener listener;
 
-    //TODO: let the controller know its fragment
+    WeakReference<Activity> currentActivity;
 
     private ControllerManager() {
         Log.i(TAG, "Creating instance");
     }
 
-    public static ControllerManager getInstance() {
+    public static ControllerManager getInstance(FragmentActivity activity) {
+        if (INSTANCE == null) {
+            INSTANCE = new ControllerManager();
+        }
+        INSTANCE.attachActivity(activity);
         return INSTANCE;
+    }
+
+    // for sure 100% buggy
+    private void attachActivity(final FragmentActivity activity) {
+        if (currentActivity == null || currentActivity.get() != activity) {
+            FragmentManager supportFragmentManager = activity.getSupportFragmentManager();
+
+            if (listener != null) {
+                supportFragmentManager.removeOnBackStackChangedListener(listener);
+            }
+            listener = new FragmentManager.OnBackStackChangedListener() {
+                public void onBackStackChanged() {
+                    ControllerManager.this.cleanupStack(activity.getSupportFragmentManager());
+                }
+            };
+            supportFragmentManager.addOnBackStackChangedListener(listener);
+        }
+
     }
 
     // return a managed controller
@@ -62,21 +91,18 @@ public class ControllerManager {
             //eg: rotation
             if (manager.isManaged(controllerId)) {
                 controller = (T) manager.getManagedController(controllerId);
-            }
-            else { //killed
+            } else { //killed
                 controller = manager.<T>restoreController(savedInstanceState);
                 manager.manage(controller);
             }
-        }
-        else if (arguments != null) {
+        } else if (arguments != null) {
             // fragment created programatically (already managed)
             // -> find controller
             controllerId = arguments.getInt(AbstractController.CONTROLLER_ID, INVALID_CONTROLLER_ID);
             Assert.ensure(controllerId != INVALID_CONTROLLER_ID, "This controller should have an id " + arguments);
             Assert.ensure(manager.isManaged(controllerId), "expecting a managed controller");
             controller = (T) manager.getManagedController(controllerId);
-        }
-        else {
+        } else {
             // creation by system (main activity, fragment)
             // -> create controller
             controller = element.makeController();
@@ -91,19 +117,35 @@ public class ControllerManager {
 
     @NonNull
     static String toString(ControlledElement el) {
-        return "["+"controlled:" + el.getClass().getSimpleName() + "." + el.getControllerId()+"]";
+        return "[" + "controlled:" + el.getClass().getSimpleName() + "." + el.getControllerId() + "]";
     }
 
     public static <T extends ControlledActivity> void startActivity(
-            Activity fromActivity,
+            FragmentActivity fromActivity,
             Class<T> toActivityClass,
             AbstractController toActivityController) {
 
         Intent intent = new Intent(fromActivity, toActivityClass);
 
-        getInstance().manage(toActivityController);
+        getInstance(fromActivity).manage(toActivityController);
         intent.putExtras(ControllerManager.saveController(new Bundle(), toActivityController));
         fromActivity.startActivity(intent);
+    }
+
+    public boolean cleanupStack(FragmentManager supportFragmentManager) {
+        boolean cleaned = false;
+        Map<ControlledElement, AbstractController> els = this.snapElements();
+        List<Fragment> frags = supportFragmentManager.getFragments();
+        for (ControlledElement e : els.keySet()) {
+            if (!frags.contains(e)) {
+                this.unmanage(els.get(e));
+                cleaned = true;
+            }
+        }
+        if (cleaned) {
+            Assert.ensure(cleanupStack(supportFragmentManager) == false);
+        }
+        return cleaned;
     }
 
 
@@ -113,8 +155,7 @@ public class ControllerManager {
             manage(fragmentController);
             frag.setArguments(ControllerManager.saveController(new Bundle(), fragmentController));
             return frag;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -153,6 +194,14 @@ public class ControllerManager {
     // can return null
     public AbstractController getManagedController(int controllerId) {
         return managedControllers.get(controllerId);
+    }
+
+    public Map<ControlledElement, AbstractController> snapElements() {
+        Map<ControlledElement, AbstractController> r = new HashMap<>();
+        for (AbstractController m : managedControllers.values()) {
+            r.put(m.getManagedElement(), m);
+        }
+        return r;
     }
 
     public boolean isManaged(int controllerId) {

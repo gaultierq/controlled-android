@@ -12,4 +12,6 @@ public interface ControlledElement<T extends AbstractController> {
     public int getControllerId();
 
     public void refresh();
+
+    ControllerManager getManager();
 }

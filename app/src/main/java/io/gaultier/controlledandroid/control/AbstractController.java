@@ -13,7 +13,7 @@ import io.gaultier.controlledandroid.util.Assert;
  */
 
 public class AbstractController {
-    // make all class transient
+    // getInstance all class transient
 
     public static final int INVALID_CONTROLLER_ID = 0;
     public static final String CONTROLLER_ID = "CONTROLLER_ID";
@@ -105,4 +105,10 @@ public class AbstractController {
     public <T extends AbstractController> void setManagedElement(ControlledElement<T> managedElement) {
         this.managedElement = managedElement;
     }
+
+    // cleanup all states from previous displays
+    // the view is about to be displayed again
+    public void reset() {
+    }
 }
+

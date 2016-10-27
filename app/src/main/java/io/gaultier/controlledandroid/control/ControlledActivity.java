@@ -53,7 +53,7 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
                     savedInstanceState,
                     getIntent().getExtras(),
                     this,
-                    ControllerManager.getInstance()
+                    getManager()
             );
             controller.assignStatus(ControllerStatus.ACTIVE);
         }
@@ -74,13 +74,13 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
         super.onSaveInstanceState(outState);
 
         // saving controller
-        ControllerManager.getInstance().saveController(outState, controller);
+        getManager().saveController(outState, controller);
     }
 
     @Override
     public void finish() {
         super.finish();
-        ControllerManager.getInstance().unmanage(Collections.<AbstractController>singleton(controller));
+        getManager().unmanage(Collections.<AbstractController>singleton(controller));
     }
 
     @Override
@@ -111,4 +111,7 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     }
 
 
+    public ControllerManager getManager() {
+        return ControllerManager.getInstance(this);
+    }
 }
