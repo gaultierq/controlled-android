@@ -82,7 +82,7 @@ public class ControllerManager {
         T controller;
         int controllerId;
 
-        if (savedInstanceState != null) {
+        if ((controllerId = readControllerId(savedInstanceState)) != INVALID_CONTROLLER_ID) {
             // fragment has already existed (rotation, restore, killed)
             // -> restore controller
             controllerId = savedInstanceState.getInt(AbstractController.CONTROLLER_ID, INVALID_CONTROLLER_ID);
@@ -95,11 +95,9 @@ public class ControllerManager {
                 controller = manager.<T>restoreController(savedInstanceState);
                 manager.manage(controller);
             }
-        } else if (arguments != null) {
+        } else if ((controllerId = readControllerId(arguments)) != INVALID_CONTROLLER_ID) {
             // fragment created programatically (already managed)
             // -> find controller
-            controllerId = arguments.getInt(AbstractController.CONTROLLER_ID, INVALID_CONTROLLER_ID);
-            Assert.ensure(controllerId != INVALID_CONTROLLER_ID, "This controller should have an id " + arguments);
             Assert.ensure(manager.isManaged(controllerId), "expecting a managed controller");
             controller = (T) manager.getManagedController(controllerId);
         } else {
@@ -113,6 +111,13 @@ public class ControllerManager {
         controller.setManagedElement(element);
 
         return controller;
+    }
+
+    static int readControllerId(Bundle bundle) {
+        if (bundle != null) {
+            return bundle.getInt(AbstractController.CONTROLLER_ID, INVALID_CONTROLLER_ID);
+        }
+        return INVALID_CONTROLLER_ID;
     }
 
     @NonNull
