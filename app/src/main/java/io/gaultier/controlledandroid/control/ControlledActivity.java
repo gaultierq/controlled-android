@@ -3,8 +3,6 @@ package io.gaultier.controlledandroid.control;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import java.util.Collections;
-
 import io.gaultier.controlledandroid.util.Assert;
 import io.gaultier.controlledandroid.util.Log;
 
@@ -80,20 +78,8 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     @Override
     public void finish() {
         super.finish();
-        getManager().unmanage(Collections.<AbstractController>singleton(controller));
+        getManager().unmanage(controller);
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-
-    //    @Override
-//    public void onDestroyView() {
-//        super.onDestroyView();
-//        controller.setViewPrepared(false);
-//    }
 
     @Override
     public String toString() {

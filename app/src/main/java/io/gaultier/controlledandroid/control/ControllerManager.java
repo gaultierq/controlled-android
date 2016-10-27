@@ -66,9 +66,11 @@ public class ControllerManager {
             }
             listener = new FragmentManager.OnBackStackChangedListener() {
                 public void onBackStackChanged() {
+                    Log.d(TAG, "On back stack change");
                     ControllerManager.this.cleanupStack(activity.getSupportFragmentManager());
                 }
             };
+
             supportFragmentManager.addOnBackStackChangedListener(listener);
         }
 
@@ -85,9 +87,6 @@ public class ControllerManager {
         if ((controllerId = readControllerId(savedInstanceState)) != INVALID_CONTROLLER_ID) {
             // fragment has already existed (rotation, restore, killed)
             // -> restore controller
-            controllerId = savedInstanceState.getInt(AbstractController.CONTROLLER_ID, INVALID_CONTROLLER_ID);
-            Assert.ensure(controllerId != INVALID_CONTROLLER_ID);
-
             //eg: rotation
             if (manager.isManaged(controllerId)) {
                 controller = (T) manager.getManagedController(controllerId);
@@ -126,15 +125,20 @@ public class ControllerManager {
     }
 
     public static <T extends ControlledActivity> void startActivity(
-            FragmentActivity fromActivity,
+            ControlledActivity fromActivity,
             Class<T> toActivityClass,
-            AbstractController toActivityController) {
+            AbstractController toActivityController
+
+    ) {
 
         Intent intent = new Intent(fromActivity, toActivityClass);
 
-        getInstance(fromActivity).manage(toActivityController);
+        ControllerManager manager = getInstance(fromActivity);
+        manager.manage(toActivityController);
+        manager.unmanage(fromActivity.getController());
         intent.putExtras(ControllerManager.saveController(new Bundle(), toActivityController));
         fromActivity.startActivity(intent);
+
     }
 
     public boolean cleanupStack(FragmentManager supportFragmentManager) {
@@ -142,7 +146,7 @@ public class ControllerManager {
         Map<ControlledElement, AbstractController> els = this.snapElements();
         List<Fragment> frags = supportFragmentManager.getFragments();
         for (ControlledElement e : els.keySet()) {
-            if (!frags.contains(e)) {
+            if (e instanceof ControlledFragment && !frags.contains(e)) {
                 this.unmanage(els.get(e));
                 cleaned = true;
             }
@@ -165,7 +169,7 @@ public class ControllerManager {
         }
     }
 
-    public void unmanage(AbstractController ctrl) {
+    void unmanage(AbstractController ctrl) {
         Log.i(TAG, "Unmanaging controller: ", ctrl);
         unmanage(ctrl.getSubControllers());
         ctrl.assignStatus(ControllerStatus.UNACTIVE);
@@ -174,7 +178,7 @@ public class ControllerManager {
         ctrl.assignStatus(ControllerStatus.UNMANAGED);
     }
 
-    public void unmanage(Collection<AbstractController> controllers) {
+    private void unmanage(Collection<AbstractController> controllers) {
         for (AbstractController ctrl : controllers) {
             unmanage(ctrl);
         }
