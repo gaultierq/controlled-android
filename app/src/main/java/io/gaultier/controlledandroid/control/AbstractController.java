@@ -59,14 +59,6 @@ public class AbstractController {
         return "["+ getClass().getSimpleName() + "." + id + "]" + "(" + status + ")~" + hashCode();
     }
 
-    public void manageSubController(AbstractController subCtrl) {
-        if (!subCtrl.isReady()) {
-            subControllers.add(subCtrl);
-            subCtrl.parentController = this;
-            subCtrl.assignStatus(ControllerStatus.ACTIVE);
-        }
-    }
-
     public Collection<AbstractController> getSubControllers() {
         return subControllers;
     }
@@ -75,8 +67,9 @@ public class AbstractController {
         return status.isAtLeast(ControllerStatus.MANAGED);
     }
 
-    public boolean isReady() {
-        return status.isAtLeast(ControllerStatus.ACTIVE);
+    // TODO link activities
+    public boolean isLinked() {
+        return parentController != null;
     }
 
     public boolean hasId() {

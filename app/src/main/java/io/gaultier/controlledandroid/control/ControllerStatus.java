@@ -7,7 +7,6 @@ public enum ControllerStatus {
     CREATE,
     WITH_ID,
     MANAGED,
-    ACTIVE,
     UNACTIVE,
     UNMANAGED
     ;

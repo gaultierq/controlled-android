@@ -53,7 +53,6 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
                     this,
                     getManager()
             );
-            controller.assignStatus(ControllerStatus.ACTIVE);
         }
         return controller;
     }
@@ -94,6 +93,7 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     }
     private void prepareViewInternal(T controller) {
         prepareView(controller);
+        refresh();
     }
 
 

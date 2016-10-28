@@ -20,6 +20,11 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     private static final String TAG = "ControlledFragment";
 
+
+    public void setController(T controller) {
+        this.controller = controller;
+    }
+
     private T controller;
 
 
@@ -106,11 +111,13 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     private T obtainController(Bundle savedInstanceState) {
         if (controller == null) {
             controller = ControllerManager.obtainController(savedInstanceState, getArguments(), this, getManager());
+        }
 
-            Log.i(TAG, this, "managing subcontroller", controller);
-
-            AbstractController c = ((ControlledActivity) getActivity()).getController();
-            c.manageSubController(this.controller);
+        if (!controller.isLinked()) {
+            Log.d(TAG, "linking controller");
+            AbstractController aCtrl = ((ControlledActivity) getActivity()).getController();
+            aCtrl.subControllers.add(controller);
+            controller.parentController = aCtrl;
         }
 
         return controller;
