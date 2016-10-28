@@ -16,19 +16,17 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
 
     private static final String TAG = "ControlledActivity";
 
-    protected T controller;
+    private ControllerAccessor<T> ctrlAccessor = new ControllerAccessor<>();
 
     // notes: android views do not have their savedStated restored yet (wait on resume)
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
 
-        controller = obtainController(savedInstanceState);
+        ctrlAccessor.obtain(this, savedInstanceState, getIntent().getExtras());
 
         super.onCreate(savedInstanceState);
 
         createView();
-
-        controller.viewCreationCount ++;
 
         //controller can be used by view from here
     }
@@ -45,24 +43,12 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
         //nothing
     }
 
-    private T obtainController(Bundle savedInstanceState) {
-        if (controller == null) {
-            controller = ControllerManager.obtainController(
-                    savedInstanceState,
-                    getIntent().getExtras(),
-                    this,
-                    getManager()
-            );
-        }
-        return controller;
-    }
-
     public T getController() {
-        return controller;
+        return ctrlAccessor.get();
     }
 
     public int getControllerId() {
-        return controller != null ? controller.getId() : INVALID_CONTROLLER_ID;
+        return getController() != null ? getController().getControllerId() : INVALID_CONTROLLER_ID;
     }
 
     @Override
@@ -71,13 +57,13 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
         super.onSaveInstanceState(outState);
 
         // saving controller
-        getManager().saveController(outState, controller);
+        getManager().saveController(outState, getController());
     }
 
     @Override
     public void finish() {
         super.finish();
-        getManager().unmanage(controller);
+        getManager().unmanage(getController());
     }
 
     @Override
@@ -88,8 +74,12 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     @Override
     protected final void onResume() {
         super.onResume();
-        Assert.ensureNotNull(controller);
-        prepareViewInternal(controller);
+        Assert.ensureNotNull(getController());
+
+        // add comment pls
+        //ctrlAccessor.bind(this);
+
+        prepareViewInternal(getController());
     }
     private void prepareViewInternal(T controller) {
         prepareView(controller);
@@ -99,5 +89,14 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
 
     public ControllerManager getManager() {
         return ControllerManager.getInstance(this);
+    }
+
+    @Override
+    public void link(T controller) {
+        AbstractController mc = getManager().getMainController();
+        Log.d(TAG, "linking activity controller");
+        mc.subControllers.add(controller);
+        controller.parentController = mc;
+
     }
 }

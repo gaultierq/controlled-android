@@ -17,13 +17,13 @@ public class SecondActivity extends ControlledActivity<SecondActivityController>
 
     @Override
     public void refresh() {
-        findViewById(R.id.progressBar).setVisibility(controller.progress ? View.VISIBLE : View.GONE);
-        ((Button) findViewById(R.id.btnConnect)).setText(controller.progress ? "disconnect" : "connect");
+        findViewById(R.id.progressBar).setVisibility(getController().progress ? View.VISIBLE : View.GONE);
+        ((Button) findViewById(R.id.btnConnect)).setText(getController().progress ? "disconnect" : "connect");
     }
 
     public void doConnect(View view) {
         //do async stuff
-        controller.progress = !controller.progress;
+        getController().progress = !getController().progress;
         refresh();
     }
 

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -14,6 +15,7 @@ import org.parceler.Parcels;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -41,6 +43,8 @@ public class ControllerManager {
     //TODO: get rid of random
     private final int session = new Random().nextInt(10000);
     private FragmentManager.OnBackStackChangedListener listener;
+
+    private final AbstractController mainController = new ApplicationController();
 
     WeakReference<Activity> currentActivity;
 
@@ -76,14 +80,11 @@ public class ControllerManager {
 
     }
 
-    // return a managed controller
-    public static <T extends AbstractController> T obtainController(final Bundle savedInstanceState,
-                                                                    Bundle arguments,
-                                                                    ControlledElement<T> element,
-                                                                    ControllerManager manager) {
-        T controller;
+    @Nullable
+    public static <T extends AbstractController> T obtainIt(ControlledElement<T> element, Bundle savedInstanceState, Bundle arguments) {
+        ControllerManager manager = element.getManager();
         int controllerId;
-
+        T controller;
         if ((controllerId = readControllerId(savedInstanceState)) != INVALID_CONTROLLER_ID) {
             // fragment has already existed (rotation, restore, killed)
             // -> restore controller
@@ -91,24 +92,26 @@ public class ControllerManager {
             if (manager.isManaged(controllerId)) {
                 controller = (T) manager.getManagedController(controllerId);
             } else { //killed
-                controller = manager.<T>restoreController(savedInstanceState);
+                controller = manager.restoreController(savedInstanceState);
                 manager.manage(controller);
             }
-        } else if ((controllerId = readControllerId(arguments)) != INVALID_CONTROLLER_ID) {
+        }
+        else if ((controllerId = readControllerId(arguments)) != INVALID_CONTROLLER_ID) {
             // fragment created programatically (already managed)
             // -> find controller
-            Assert.ensure(manager.isManaged(controllerId), "expecting a managed controller");
+            Assert.ensure(manager.isManaged(controllerId), "expecting a managed controller for id=" + controllerId);
             controller = (T) manager.getManagedController(controllerId);
         } else {
             // creation by system (main activity, fragment)
-            // -> create controller
+            // -> create new controller (should be the only controller factory)
             controller = element.makeController();
-            Assert.ensure(controller != null);
+            controller.setNew();
             manager.manage(controller);
+            Assert.ensure(controller != null);
         }
-        Assert.ensure(controller.isManaged());
         controller.setManagedElement(element);
-
+        controller.ensureInitialized();
+        element.link(controller);
         return controller;
     }
 
@@ -123,6 +126,27 @@ public class ControllerManager {
     static String toString(ControlledElement el) {
         return "[" + "controlled:" + el.getClass().getSimpleName() + "." + el.getControllerId() + "]";
     }
+    public String toString() {
+        return "[" + "manager ["+toString(managedControllers) + "]" ;
+    }
+
+    private <K,V> String toString(Map<K, V> managedControllers) {
+        if (managedControllers == null) {
+            return "null";
+        }
+        StringBuilder b = new StringBuilder("size="+managedControllers.size() + " {");
+        Iterator<Map.Entry<K, V>> it = managedControllers.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<K, V> e = it.next();
+            b.append(e.getValue());
+            if (it.hasNext()) {
+                b.append(", ");
+            }
+        }
+        b.append("}");
+        return b.toString();
+    }
+
 
     public static <T extends ControlledActivity> void startActivity(
             ControlledActivity fromActivity,
@@ -163,41 +187,40 @@ public class ControllerManager {
             Assert.ensure(!fragmentController.hasId());
             manage(fragmentController);
             frag.setArguments(ControllerManager.saveController(new Bundle(), fragmentController));
+            frag.setController(null);
             return frag;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    void unmanage(AbstractController ctrl) {
-        Log.i(TAG, "Unmanaging controller: ", ctrl);
-        unmanage(ctrl.getSubControllers());
-        ctrl.assignStatus(ControllerStatus.UNACTIVE);
-        managedControllers.remove(ctrl.getId());
-        ctrl.cleanup();
-        ctrl.assignStatus(ControllerStatus.UNMANAGED);
+    public void unmanage(AbstractController controller) {
+        unmanage(controller.snapSubControllers());
+
+        int id = controller.getControllerId();
+        Assert.ensure(id != INVALID_CONTROLLER_ID, "Unexpected. " + controller + " in " + this);
+        AbstractController unmanaged = managedControllers.remove(id);
+        Assert.ensure(unmanaged == controller, "Controller not found:" + controller + " in " + this);
+
+        unmanaged.cleanup();
+        unmanaged.setManaged(false);
+        Log.i(TAG, "--: ", controller, "manager:", this);
     }
 
     private void unmanage(Collection<AbstractController> controllers) {
         for (AbstractController ctrl : controllers) {
             unmanage(ctrl);
         }
-        logSize();
     }
 
     // manage provide an id to the controller
     public <T extends AbstractController> void manage(T controller) {
         Assert.ensure(controller != null);
-        Assert.ensure(controller.getId() == AbstractController.INVALID_CONTROLLER_ID);
-        controller.assignId(generateControllerId());
-        Log.i(TAG, "Managing controller: ", controller);
-        managedControllers.put(controller.getId(), controller);
-        controller.assignStatus(ControllerStatus.MANAGED);
-        logSize();
-    }
-
-    private void logSize() {
-        Log.i(TAG, "Managed controllers: ", managedControllers.size());
+        Assert.ensure(controller.getControllerId() == AbstractController.INVALID_CONTROLLER_ID);
+        controller.setControllerId(generateControllerId());
+        managedControllers.put(controller.getControllerId(), controller);
+        controller.setManaged(true);
+        Log.i(TAG, "++: ", controller, "manager:", this);
     }
 
     // can return null
@@ -235,11 +258,14 @@ public class ControllerManager {
     }
 
     public static <T extends AbstractController> Bundle saveController(Bundle outState, T controller) {
-        outState.putInt(AbstractController.CONTROLLER_ID, controller.getId());
+        outState.putInt(AbstractController.CONTROLLER_ID, controller.getControllerId());
         outState.putParcelable(AbstractController.CONTROLLER, Parcels.wrap(controller));
         return outState;
     }
 
+    public AbstractController getMainController() {
+        return mainController;
+    }
 }
 
 

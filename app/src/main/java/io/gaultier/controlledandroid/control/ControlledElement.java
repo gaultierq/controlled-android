@@ -14,4 +14,6 @@ public interface ControlledElement<T extends AbstractController> {
     public void refresh();
 
     ControllerManager getManager();
+
+    void link(T controller);
 }

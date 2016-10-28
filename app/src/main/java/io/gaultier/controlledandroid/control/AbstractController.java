@@ -21,10 +21,7 @@ public class AbstractController {
 
 
     @Transient
-    int id = INVALID_CONTROLLER_ID;
-
-    @Transient
-    ControllerStatus status = ControllerStatus.CREATE;
+    private int controllerId = INVALID_CONTROLLER_ID;
 
     @Transient
     Set<AbstractController> subControllers = new HashSet<AbstractController>();
@@ -32,57 +29,41 @@ public class AbstractController {
     @Transient
     protected AbstractController parentController;
 
-    // numer of view created with this controller
-    int viewCreationCount;
-
     @Transient
     private ControlledElement managedElement;
+    private boolean managed;
+
+    boolean isInitialized;
 
 
-    public int getId() {
-        return id;
+    public int getControllerId() {
+        return controllerId;
     }
 
-    public void assignId(int id) {
-        this.id = id;
-        assignStatus(ControllerStatus.WITH_ID);
-    }
-
-    public void assignStatus(ControllerStatus newStatus) {
-        Assert.ensure(newStatus.ordinal() - status.ordinal() <= 1,
-                "jumping from status '" + status + "' to '" +newStatus + "'");
-        status = newStatus;
+    public void setControllerId(int controllerId) {
+        this.controllerId = controllerId;
     }
 
     @Override
     public final String toString() {
-        return "["+ getClass().getSimpleName() + "." + id + "]" + "(" + status + ")~" + hashCode();
+        return "["+ getClass().getSimpleName() + "." + controllerId + "]" + "~" + hashCode();
     }
 
-    public Collection<AbstractController> getSubControllers() {
-        return subControllers;
+    public Collection<AbstractController> snapSubControllers() {
+        return new HashSet<>(subControllers);
     }
 
     public boolean isManaged() {
-        return status.isAtLeast(ControllerStatus.MANAGED);
-    }
-
-    // TODO link activities
-    public boolean isLinked() {
-        return parentController != null;
+        return managed;
     }
 
     public boolean hasId() {
-        boolean res = status.isAtLeast(ControllerStatus.WITH_ID);
-        Assert.ensure(res == (id != INVALID_CONTROLLER_ID));
-        return res;
-    }
-
-    public boolean isFirstInflate() {
-        return viewCreationCount == 0;
+        return controllerId != INVALID_CONTROLLER_ID;
     }
 
     public void cleanup() {
+        boolean removed = parentController.subControllers.remove(this);
+        Assert.ensure(removed);
         parentController = null;
     }
 
@@ -96,12 +77,34 @@ public class AbstractController {
     }
 
     public <T extends AbstractController> void setManagedElement(ControlledElement<T> managedElement) {
+        Assert.ensure(isManaged());
         this.managedElement = managedElement;
     }
 
     // cleanup all states from previous displays
     // the view is about to be displayed again
     public void reset() {
+    }
+
+    public void setManaged(boolean managed) {
+        this.managed = managed;
+    }
+
+    public void setNew() {
+        this.isInitialized = true;
+    }
+
+
+    void ensureInitialized() {
+        if (isInitialized == false) {
+            init();
+            isInitialized = true;
+        }
+    }
+
+    // first time this controller will be displayed
+    protected void init() {
+
     }
 }
 

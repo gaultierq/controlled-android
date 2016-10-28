@@ -10,8 +10,6 @@ import android.view.ViewGroup;
 import io.gaultier.controlledandroid.util.Assert;
 import io.gaultier.controlledandroid.util.Log;
 
-import static io.gaultier.controlledandroid.control.AbstractController.INVALID_CONTROLLER_ID;
-
 /**
  * Created by q on 16/10/16.
  */
@@ -20,19 +18,13 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     private static final String TAG = "ControlledFragment";
 
-
-    public void setController(T controller) {
-        this.controller = controller;
-    }
-
-    private T controller;
+    private ControllerAccessor<T> ctrlAccessor = new ControllerAccessor<>();
 
 
     @Override
     public final void onCreate(Bundle savedInstanceState) {
-        controller = obtainController(savedInstanceState);
 
-        Log.i(TAG, this, " onCreate");
+        ctrlAccessor.obtain(this, savedInstanceState, getArguments());
 
         Assert.ensure(getActivity() instanceof ControlledActivity, "ControlledFragment can only exist in ControlledActivity");
 
@@ -43,12 +35,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     @Override
     public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-
-        View view = createView(inflater, container);
-
-        controller.viewCreationCount ++;
-
-        return view;
+        return createView(inflater, container);
     }
 
     @Override
@@ -68,7 +55,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     }
 
     private void prepareViewInternal(View fragmentView, T fragmentController) {
-        controller.reset();
+        getController().reset();
         prepareView(fragmentView, fragmentController);
     }
 
@@ -81,17 +68,20 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     }
 
     public T getController() {
-        return controller;
+        return ctrlAccessor.get();
     }
 
     public int getControllerId() {
-        return controller != null ? controller.getId() : INVALID_CONTROLLER_ID;
+        return ctrlAccessor.getId();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Assert.ensureNotNull(controller);
+        Assert.ensureNotNull(getController());
+
+        // add comment pls
+        //ctrlAccessor.bind(this);
         prepareViewInternal(getView(), getController());
     }
 
@@ -100,27 +90,12 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         super.onSaveInstanceState(outState);
 
         // saving controller state
-        getManager().saveController(outState, controller);
+        getManager().saveController(outState, getController());
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-    }
-
-    private T obtainController(Bundle savedInstanceState) {
-        if (controller == null) {
-            controller = ControllerManager.obtainController(savedInstanceState, getArguments(), this, getManager());
-        }
-
-        if (!controller.isLinked()) {
-            Log.d(TAG, "linking controller");
-            AbstractController aCtrl = ((ControlledActivity) getActivity()).getController();
-            aCtrl.subControllers.add(controller);
-            controller.parentController = aCtrl;
-        }
-
-        return controller;
     }
 
     public final String tag() {
@@ -132,4 +107,19 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         return ((ControlledActivity)getActivity()).getManager();
     }
 
+    @Override
+    public void link(T controller) {
+        Log.d(TAG, "linking controller");
+        AbstractController aCtrl = ((ControlledActivity) getActivity()).getController();
+        aCtrl.subControllers.add(controller);
+        controller.parentController = aCtrl;
+    }
+    public void setController(T controller) {
+        ctrlAccessor.set(controller);
+    }
+
+
+    public boolean addToBackStack() {
+        return true;
+    }
 }
