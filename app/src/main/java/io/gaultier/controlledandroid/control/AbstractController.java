@@ -31,7 +31,8 @@ public class AbstractController {
 
     @Transient
     private ControlledElement managedElement;
-    private boolean managed;
+
+    boolean managed;
 
     boolean isInitialized;
 
