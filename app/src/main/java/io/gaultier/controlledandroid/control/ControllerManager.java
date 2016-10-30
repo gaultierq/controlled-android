@@ -99,7 +99,7 @@ public class ControllerManager {
         else if ((controllerId = readControllerId(arguments)) != INVALID_CONTROLLER_ID) {
             // fragment created programatically (already managed)
             // -> find controller
-            Assert.ensure(manager.isManaged(controllerId), "expecting a managed controller for id=" + controllerId);
+            Assert.ensure(manager.isManaged(controllerId), "expecting a managed controller for id=" + controllerId + ", arguments=" + arguments );
             controller = (T) manager.getManagedController(controllerId);
         } else {
             // creation by system (main activity, fragment)
