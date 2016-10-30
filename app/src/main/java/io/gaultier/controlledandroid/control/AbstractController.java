@@ -91,9 +91,9 @@ public class AbstractController {
         this.managed = managed;
     }
 
-    public void setNew() {
-        this.isInitialized = true;
-    }
+    //public void setNew() {
+    //    this.isInitialized = false;
+    //}
 
 
     void ensureInitialized() {

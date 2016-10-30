@@ -105,7 +105,6 @@ public class ControllerManager {
             // creation by system (main activity, fragment)
             // -> create new controller (should be the only controller factory)
             controller = element.makeController();
-            controller.setNew();
             manager.manage(controller);
             Assert.ensure(controller != null);
         }
