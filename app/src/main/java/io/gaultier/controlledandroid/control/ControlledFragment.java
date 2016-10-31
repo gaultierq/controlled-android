@@ -71,7 +71,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         return ctrlAccessor.get();
     }
 
-    public int getControllerId() {
+    public String getControllerId() {
         return ctrlAccessor.getId();
     }
 

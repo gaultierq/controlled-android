@@ -15,13 +15,13 @@ import io.gaultier.controlledandroid.util.Assert;
 public class AbstractController {
     // getInstance all class transient
 
-    public static final int INVALID_CONTROLLER_ID = 0;
+    public static final String INVALID_CONTROLLER_ID = "0";
     public static final String CONTROLLER_ID = "CONTROLLER_ID";
     public static final String CONTROLLER = "CONTROLLER";
 
 
     @Transient
-    private int controllerId = INVALID_CONTROLLER_ID;
+    private String controllerId = INVALID_CONTROLLER_ID;
 
     @Transient
     Set<AbstractController> subControllers = new HashSet<AbstractController>();
@@ -37,11 +37,11 @@ public class AbstractController {
     boolean isInitialized;
 
 
-    public int getControllerId() {
+    public String getControllerId() {
         return controllerId;
     }
 
-    public void setControllerId(int controllerId) {
+    public void setControllerId(String controllerId) {
         this.controllerId = controllerId;
     }
 

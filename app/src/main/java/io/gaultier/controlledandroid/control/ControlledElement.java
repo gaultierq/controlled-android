@@ -9,7 +9,7 @@ public interface ControlledElement<T extends AbstractController> {
 
     public T getController();
 
-    public int getControllerId();
+    public String getControllerId();
 
     public void refresh();
 

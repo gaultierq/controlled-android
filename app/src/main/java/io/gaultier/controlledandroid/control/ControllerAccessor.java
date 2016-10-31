@@ -13,20 +13,16 @@ public class ControllerAccessor<T extends AbstractController> {
     T controllerInternal;
 
     public void obtain(ControlledElement<T> element, Bundle savedInstanceState, Bundle extras) {
-
         if (controllerInternal == null) {
             controllerInternal = ControllerManager.obtainIt(element, savedInstanceState, extras);
-
         }
-
     }
-
 
     public T get() {
         return controllerInternal;
     }
 
-    public int getId() {
+    public String getId() {
         return controllerInternal != null ? controllerInternal.getControllerId() : INVALID_CONTROLLER_ID;
     }
 

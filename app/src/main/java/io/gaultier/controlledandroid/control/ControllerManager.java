@@ -36,7 +36,7 @@ public class ControllerManager {
 
     private static ControllerManager INSTANCE;
 
-    private final Map<Integer, AbstractController> managedControllers = new HashMap<>();
+    private final Map<String, AbstractController> managedControllers = new HashMap<>();
 
     private final AtomicInteger counter = new AtomicInteger();
 
@@ -83,7 +83,7 @@ public class ControllerManager {
     @Nullable
     public static <T extends AbstractController> T obtainIt(ControlledElement<T> element, Bundle savedInstanceState, Bundle arguments) {
         ControllerManager manager = element.getManager();
-        int controllerId;
+        String controllerId;
         T controller;
         if ((controllerId = readControllerId(savedInstanceState)) != INVALID_CONTROLLER_ID) {
             // fragment has already existed (rotation, restore, killed)
@@ -115,9 +115,9 @@ public class ControllerManager {
         return controller;
     }
 
-    static int readControllerId(Bundle bundle) {
+    static String readControllerId(Bundle bundle) {
         if (bundle != null) {
-            return bundle.getInt(AbstractController.CONTROLLER_ID, INVALID_CONTROLLER_ID);
+            return bundle.getString(AbstractController.CONTROLLER_ID, INVALID_CONTROLLER_ID);
         }
         return INVALID_CONTROLLER_ID;
     }
@@ -197,7 +197,7 @@ public class ControllerManager {
     public void unmanage(AbstractController controller) {
         unmanage(controller.snapSubControllers());
 
-        int id = controller.getControllerId();
+        String id = controller.getControllerId();
         Assert.ensure(id != INVALID_CONTROLLER_ID, "Unexpected. " + controller + " in " + this);
         AbstractController unmanaged = managedControllers.remove(id);
         Assert.ensure(unmanaged == controller, "Controller not found:" + controller + " in " + this);
@@ -217,14 +217,14 @@ public class ControllerManager {
     public <T extends AbstractController> void manage(T controller) {
         Assert.ensure(controller != null);
         Assert.ensure(controller.getControllerId() == AbstractController.INVALID_CONTROLLER_ID);
-        controller.setControllerId(generateControllerId());
+        controller.setControllerId("" + generateControllerId());
         managedControllers.put(controller.getControllerId(), controller);
         controller.setManaged(true);
         Log.i(TAG, "++: ", controller, "manager:", this);
     }
 
     // can return null
-    public AbstractController getManagedController(int controllerId) {
+    public AbstractController getManagedController(String controllerId) {
         return managedControllers.get(controllerId);
     }
 
@@ -236,7 +236,7 @@ public class ControllerManager {
         return r;
     }
 
-    public boolean isManaged(int controllerId) {
+    public boolean isManaged(String controllerId) {
         AbstractController managedController = getManagedController(controllerId);
         if (managedController != null) {
             Assert.ensure(managedController.isManaged());
@@ -258,7 +258,7 @@ public class ControllerManager {
     }
 
     public static <T extends AbstractController> Bundle saveController(Bundle outState, T controller) {
-        outState.putInt(AbstractController.CONTROLLER_ID, controller.getControllerId());
+        outState.putString(AbstractController.CONTROLLER_ID, controller.getControllerId());
         outState.putParcelable(AbstractController.CONTROLLER, Parcels.wrap(controller));
         return outState;
     }

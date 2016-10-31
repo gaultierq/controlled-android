@@ -47,7 +47,7 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
         return ctrlAccessor.get();
     }
 
-    public int getControllerId() {
+    public String getControllerId() {
         return getController() != null ? getController().getControllerId() : INVALID_CONTROLLER_ID;
     }
 
