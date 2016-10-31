@@ -34,7 +34,7 @@ public class SecondActivity extends ControlledActivity<SecondActivityController>
     }
 
     @Override
-    public SecondActivityController makeController() {
+    public SecondActivityController makeActivityController() {
         return new SecondActivityController();
     }
 }

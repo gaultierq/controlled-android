@@ -21,7 +21,7 @@ public class FirstActivity extends ControlledActivity<FirstActivityController> {
     }
 
     @Override
-    public FirstActivityController makeController() {
+    public FirstActivityController makeActivityController() {
         return new FirstActivityController();
     }
 }

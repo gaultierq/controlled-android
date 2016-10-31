@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.gaultier.controlledandroid.util.Assert;
+import io.gaultier.controlledandroid.util.Log;
 
 /**
  * Created by q on 16/10/16.
@@ -20,6 +21,8 @@ public class AbstractController {
     public static final String CONTROLLER = "CONTROLLER";
 
 
+    public String debugmode;
+
     @Transient
     private String controllerId = INVALID_CONTROLLER_ID;
 
@@ -27,7 +30,9 @@ public class AbstractController {
     Set<AbstractController> subControllers = new HashSet<AbstractController>();
 
     @Transient
-    protected AbstractController parentController;
+    private AbstractController parentController;
+
+    protected String parentControllerId;
 
     @Transient
     private ControlledElement managedElement;
@@ -35,6 +40,9 @@ public class AbstractController {
     boolean managed;
 
     boolean isInitialized;
+
+    @Transient
+    private String previousId;
 
 
     public String getControllerId() {
@@ -47,7 +55,11 @@ public class AbstractController {
 
     @Override
     public final String toString() {
-        return "["+ getClass().getSimpleName() + "." + controllerId + "]" + "~" + hashCode();
+        return "[" + blaze() + "." + controllerId + "<-" + parentControllerId + "]" + "~" + previousId;
+    }
+
+    protected String blaze() {
+        return getClass().getSimpleName().replaceAll("Controller", "").replace("Activity", "-A").replace("Fragment", "-F");
     }
 
     public Collection<AbstractController> snapSubControllers() {
@@ -64,8 +76,9 @@ public class AbstractController {
 
     public void cleanup() {
         boolean removed = parentController.subControllers.remove(this);
-        Assert.ensure(removed);
+        Assert.ensure(removed, "cleaning up an unmanaged controller:" + this);
         parentController = null;
+        //parentControllerId = null;
     }
 
     // one of my sub-controller tells me to check something
@@ -91,11 +104,6 @@ public class AbstractController {
         this.managed = managed;
     }
 
-    public void setNew() {
-        this.isInitialized = true;
-    }
-
-
     void ensureInitialized() {
         if (isInitialized == false) {
             init();
@@ -106,6 +114,39 @@ public class AbstractController {
     // first time this controller will be displayed
     protected void init() {
 
+    }
+
+
+    public AbstractController getParentController() {
+        return parentController;
+    }
+
+    public void assignParentController(AbstractController p) {
+        this.parentController = p;
+        if (p != null) {
+            p.subControllers.add(this);
+            parentControllerId = p.getControllerId();
+        }
+        else {
+            parentControllerId = "-1";
+            Log.e("Manager", "null parent for", this);
+        }
+    }
+
+    public static boolean isValidId(String id) {
+        return id != null && !INVALID_CONTROLLER_ID.equals(id) && Integer.parseInt(id) > 0;
+    }
+
+    public String getPreviousId() {
+        return previousId;
+    }
+
+    public void setPreviousId(String previousId) {
+        this.previousId = previousId;
+    }
+
+    public boolean isOrphan() {
+        return getParentController() == null;
     }
 }
 

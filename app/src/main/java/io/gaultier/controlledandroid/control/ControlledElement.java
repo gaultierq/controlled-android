@@ -5,15 +5,14 @@ package io.gaultier.controlledandroid.control;
  */
 public interface ControlledElement<T extends AbstractController> {
     
-    public T makeController();
+    T makeController();
 
-    public T getController();
+    T getController();
 
-    public String getControllerId();
+    String getControllerId();
 
-    public void refresh();
+    void refresh();
 
     ControllerManager getManager();
 
-    void link(T controller);
 }

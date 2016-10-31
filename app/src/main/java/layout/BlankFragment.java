@@ -22,7 +22,7 @@ public class BlankFragment extends ControlledFragment<BlankFragmentController> {
     }
 
     @Override
-    public BlankFragmentController makeController() {
+    public BlankFragmentController makeFragmentController() {
         return new BlankFragmentController();
     }
 

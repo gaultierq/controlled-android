@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import io.gaultier.controlledandroid.util.Assert;
-import io.gaultier.controlledandroid.util.Log;
 
 /**
  * Created by q on 16/10/16.
@@ -107,19 +106,22 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         return ((ControlledActivity)getActivity()).getManager();
     }
 
-    @Override
-    public void link(T controller) {
-        Log.d(TAG, "linking controller");
-        AbstractController aCtrl = ((ControlledActivity) getActivity()).getController();
-        aCtrl.subControllers.add(controller);
-        controller.parentController = aCtrl;
-    }
     public void setController(T controller) {
         ctrlAccessor.set(controller);
     }
 
-
     public boolean addToBackStack() {
         return true;
     }
+
+    @Override
+    public final T makeController() {
+        T res = makeFragmentController();
+        if (res.getParentController() == null) {
+            res.assignParentController(((ControlledActivity) getActivity()).getController());
+        }
+        return res;
+    }
+
+    public abstract T makeFragmentController();
 }

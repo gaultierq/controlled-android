@@ -91,12 +91,17 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
         return ControllerManager.getInstance(this);
     }
 
-    @Override
-    public void link(T controller) {
-        AbstractController mc = getManager().getMainController();
-        Log.d(TAG, "linking activity controller");
-        mc.subControllers.add(controller);
-        controller.parentController = mc;
 
+    @Override
+    public final T makeController() {
+        T res = makeActivityController();
+        if (res.getParentController() == null) {
+            res.assignParentController(getManager().getMainController());
+        }
+        return res;
     }
+
+    public abstract T makeActivityController();
+
+
 }
