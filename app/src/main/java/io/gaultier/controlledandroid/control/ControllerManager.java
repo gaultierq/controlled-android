@@ -51,7 +51,7 @@ public class ControllerManager {
 
     private ControllerManager(int oldSessionId, int sessionId) {
         Log.i(TAG, "Creating instance");
-        mainController = new AbstractController();
+        mainController = new ApplicationController();
         session = sessionId;
         mainController.setPreviousId("" + oldSessionId);
         manageAndAssignParent(mainController, new AbstractController());
@@ -70,8 +70,25 @@ public class ControllerManager {
         return INSTANCE;
     }
 
+    //managed elements asked for display / removal
+    protected static <U extends AbstractController> void refreshPendings(U controller) {
+        ControlledElement parentEl = controller.getManagedElement();
 
-    // for sure 100% buggy
+        ElementTransactionHelper helper = new ElementTransactionHelper(parentEl);
+
+        for (AbstractController c : controller.subControllers) {
+            if (c.isAskRemove()) {
+                helper.removeManagedElement(c.getManagedElement());
+                c.setAskRemove(false);
+            }
+            else if (c.isAskAdd()) {
+                helper.addSub(c.getManagedElement(), c.getAddIn());
+                c.setAskAdd(false, 0);
+            }
+        }
+        helper.commit();
+    }
+
     private void attachActivity(final ControlledActivity activity) {
         if (currentActivity == null || currentActivity.get() != activity) {
             FragmentManager supportFragmentManager = activity.getSupportFragmentManager();
@@ -131,11 +148,9 @@ public class ControllerManager {
         if (manager.assignParent(controller)) {
             manager.runParentNet();
         }
-
         if (controller.getParentController() == null){
             Log.w(TAG, "No parent linked to", controller, "for parent id",controller.parentControllerId, "when mode was", controller.debugmode);
         }
-
         Assert.ensure(controller.isManaged());
         controller.setManagedElement(element);
         controller.ensureInitialized();
@@ -285,6 +300,10 @@ public class ControllerManager {
         try {
             Assert.ensure(!fragmentController.hasId());
             manageAndAssignParent(fragmentController, parent);
+
+            // this is a test, to let the parent controller element find frag, and add it
+            fragmentController.setManagedElement(frag);
+
             frag.setArguments(ControllerManager.saveController(new Bundle(), fragmentController));
             frag.setController(null);
             return frag;
@@ -363,6 +382,8 @@ public class ControllerManager {
     }
 
 
+    private static class ApplicationController extends AbstractController {
+    }
 }
 
 

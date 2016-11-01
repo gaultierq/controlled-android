@@ -15,4 +15,5 @@ public interface ControlledElement<T extends AbstractController> {
 
     ControllerManager getManager();
 
+    ControlledActivity getControlledActivity();
 }

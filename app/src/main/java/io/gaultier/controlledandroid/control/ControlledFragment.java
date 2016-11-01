@@ -50,6 +50,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     }
 
     public final void refresh() {
+        ControllerManager.refreshPendings(getController());
         refresh(getView());
     }
 
@@ -103,14 +104,18 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     @Override
     public ControllerManager getManager() {
-        return ((ControlledActivity)getActivity()).getManager();
+        return ((ControlledActivity) getActivity()).getManager();
     }
 
     public void setController(T controller) {
         ctrlAccessor.set(controller);
     }
 
-    public boolean addToBackStack() {
+    public enum FragTrans {
+        ADD, REMOVE
+    }
+
+    public boolean addToBackStack(FragTrans t) {
         return true;
     }
 
@@ -124,4 +129,10 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     }
 
     public abstract T makeFragmentController();
+
+
+    public ControlledActivity getControlledActivity() {
+        return (ControlledActivity) getActivity();
+    }
+
 }

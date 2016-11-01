@@ -41,6 +41,10 @@ public class AbstractController {
 
     boolean isInitialized;
 
+    boolean askRemove;
+    boolean askAdd;
+    int addIn;
+
     @Transient
     private String previousId;
 
@@ -147,6 +151,27 @@ public class AbstractController {
 
     public boolean isOrphan() {
         return getParentController() == null;
+    }
+
+    public boolean isAskRemove() {
+        return askRemove;
+    }
+
+    public void setAskRemove(boolean askRemove) {
+        this.askRemove = askRemove;
+    }
+
+    public boolean isAskAdd() {
+        return askAdd;
+    }
+
+    public void setAskAdd(boolean askAdd, int askAddIn) {
+        this.askAdd = askAdd;
+        this.addIn = askAddIn;
+    }
+
+    public int getAddIn() {
+        return addIn;
     }
 }
 

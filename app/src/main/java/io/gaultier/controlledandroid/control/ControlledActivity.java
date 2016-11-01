@@ -39,8 +39,12 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
         // nothing by default
     }
 
-    public void refresh() {
-        //nothing
+    public void refreshView() {
+    }
+
+    public final void refresh() {
+        ControllerManager.refreshPendings(getController());
+        refreshView();
     }
 
     public T getController() {
@@ -53,7 +57,7 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        Log.i(TAG, this , " onSaveInstanceState");
+        Log.i(TAG, this, " onSaveInstanceState");
         super.onSaveInstanceState(outState);
 
         // saving controller
@@ -75,22 +79,17 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     protected final void onResume() {
         super.onResume();
         Assert.ensureNotNull(getController());
-
-        // add comment pls
-        //ctrlAccessor.bind(this);
-
         prepareViewInternal(getController());
     }
+
     private void prepareViewInternal(T controller) {
         prepareView(controller);
         refresh();
     }
 
-
     public ControllerManager getManager() {
         return ControllerManager.getInstance(this);
     }
-
 
     @Override
     public final T makeController() {
@@ -104,4 +103,8 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     public abstract T makeActivityController();
 
 
+    @Override
+    public ControlledActivity getControlledActivity() {
+        return this;
+    }
 }

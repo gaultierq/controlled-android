@@ -16,7 +16,7 @@ public class SecondActivity extends ControlledActivity<SecondActivityController>
     }
 
     @Override
-    public void refresh() {
+    public void refreshView() {
         findViewById(R.id.progressBar).setVisibility(getController().progress ? View.VISIBLE : View.GONE);
         ((Button) findViewById(R.id.btnConnect)).setText(getController().progress ? "disconnect" : "connect");
     }
