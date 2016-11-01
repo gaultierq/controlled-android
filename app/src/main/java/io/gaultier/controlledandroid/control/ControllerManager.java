@@ -82,7 +82,7 @@ public class ControllerManager {
             listener = new FragmentManager.OnBackStackChangedListener() {
                 public void onBackStackChanged() {
                     Log.d(TAG, "On back stack change");
-                    ControllerManager.this.cleanupStack(activity);
+                    ControllerManager.this.cleanupFragmentStack(activity);
                 }
             };
 
@@ -252,20 +252,29 @@ public class ControllerManager {
 
     }
 
-    private boolean cleanupStack(ControlledActivity activity) {
-        boolean cleaned = false;
+    // as we dont have a callback on the fragment "finish" event, we
+    // listen to the fragmentmanager changes to cleanup afterwards
+    private boolean cleanupFragmentStack(ControlledActivity activity) {
         List<Fragment> frags = activity.getSupportFragmentManager().getFragments();
-        Set<AbstractController> subcontrollers = new HashSet<>(activity.getController().subControllers);
+        AbstractController controller = activity.getController();
 
+        if (cleanup(controller, frags)) {
+            Assert.ensure(!cleanupFragmentStack(activity));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean cleanup(AbstractController controller, List<Fragment> frags) {
+        Set<AbstractController> subcontrollers = new HashSet<>(controller.subControllers);
+        boolean cleaned = false;
         for (AbstractController sc : subcontrollers) {
             ControlledElement e = sc.getManagedElement();
             if (e instanceof ControlledFragment && !frags.contains(e)) {
                 this.unmanage(sc);
                 cleaned = true;
             }
-        }
-        if (cleaned) {
-            Assert.ensure(!cleanupStack(activity));
+            cleaned |= cleanup(sc, frags);
         }
         return cleaned;
     }
