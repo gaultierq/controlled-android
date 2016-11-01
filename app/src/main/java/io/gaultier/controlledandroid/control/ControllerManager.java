@@ -14,7 +14,6 @@ import org.parceler.Parcels;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,7 +47,7 @@ public class ControllerManager {
 
     private final AbstractController mainController;
 
-    WeakReference<Activity> currentActivity;
+    private WeakReference<Activity> currentActivity;
 
     private ControllerManager(int oldSessionId, int sessionId) {
         Log.i(TAG, "Creating instance");
@@ -93,7 +92,7 @@ public class ControllerManager {
     }
 
     @Nullable
-    public static <T extends AbstractController> T obtainIt(ControlledElement<T> element, Bundle savedInstanceState, Bundle arguments) {
+    static <T extends AbstractController> T obtainIt(ControlledElement<T> element, Bundle savedInstanceState, Bundle arguments) {
         ControllerManager manager = element.getManager();
         String controllerId;
         T controller;
@@ -114,7 +113,7 @@ public class ControllerManager {
             // -> find controller
             Assert.ensure(manager.isManaged(controllerId), "expecting a managed controller for id=" + controllerId + ", arguments=" + arguments);
             controller = (T) manager.getManagedController(controllerId);
-            Assert.ensure(controller.isOrphan() == false, "unexpected orphan:" + controller);
+            Assert.ensure(!controller.isOrphan(), "unexpected orphan:" + controller);
 
             controller.debugmode = "from args";
         } else {
@@ -145,7 +144,7 @@ public class ControllerManager {
     }
 
 
-    protected <T extends AbstractController> boolean assignParent(T controller) {
+    private <T extends AbstractController> boolean assignParent(T controller) {
         if (controller.isOrphan()) {
             AbstractController parent = findParent(controller);
             if (parent != null) {
@@ -156,7 +155,7 @@ public class ControllerManager {
         return false;
     }
 
-    protected void runParentNet() {
+    private void runParentNet() {
         //check
         int o = logOrphanCount();
         for (AbstractController c : managedControllers.values()) {
@@ -197,7 +196,7 @@ public class ControllerManager {
         return parent;
     }
 
-    static String readControllerId(Bundle bundle) {
+    private static String readControllerId(Bundle bundle) {
         if (bundle != null) {
             return bundle.getString(AbstractController.CONTROLLER_ID, INVALID_CONTROLLER_ID);
         }
@@ -253,7 +252,7 @@ public class ControllerManager {
 
     }
 
-    public boolean cleanupStack(ControlledActivity activity) {
+    private boolean cleanupStack(ControlledActivity activity) {
         boolean cleaned = false;
         List<Fragment> frags = activity.getSupportFragmentManager().getFragments();
         Set<AbstractController> subcontrollers = new HashSet<>(activity.getController().subControllers);
@@ -266,7 +265,7 @@ public class ControllerManager {
             }
         }
         if (cleaned) {
-            Assert.ensure(cleanupStack(activity) == false);
+            Assert.ensure(!cleanupStack(activity));
         }
         return cleaned;
     }
@@ -285,7 +284,7 @@ public class ControllerManager {
         }
     }
 
-    public void unmanage(AbstractController controller) {
+    void unmanage(AbstractController controller) {
         unmanage(controller.snapSubControllers());
 
         String id = controller.getControllerId();
@@ -304,7 +303,7 @@ public class ControllerManager {
         }
     }
 
-    protected <T extends AbstractController> void manage(T controller) {
+    private <T extends AbstractController> void manage(T controller) {
         Assert.ensure(AbstractController.INVALID_CONTROLLER_ID.equals(controller.getControllerId()), ""+controller);
         controller.setControllerId("" + generateControllerId());
         managedControllers.put(controller.getControllerId(), controller);
@@ -313,25 +312,17 @@ public class ControllerManager {
     }
 
     // manageAndAssignParent provide an id to the controller
-    public <T extends AbstractController> void manageAndAssignParent(T controller, AbstractController parentController) {
+    private <T extends AbstractController> void manageAndAssignParent(T controller, AbstractController parentController) {
         controller.assignParentController(parentController);
         manage(controller);
     }
 
     // can return null
-    public AbstractController getManagedController(String controllerId) {
+    private AbstractController getManagedController(String controllerId) {
         return managedControllers.get(controllerId);
     }
 
-    public Map<ControlledElement, AbstractController> snapElements() {
-        Map<ControlledElement, AbstractController> r = new HashMap<>();
-        for (AbstractController m : managedControllers.values()) {
-            r.put(m.getManagedElement(), m);
-        }
-        return r;
-    }
-
-    public boolean isManaged(String controllerId) {
+    private boolean isManaged(String controllerId) {
         AbstractController managedController = getManagedController(controllerId);
         if (managedController != null) {
             Assert.ensure(managedController.isManaged());
@@ -340,9 +331,9 @@ public class ControllerManager {
         return false;
     }
 
-    public <T extends AbstractController> T restoreController(Bundle savedInstanceState) {
+    private <T extends AbstractController> T restoreController(Bundle savedInstanceState) {
         Parcelable wrappedController = savedInstanceState.getParcelable(AbstractController.CONTROLLER);
-        T controller = Parcels.<T>unwrap(wrappedController);
+        T controller = Parcels.unwrap(wrappedController);
         Assert.ensure(controller != null);
         return controller;
     }
@@ -352,13 +343,13 @@ public class ControllerManager {
 
     }
 
-    public static <T extends AbstractController> Bundle saveController(Bundle outState, T controller) {
+    static <T extends AbstractController> Bundle saveController(Bundle outState, T controller) {
         outState.putString(AbstractController.CONTROLLER_ID, controller.getControllerId());
         outState.putParcelable(AbstractController.CONTROLLER, Parcels.wrap(controller));
         return outState;
     }
 
-    public AbstractController getMainController() {
+    AbstractController getMainController() {
         return mainController;
     }
 
