@@ -173,5 +173,9 @@ public class AbstractController {
     public int getAddIn() {
         return addIn;
     }
+
+    public final String tag() {
+        return getClass().getSimpleName();
+    }
 }
 
