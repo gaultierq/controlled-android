@@ -33,7 +33,6 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     @Override
     public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         return createView(inflater, container);
     }
 

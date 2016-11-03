@@ -80,13 +80,22 @@ public class ControllerManager {
             if (c.isAskRemove()) {
                 helper.removeManagedElement(c.getManagedElement());
                 c.setAskRemove(false);
-            }
-            else if (c.isAskAdd()) {
+            } else if (c.isAskAdd()) {
                 helper.addSub(c.getManagedElement(), c.getAddIn());
                 c.setAskAdd(false, 0);
             }
         }
         helper.commit();
+    }
+
+    public static void addFragment(ControlledFragment f, int container, AbstractController parent) {
+        addFragment(f, f.makeFragmentController(), container, parent);
+    }
+
+    public static void addFragment(ControlledFragment f, AbstractController controller, int container, AbstractController parent) {
+        controller.setAskAdd(true, container);
+        parent.getManagedElement().getManager().managedNewFragment(f, controller, parent);
+        parent.getManagedElement().refresh();
     }
 
     private void attachActivity(final ControlledActivity activity) {
@@ -148,8 +157,8 @@ public class ControllerManager {
         if (manager.assignParent(controller)) {
             manager.runParentNet();
         }
-        if (controller.getParentController() == null){
-            Log.w(TAG, "No parent linked to", controller, "for parent id",controller.parentControllerId, "when mode was", controller.debugmode);
+        if (controller.getParentController() == null) {
+            Log.w(TAG, "No parent linked to", controller, "for parent id", controller.parentControllerId, "when mode was", controller.debugmode);
         }
         Assert.ensure(controller.isManaged());
         controller.setManagedElement(element);
@@ -174,7 +183,7 @@ public class ControllerManager {
         //check
         int o = logOrphanCount();
         for (AbstractController c : managedControllers.values()) {
-            if (this.assignParent(c) ) {
+            if (this.assignParent(c)) {
                 Log.i(TAG, "The net is working");
             }
         }
@@ -332,7 +341,7 @@ public class ControllerManager {
     }
 
     private <T extends AbstractController> void manage(T controller) {
-        Assert.ensure(AbstractController.INVALID_CONTROLLER_ID.equals(controller.getControllerId()), ""+controller);
+        Assert.ensure(AbstractController.INVALID_CONTROLLER_ID.equals(controller.getControllerId()), "" + controller);
         controller.setControllerId("" + generateControllerId());
         managedControllers.put(controller.getControllerId(), controller);
         controller.setManaged(true);

@@ -85,10 +85,6 @@ public class AbstractController {
         //parentControllerId = null;
     }
 
-    // one of my sub-controller tells me to check something
-    public void notifyChange(AbstractController controller) {
-
-    }
 
     public ControlledElement getManagedElement() {
         return managedElement;
@@ -177,5 +173,28 @@ public class AbstractController {
     public final String tag() {
         return getClass().getSimpleName();
     }
+
+    protected AbstractController self() {
+        return this;
+    }
+
+    //notify change on parent controller
+    protected final void notifyChange() {
+        AbstractController p = getParentController();
+        if (p != null) {
+            p.onSubChange(this);
+            ControlledElement managedEl = p.getManagedElement();
+            if (managedEl != null) {
+                p.getManagedElement().refresh();
+            }
+            p.notifyChange();
+        }
+    }
+    // one of my sub-controller tells me to check something
+    public void onSubChange(AbstractController controller) {
+
+    }
+
+
 }
 
