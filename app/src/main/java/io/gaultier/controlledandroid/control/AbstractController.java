@@ -21,10 +21,11 @@ public class AbstractController {
     public static final String CONTROLLER = "CONTROLLER";
 
 
-    public String debugmode;
-
     @Transient
     private String controllerId = INVALID_CONTROLLER_ID;
+
+    @Transient
+    public String debugmode;
 
     @Transient
     Set<AbstractController> subControllers = new HashSet<AbstractController>();
@@ -32,21 +33,18 @@ public class AbstractController {
     @Transient
     private AbstractController parentController;
 
-    protected String parentControllerId;
+    @Transient
+    private String previousId;
 
     @Transient
     private ControlledElement managedElement;
 
+    protected String parentControllerId;
     boolean managed;
-
     boolean isInitialized;
-
     boolean askRemove;
     boolean askAdd;
     int addIn;
-
-    @Transient
-    private String previousId;
 
 
     public String getControllerId() {
