@@ -134,4 +134,8 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         return (ControlledActivity) getActivity();
     }
 
+    protected ControlledFragment<T> self() {
+        return this;
+    }
+
 }
