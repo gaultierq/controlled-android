@@ -4,6 +4,7 @@ import org.parceler.Transient;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import io.gaultier.controlledandroid.util.Assert;
@@ -13,7 +14,7 @@ import io.gaultier.controlledandroid.util.Log;
  * Created by q on 16/10/16.
  */
 
-public class AbstractController {
+public class AbstractController implements SubChangeListener {
     // getInstance all class transient
 
     public static final String INVALID_CONTROLLER_ID = "0";
@@ -46,6 +47,13 @@ public class AbstractController {
     boolean askAdd;
     int addIn;
 
+    @Transient
+    private Collection<SubChangeListener> subChangeListeners = new LinkedHashSet<SubChangeListener>();
+
+
+    public AbstractController() {
+        subChangeListeners.add(this);
+    }
 
     public String getControllerId() {
         return controllerId;
@@ -180,7 +188,8 @@ public class AbstractController {
     protected final void notifyChange() {
         AbstractController p = getParentController();
         if (p != null) {
-            p.onSubChange(this);
+            p.onSubChangeInternal(this);
+
             ControlledElement managedEl = p.getManagedElement();
             if (managedEl != null) {
                 p.getManagedElement().refresh();
@@ -188,11 +197,30 @@ public class AbstractController {
             p.notifyChange();
         }
     }
+
+
     // one of my sub-controller tells me to check something
-    public void onSubChange(AbstractController controller) {
+    @Override
+    public void onSubChange(AbstractController subController) {
 
     }
 
+    private void onSubChangeInternal(AbstractController subController) {
+        for (SubChangeListener listener : snapSubListeners()) {
+            listener.onSubChange(subController);
+        }
+    }
 
+    public Collection<SubChangeListener> snapSubListeners() {
+        return new LinkedHashSet<>(subChangeListeners);
+    }
+
+    protected boolean addSubListeners(SubChangeListener listener) {
+        return subChangeListeners.add(listener);
+    }
+
+    protected boolean removeSubListener(SubChangeListener listener) {
+        return subChangeListeners.remove(listener);
+    }
 }
 
