@@ -88,10 +88,6 @@ public class ControllerManager {
         helper.commit();
     }
 
-    public static void addFragment(ControlledFragment f, int container, AbstractController parent) {
-        addFragment(f, f.makeFragmentController(), container, parent);
-    }
-
     public static void addFragment(ControlledFragment f, AbstractController controller, int container, AbstractController parent) {
         controller.setAskAdd(true, container);
         parent.getManagedElement().getManager().managedNewFragment(f, controller, parent);

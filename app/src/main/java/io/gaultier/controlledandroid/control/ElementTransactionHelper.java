@@ -1,5 +1,6 @@
 package io.gaultier.controlledandroid.control;
 
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import io.gaultier.controlledandroid.util.Assert;
@@ -11,8 +12,10 @@ import io.gaultier.controlledandroid.util.Assert;
 public class ElementTransactionHelper {
 
 
+    private static final String TAG = "ElementTransactionHelper";
     private final ControlledElement parentEl;
     private FragmentTransaction fragmentTransaction;
+    private FragmentManager manager;
 
     public ElementTransactionHelper(ControlledElement parentEl) {
         this.parentEl = parentEl;
@@ -30,7 +33,7 @@ public class ElementTransactionHelper {
             makeAnimation(trans);
 
             trans.add(addIn, f, f.tag());
-            if (f.addToBackStack(ControlledFragment.FragTrans.ADD)) {
+            if (f.addToBackStack()) {
                 trans.addToBackStack(f.tag());
             }
         } else {
@@ -40,22 +43,30 @@ public class ElementTransactionHelper {
 
     int[] animation = new int[2];
 
+
+    //TODO: debug this
+    // fragment was added to the stack, then we need to remove it from the stack
+    // possible bug 1 : displaying the previous fragment in the saved state, and we have no way no tell it its displayed again
+    // possible bug 2 : the popped fragment is not the good one
     protected void removeManagedElement(ControlledElement managedElement) {
         if (managedElement instanceof ControlledActivity) {
             ((ControlledActivity) managedElement).finish();
         } else if (managedElement instanceof ControlledFragment) {
             ControlledFragment f = ((ControlledFragment) managedElement);
-            FragmentTransaction trans = obtainOpenedFragmentTrans();
+            //FragmentTransaction trans = obtainOpenedFragmentTrans();
+            //int[] anim = f.getAnimation();
+            //animation[1] = anim == null ? 0 : anim[1];
+            //makeAnimation(trans);
+            //trans.remove(f);
 
-            int[] anim = f.getAnimation();
-            animation[1] = anim == null ? 0 : anim[1];
-            makeAnimation(trans);
-
-            trans.remove(f);
-            if (f.addToBackStack(ControlledFragment.FragTrans.REMOVE)) {
-                trans.addToBackStack(f.tag());
+            if (f.addToBackStack()) {
+                //trans.addToBackStack(f.tag());
+                obtainerManager().popBackStackImmediate();
             }
-
+            else {
+                //TODO: this is bad
+                obtainerManager().popBackStackImmediate();
+            }
         } else {
             Assert.thrown();
         }
@@ -67,9 +78,16 @@ public class ElementTransactionHelper {
 
     private FragmentTransaction obtainOpenedFragmentTrans() {
         if (fragmentTransaction == null) {
-            fragmentTransaction = parentEl.getControlledActivity().getSupportFragmentManager().beginTransaction();
+            fragmentTransaction = obtainerManager().beginTransaction();
         }
         return fragmentTransaction;
+    }
+
+    private FragmentManager obtainerManager() {
+        if (manager == null) {
+            manager = parentEl.getControlledActivity().getSupportFragmentManager();
+        }
+        return manager;
     }
 
     public void commit() {

@@ -83,7 +83,8 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
         // add comment pls
         //ctrlAccessor.bind(this);
-        prepareViewInternal(getView(), getController());
+        getController().reset();
+        prepareView(getView(), getController());
     }
 
     @Override
@@ -120,7 +121,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         ADD, REMOVE
     }
 
-    public boolean addToBackStack(FragTrans t) {
+    public boolean addToBackStack() {
         return true;
     }
 
