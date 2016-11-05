@@ -138,4 +138,8 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         return this;
     }
 
+    protected ControlledActivity activity() {
+        return (ControlledActivity) getActivity();
+    }
+
 }

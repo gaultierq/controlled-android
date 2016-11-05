@@ -4,8 +4,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
-import org.parceler.Parcels;
-
 import io.gaultier.controlledandroid.control.AbstractController;
 import io.gaultier.controlledandroid.util.Assert;
 import io.gaultier.controlledandroid.util.Log;
@@ -49,7 +47,6 @@ public abstract class FragmentImagePickerImpl extends ImagePickerImpl {
     public abstract void onImage(Uri imageUri);
 
     public final void provideImage(Fragment fragment) {
-        Assert.ensure(imageClient == null, "This picker is already waiting for a result:"+ Parcels.wrap(imageClient));
         imageClient = new ImagePickerClientParcelable();
         imageClient.setId(UNIQ_CLIENT_ID);
         provideImage(fragment, imageClient);
