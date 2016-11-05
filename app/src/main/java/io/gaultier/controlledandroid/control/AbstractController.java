@@ -215,11 +215,11 @@ public class AbstractController implements SubChangeListener {
         return new LinkedHashSet<>(subChangeListeners);
     }
 
-    protected boolean addSubListeners(SubChangeListener listener) {
+    public boolean addSubListeners(SubChangeListener listener) {
         return subChangeListeners.add(listener);
     }
 
-    protected boolean removeSubListener(SubChangeListener listener) {
+    public boolean removeSubListener(SubChangeListener listener) {
         return subChangeListeners.remove(listener);
     }
 }
