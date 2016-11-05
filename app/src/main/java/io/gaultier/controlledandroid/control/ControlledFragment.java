@@ -19,6 +19,8 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     private ControllerAccessor<T> ctrlAccessor = new ControllerAccessor<>();
 
+    protected int[] animation;
+
 
     @Override
     public final void onCreate(Bundle savedInstanceState) {
@@ -108,6 +110,10 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     public void setController(T controller) {
         ctrlAccessor.set(controller);
+    }
+
+    public int[] getAnimation() {
+        return animation;
     }
 
     public enum FragTrans {

@@ -24,6 +24,11 @@ public class ElementTransactionHelper {
         } else if (managedElement instanceof ControlledFragment) {
             ControlledFragment f = ((ControlledFragment) managedElement);
             FragmentTransaction trans = obtainOpenedFragmentTrans();
+
+            int[] anim = f.getAnimation();
+            animation[0] = anim == null ? 0 : anim[0];
+            makeAnimation(trans);
+
             trans.add(addIn, f, f.tag());
             if (f.addToBackStack(ControlledFragment.FragTrans.ADD)) {
                 trans.addToBackStack(f.tag());
@@ -33,12 +38,19 @@ public class ElementTransactionHelper {
         }
     }
 
+    int[] animation = new int[2];
+
     protected void removeManagedElement(ControlledElement managedElement) {
         if (managedElement instanceof ControlledActivity) {
             ((ControlledActivity) managedElement).finish();
         } else if (managedElement instanceof ControlledFragment) {
             ControlledFragment f = ((ControlledFragment) managedElement);
             FragmentTransaction trans = obtainOpenedFragmentTrans();
+
+            int[] anim = f.getAnimation();
+            animation[1] = anim == null ? 0 : anim[1];
+            makeAnimation(trans);
+
             trans.remove(f);
             if (f.addToBackStack(ControlledFragment.FragTrans.REMOVE)) {
                 trans.addToBackStack(f.tag());
@@ -47,6 +59,10 @@ public class ElementTransactionHelper {
         } else {
             Assert.thrown();
         }
+    }
+
+    private void makeAnimation(FragmentTransaction trans) {
+        trans.setCustomAnimations(animation[0], animation[1]);
     }
 
     private FragmentTransaction obtainOpenedFragmentTrans() {
