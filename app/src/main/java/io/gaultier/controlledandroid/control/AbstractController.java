@@ -187,8 +187,9 @@ public class AbstractController implements SubChangeListener {
         return pendingOperation != null && pendingOperation.type == removeReplace;
     }
 
-    public void askBack() {
+    public void goBack() {
         assignPending(REMOVE_BACK, 0);
+        notifyChange();
     }
 
     public void askReplace() {

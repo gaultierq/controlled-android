@@ -147,8 +147,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     @Override
     public boolean interceptBackPressed() {
         if (isAdded()) {
-            getController().askBack();
-            getController().notifyChange();
+            getController().goBack();
             return true;
         }
         return false;
