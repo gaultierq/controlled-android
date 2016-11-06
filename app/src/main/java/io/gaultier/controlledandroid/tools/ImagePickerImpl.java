@@ -80,30 +80,31 @@ public abstract class ImagePickerImpl {
         }
     }
 
-    public void onActivityResult(ImagePickerClient client, int requestCode, int resultCode, Intent data) {
-        boolean ok = false;
-        if (resultCode == Activity.RESULT_OK) {
-            switch (requestCode) {
-                case REQUEST_GALLERY_PHOTO:
-                    client.setUri(data.getData());
-                    ok = true;
-                    break;
-                case REQUEST_TAKE_PHOTO:
-                    ok = true;
-                    break;
-            }
+    public boolean onActivityResult(ImagePickerClient client, int requestCode, int resultCode, Intent data) {
+        Boolean ok = null;
+
+        switch (requestCode) {
+            case REQUEST_GALLERY_PHOTO:
+                client.setUri(data.getData());
+                ok = resultCode == Activity.RESULT_OK;
+                break;
+            case REQUEST_TAKE_PHOTO:
+                ok = resultCode == Activity.RESULT_OK;
+                break;
         }
 
-        onResult(client, ok);
-
+        if (ok != null) {
+            onResult(client, ok);
+            return true;
+        }
+        return false;
     }
 
     public void onResult(ImagePickerClient client, boolean ok) {
         Callback callback = makeCallback(client.getId());
         if (ok) {
             callback.onImageFound(client.getUri());
-        }
-        else {
+        } else {
             callback.onError();
         }
     }

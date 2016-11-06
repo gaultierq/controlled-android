@@ -1,5 +1,8 @@
 package io.gaultier.controlledandroid.control;
 
+import android.content.Intent;
+import android.preference.PreferenceManager;
+
 import org.parceler.Transient;
 
 import java.util.ArrayList;
@@ -50,6 +53,14 @@ public class AbstractController implements SubChangeListener {
     @Transient
     private Collection<SubChangeListener> subChangeListeners = new LinkedHashSet<>();
 
+    @Transient
+    List<PreferenceManager.OnActivityResultListener> activityResultCallbacks = new ArrayList<>();
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        for (int i = activityResultCallbacks.size(); i --> 0;) {
+            activityResultCallbacks.get(i).onActivityResult(requestCode, resultCode, data);
+        }
+    }
 
     public AbstractController() {
         subChangeListeners.add(this);
@@ -217,6 +228,10 @@ public class AbstractController implements SubChangeListener {
 
     public boolean addSubListeners(SubChangeListener listener) {
         return subChangeListeners.add(listener);
+    }
+
+    public boolean addOnActivityResultCallback(PreferenceManager.OnActivityResultListener listener) {
+        return this.activityResultCallbacks.add(listener);
     }
 
     public boolean removeSubListener(SubChangeListener listener) {

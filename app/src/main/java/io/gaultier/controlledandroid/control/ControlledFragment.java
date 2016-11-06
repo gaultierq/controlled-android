@@ -1,5 +1,6 @@
 package io.gaultier.controlledandroid.control;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,12 +16,10 @@ import io.gaultier.controlledandroid.util.Assert;
 
 public abstract class ControlledFragment<T extends AbstractController> extends Fragment implements ControlledElement<T> {
 
-    private static final String TAG = "ControlledFragment";
 
     private ControllerAccessor<T> ctrlAccessor = new ControllerAccessor<>();
 
     protected int[] animation;
-
 
     @Override
     public final void onCreate(Bundle savedInstanceState) {
@@ -92,7 +91,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         super.onSaveInstanceState(outState);
 
         // saving controller state
-        getManager().saveController(outState, getController());
+        ControllerManager.saveController(outState, getController());
     }
 
     @Override
@@ -115,10 +114,6 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     public int[] getAnimation() {
         return animation;
-    }
-
-    public enum FragTrans {
-        ADD, REMOVE
     }
 
     public boolean addToBackStack() {
@@ -152,5 +147,10 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     @Override
     public boolean interceptBackPressed() {
         return false;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        getController().onActivityResult(requestCode, resultCode, data);
     }
 }
