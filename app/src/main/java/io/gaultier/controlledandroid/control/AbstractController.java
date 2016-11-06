@@ -2,10 +2,10 @@ package io.gaultier.controlledandroid.control;
 
 import org.parceler.Transient;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import io.gaultier.controlledandroid.util.Assert;
 import io.gaultier.controlledandroid.util.Log;
@@ -17,19 +17,19 @@ import io.gaultier.controlledandroid.util.Log;
 public class AbstractController implements SubChangeListener {
     // getInstance all class transient
 
-    public static final String INVALID_CONTROLLER_ID = "0";
-    public static final String CONTROLLER_ID = "CONTROLLER_ID";
-    public static final String CONTROLLER = "CONTROLLER";
+    static final String INVALID_CONTROLLER_ID = "0";
+    static final String CONTROLLER_ID = "CONTROLLER_ID";
+    static final String CONTROLLER = "CONTROLLER";
 
 
     @Transient
     private String controllerId = INVALID_CONTROLLER_ID;
 
     @Transient
-    public String debugmode;
+    String debugmode;
 
     @Transient
-    Set<AbstractController> subControllers = new HashSet<AbstractController>();
+    List<AbstractController> subControllers = new ArrayList<AbstractController>();
 
     @Transient
     private AbstractController parentController;
@@ -40,7 +40,7 @@ public class AbstractController implements SubChangeListener {
     @Transient
     private ControlledElement managedElement;
 
-    protected String parentControllerId;
+    String parentControllerId;
     boolean managed;
     boolean isInitialized;
     boolean askRemove;
@@ -48,18 +48,18 @@ public class AbstractController implements SubChangeListener {
     int addIn;
 
     @Transient
-    private Collection<SubChangeListener> subChangeListeners = new LinkedHashSet<SubChangeListener>();
+    private Collection<SubChangeListener> subChangeListeners = new LinkedHashSet<>();
 
 
     public AbstractController() {
         subChangeListeners.add(this);
     }
 
-    public String getControllerId() {
+    String getControllerId() {
         return controllerId;
     }
 
-    public void setControllerId(String controllerId) {
+    void setControllerId(String controllerId) {
         this.controllerId = controllerId;
     }
 
@@ -68,23 +68,23 @@ public class AbstractController implements SubChangeListener {
         return "[" + blaze() + "." + controllerId + "<-" + parentControllerId + "]" + "~" + previousId;
     }
 
-    protected String blaze() {
+    private String blaze() {
         return getClass().getSimpleName().replaceAll("Controller", "").replace("Activity", "-A").replace("Fragment", "-F");
     }
 
-    public Collection<AbstractController> snapSubControllers() {
-        return new HashSet<>(subControllers);
+    public List<AbstractController> snapSubControllers() {
+        return new ArrayList<>(subControllers);
     }
 
-    public boolean isManaged() {
+    boolean isManaged() {
         return managed;
     }
 
-    public boolean hasId() {
-        return controllerId != INVALID_CONTROLLER_ID;
+    boolean hasId() {
+        return isValidId(controllerId);
     }
 
-    public void cleanup() {
+    void cleanup() {
         boolean removed = parentController.subControllers.remove(this);
         Assert.ensure(removed, "cleaning up an unmanaged controller:" + this);
         parentController = null;
@@ -92,11 +92,11 @@ public class AbstractController implements SubChangeListener {
     }
 
 
-    public ControlledElement getManagedElement() {
+    protected ControlledElement getManagedElement() {
         return managedElement;
     }
 
-    public <T extends AbstractController> void setManagedElement(ControlledElement<T> managedElement) {
+    <T extends AbstractController> void setManagedElement(ControlledElement<T> managedElement) {
         Assert.ensure(isManaged());
         this.managedElement = managedElement;
     }
@@ -106,12 +106,12 @@ public class AbstractController implements SubChangeListener {
     public void reset() {
     }
 
-    public void setManaged(boolean managed) {
+    void setManaged(boolean managed) {
         this.managed = managed;
     }
 
     void ensureInitialized() {
-        if (isInitialized == false) {
+        if (!isInitialized) {
             init();
             isInitialized = true;
         }
@@ -123,11 +123,11 @@ public class AbstractController implements SubChangeListener {
     }
 
 
-    public AbstractController getParentController() {
+    AbstractController getParentController() {
         return parentController;
     }
 
-    public void assignParentController(AbstractController p) {
+    void assignParentController(AbstractController p) {
         this.parentController = p;
         if (p != null) {
             p.subControllers.add(this);
@@ -139,23 +139,23 @@ public class AbstractController implements SubChangeListener {
         }
     }
 
-    public static boolean isValidId(String id) {
+    static boolean isValidId(String id) {
         return id != null && !INVALID_CONTROLLER_ID.equals(id) && Integer.parseInt(id) > 0;
     }
 
-    public String getPreviousId() {
+    String getPreviousId() {
         return previousId;
     }
 
-    public void setPreviousId(String previousId) {
+    void setPreviousId(String previousId) {
         this.previousId = previousId;
     }
 
-    public boolean isOrphan() {
+    boolean isOrphan() {
         return getParentController() == null;
     }
 
-    public boolean isAskRemove() {
+    boolean isAskRemove() {
         return askRemove;
     }
 
@@ -163,7 +163,7 @@ public class AbstractController implements SubChangeListener {
         this.askRemove = askRemove;
     }
 
-    public boolean isAskAdd() {
+    boolean isAskAdd() {
         return askAdd;
     }
 
@@ -172,7 +172,7 @@ public class AbstractController implements SubChangeListener {
         this.addIn = askAddIn;
     }
 
-    public int getAddIn() {
+    int getAddIn() {
         return addIn;
     }
 
@@ -211,7 +211,7 @@ public class AbstractController implements SubChangeListener {
         }
     }
 
-    public Collection<SubChangeListener> snapSubListeners() {
+    private Collection<SubChangeListener> snapSubListeners() {
         return new LinkedHashSet<>(subChangeListeners);
     }
 
@@ -221,6 +221,20 @@ public class AbstractController implements SubChangeListener {
 
     public boolean removeSubListener(SubChangeListener listener) {
         return subChangeListeners.remove(listener);
+    }
+
+    //check if intercepted by subcontroller first
+    final boolean onBackPressed() {
+        List<AbstractController> sub = snapSubControllers();
+        for (int i = sub.size(); i --> 0;) {
+            AbstractController el = sub.get(i);
+            if (el.onBackPressed()) {
+                Log.d(tag(), "Back intercepted by", el);
+                return true;
+            }
+        }
+
+        return getManagedElement().interceptBackPressed();
     }
 }
 

@@ -149,4 +149,8 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         return (ControlledActivity) getActivity();
     }
 
+    @Override
+    public boolean interceptBackPressed() {
+        return false;
+    }
 }

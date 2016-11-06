@@ -16,4 +16,7 @@ public interface ControlledElement<T extends AbstractController> {
     ControllerManager getManager();
 
     ControlledActivity getControlledActivity();
+
+    // return true if intercepted, false otherwise
+    boolean interceptBackPressed();
 }

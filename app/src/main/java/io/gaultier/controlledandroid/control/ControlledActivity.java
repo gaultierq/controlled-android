@@ -107,4 +107,16 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     public ControlledActivity getControlledActivity() {
         return this;
     }
+
+    @Override
+    public void onBackPressed() {
+        if (!getController().onBackPressed()) {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean interceptBackPressed() {
+        return false;
+    }
 }
