@@ -19,7 +19,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     private ControllerAccessor<T> ctrlAccessor = new ControllerAccessor<>();
 
-    protected int[] animation;
+    protected int[] animation = new int[4];
 
     @Override
     public final void onCreate(Bundle savedInstanceState) {

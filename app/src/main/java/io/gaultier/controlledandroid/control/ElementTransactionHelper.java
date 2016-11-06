@@ -17,6 +17,7 @@ public class ElementTransactionHelper {
     private final ControlledElement parentEl;
     private FragmentTransaction fragmentTransaction;
     private FragmentManager manager;
+    int[] animation = new int[4];
 
     public ElementTransactionHelper(ControlledElement parentEl) {
         this.parentEl = parentEl;
@@ -35,7 +36,8 @@ public class ElementTransactionHelper {
             FragmentTransaction trans = obtainOpenedFragmentTrans();
 
             int[] anim = f.getAnimation();
-            animation[0] = anim == null ? 0 : anim[0];
+            animation[0] = anim[0];
+            animation[3] = anim[3];
             makeAnimation(trans);
 
             trans.add(addIn, f, f.tag());
@@ -47,7 +49,7 @@ public class ElementTransactionHelper {
         }
     }
 
-    int[] animation = new int[2];
+
 
 
     //TODO: debug this
@@ -64,7 +66,8 @@ public class ElementTransactionHelper {
             if (f.shouldAddToBackStack(FragTransactionOperation.REMOVE)) {
                 FragmentTransaction trans = obtainOpenedFragmentTrans();
                 int[] anim = f.getAnimation();
-                animation[1] = anim == null ? 0 : anim[1];
+                animation[1] = anim[1];
+                animation[2] = anim[2];
                 makeAnimation(trans);
                 trans.remove(f);
                 trans.addToBackStack(f.tag());
@@ -83,7 +86,7 @@ public class ElementTransactionHelper {
     }
 
     private void makeAnimation(FragmentTransaction trans) {
-        trans.setCustomAnimations(animation[0], animation[1]);
+        trans.setCustomAnimations(animation[0], animation[1], animation[2], animation[3]);
     }
 
     private FragmentTransaction obtainOpenedFragmentTrans() {
