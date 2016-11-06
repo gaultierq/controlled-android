@@ -3,6 +3,7 @@ package io.gaultier.controlledandroid.control;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -76,20 +77,20 @@ public class ControllerManager {
 
         ElementTransactionHelper helper = new ElementTransactionHelper(parentEl);
 
-        for (AbstractController c : controller.subControllers) {
+        for (AbstractController c : controller.snapSubControllers()) {
             if (c.isAskRemove()) {
                 helper.removeManagedElement(c.getManagedElement());
-                c.setAskRemove(false);
+                c.unsetPending();
             } else if (c.isAskAdd()) {
                 helper.addSub(c.getManagedElement(), c.getAddIn());
-                c.setAskAdd(false, 0);
+                c.unsetPending();
             }
         }
         helper.commit();
     }
 
     public static void addFragment(ControlledFragment f, AbstractController controller, int container, AbstractController parent) {
-        controller.setAskAdd(true, container);
+        controller.askAddIn(container);
         parent.getManagedElement().getManager().managedNewFragment(f, controller, parent);
         parent.getManagedElement().refresh();
     }
@@ -104,10 +105,19 @@ public class ControllerManager {
             listener = new FragmentManager.OnBackStackChangedListener() {
                 public void onBackStackChanged() {
                     Log.d(TAG, "On back stack change");
-                    ControllerManager.this.cleanupFragmentStack(activity);
-                }
-            };
 
+
+                    Handler handler = new Handler();
+                    Runnable sendData=new Runnable() {
+                        public void run() {
+                            cleanup(activity.getController(), activity.getSupportFragmentManager().getFragments());
+                        }
+                    };
+
+                    handler.postDelayed(sendData, 1000);
+
+                    }
+            };
             supportFragmentManager.addOnBackStackChangedListener(listener);
         }
 
@@ -272,25 +282,13 @@ public class ControllerManager {
 
     }
 
-    // as we dont have a callback on the fragment "finish" event, we
-    // listen to the fragmentmanager changes to cleanup afterwards
-    private boolean cleanupFragmentStack(ControlledActivity activity) {
-        List<Fragment> frags = activity.getSupportFragmentManager().getFragments();
-        AbstractController controller = activity.getController();
-
-        if (cleanup(controller, frags)) {
-            Assert.ensure(!cleanupFragmentStack(activity));
-            return true;
-        }
-        return false;
-    }
-
     private boolean cleanup(AbstractController controller, List<Fragment> frags) {
         Set<AbstractController> subcontrollers = new HashSet<>(controller.subControllers);
         boolean cleaned = false;
         for (AbstractController sc : subcontrollers) {
             ControlledElement e = sc.getManagedElement();
             if (e instanceof ControlledFragment && !frags.contains(e)) {
+                Log.e(TAG, sc, "has been cleaned");
                 this.unmanage(sc);
                 cleaned = true;
             }

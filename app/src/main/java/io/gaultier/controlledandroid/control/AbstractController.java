@@ -13,6 +13,10 @@ import java.util.List;
 import io.gaultier.controlledandroid.util.Assert;
 import io.gaultier.controlledandroid.util.Log;
 
+import static io.gaultier.controlledandroid.control.PendingOperationType.ADD;
+import static io.gaultier.controlledandroid.control.PendingOperationType.REMOVE_BACK;
+import static io.gaultier.controlledandroid.control.PendingOperationType.REMOVE_REPLACE;
+
 /**
  * Created by q on 16/10/16.
  */
@@ -46,9 +50,10 @@ public class AbstractController implements SubChangeListener {
     String parentControllerId;
     boolean managed;
     boolean isInitialized;
-    boolean askRemove;
-    boolean askAdd;
-    int addIn;
+
+    @Transient
+    PendingOperation pendingOperation;
+
 
     @Transient
     private Collection<SubChangeListener> subChangeListeners = new LinkedHashSet<>();
@@ -167,24 +172,47 @@ public class AbstractController implements SubChangeListener {
     }
 
     boolean isAskRemove() {
-        return askRemove;
+        return isPending(REMOVE_REPLACE) || isPending(REMOVE_BACK);
     }
 
-    public void setAskRemove(boolean askRemove) {
-        this.askRemove = askRemove;
+    boolean isAskBack() {
+        return isPending(REMOVE_BACK);
+    }
+
+    boolean isAskReplace() {
+        return isPending(REMOVE_REPLACE);
+    }
+
+    private boolean isPending(PendingOperationType removeReplace) {
+        return pendingOperation != null && pendingOperation.type == removeReplace;
+    }
+
+    public void askBack() {
+        assignPending(REMOVE_BACK, 0);
+    }
+
+    public void askReplace() {
+        assignPending(REMOVE_REPLACE, 0);
+    }
+
+    protected void assignPending(PendingOperationType removeReplace, int addIn) {
+        pendingOperation = new PendingOperation(removeReplace, addIn);
     }
 
     boolean isAskAdd() {
-        return askAdd;
+        return isPending(ADD);
     }
 
-    public void setAskAdd(boolean askAdd, int askAddIn) {
-        this.askAdd = askAdd;
-        this.addIn = askAddIn;
+    public void askAddIn(int askAddIn) {
+        assignPending(ADD, askAddIn);
+    }
+
+    public void unsetPending() {
+        pendingOperation = null;
     }
 
     int getAddIn() {
-        return addIn;
+        return pendingOperation.addIn;
     }
 
     public final String tag() {
@@ -195,7 +223,7 @@ public class AbstractController implements SubChangeListener {
         return this;
     }
 
-    //notify change on parent controller
+    //notify change to parent controller
     protected final void notifyChange() {
         AbstractController p = getParentController();
         if (p != null) {

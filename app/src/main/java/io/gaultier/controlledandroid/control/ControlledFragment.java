@@ -116,8 +116,8 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         return animation;
     }
 
-    public boolean shouldAddToBackStack(ElementTransactionHelper.FragTransactionOperation operation) {
-        return operation == ElementTransactionHelper.FragTransactionOperation.ADD;
+    public boolean shouldAddToBackStack(PendingOperationType operation) {
+        return operation == PendingOperationType.ADD;
     }
 
     @Override
@@ -146,6 +146,11 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     @Override
     public boolean interceptBackPressed() {
+        if (isAdded()) {
+            getController().askBack();
+            getController().notifyChange();
+            return true;
+        }
         return false;
     }
 

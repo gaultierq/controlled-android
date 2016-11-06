@@ -4,7 +4,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import io.gaultier.controlledandroid.util.Assert;
-import io.gaultier.controlledandroid.util.Log;
 
 /**
  * Created by q on 01/11/16.
@@ -23,11 +22,6 @@ public class ElementTransactionHelper {
         this.parentEl = parentEl;
     }
 
-    public enum FragTransactionOperation {
-        ADD,
-        REMOVE
-    }
-
     protected void addSub(ControlledElement managedElement, int addIn) {
         if (managedElement instanceof ControlledActivity) {
             parentEl.getManager().startActivity(parentEl.getControlledActivity(), ((ControlledActivity) managedElement).getClass(), managedElement.getController());
@@ -41,7 +35,7 @@ public class ElementTransactionHelper {
             makeAnimation(trans);
 
             trans.add(addIn, f, f.tag());
-            if (f.shouldAddToBackStack(FragTransactionOperation.ADD)) {
+            if (f.shouldAddToBackStack(PendingOperationType.ADD)) {
                 trans.addToBackStack(f.tag());
             }
         } else {
@@ -49,13 +43,7 @@ public class ElementTransactionHelper {
         }
     }
 
-
-
-
-    //TODO: debug this
     // fragment was added to the stack, then we need to remove it from the stack
-    // possible bug 1 : displaying the previous fragment in the saved state, and we have no way no tell it its displayed again
-    // possible bug 2 : the popped fragment is not the good one
     protected void removeManagedElement(ControlledElement managedElement) {
         if (managedElement instanceof ControlledActivity) {
             ((ControlledActivity) managedElement).finish();
@@ -63,7 +51,8 @@ public class ElementTransactionHelper {
             ControlledFragment f = ((ControlledFragment) managedElement);
 
 
-            if (f.shouldAddToBackStack(FragTransactionOperation.REMOVE)) {
+            AbstractController c = f.getController();
+            if (c.isAskReplace()) {
                 FragmentTransaction trans = obtainOpenedFragmentTrans();
                 int[] anim = f.getAnimation();
                 animation[1] = anim[1];
@@ -72,10 +61,8 @@ public class ElementTransactionHelper {
                 trans.remove(f);
                 trans.addToBackStack(f.tag());
 
-            } else if (f.shouldAddToBackStack(FragTransactionOperation.ADD)) {
-                //trans.shouldAddToBackStack(f.tag());
-                FragmentManager.BackStackEntry entry = obtainerManager().getBackStackEntryAt(obtainerManager().getBackStackEntryCount() - 1);
-                Log.d(TAG, "Poping back fragment ", f, " with result:", entry);
+            } else if (c.isAskBack()) {
+                c.getManagedElement().getManager().unmanage(c);
                 obtainerManager().popBackStack();
             } else {
                 Assert.thrown();
