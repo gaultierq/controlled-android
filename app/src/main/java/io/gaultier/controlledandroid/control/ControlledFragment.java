@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import io.gaultier.controlledandroid.util.Assert;
+import io.gaultier.controlledandroid.util.Log;
 
 /**
  * Created by q on 16/10/16.
@@ -51,7 +52,12 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     public final void refresh() {
         ControllerManager.refreshPendings(getController());
-        refresh(getView());
+        if (isAdded()) {
+            refresh(getView());
+        }
+        else {
+            Log.w(tag(), "Skipping a refresh as the fragment is not added.");
+        }
     }
 
     private void prepareViewInternal(View fragmentView, T fragmentController) {

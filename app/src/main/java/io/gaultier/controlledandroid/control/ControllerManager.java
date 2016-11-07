@@ -3,7 +3,6 @@ package io.gaultier.controlledandroid.control;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -105,18 +104,8 @@ public class ControllerManager {
             listener = new FragmentManager.OnBackStackChangedListener() {
                 public void onBackStackChanged() {
                     Log.d(TAG, "On back stack change");
-
-
-                    Handler handler = new Handler();
-                    Runnable sendData=new Runnable() {
-                        public void run() {
-                            cleanup(activity.getController(), activity.getSupportFragmentManager().getFragments());
-                        }
-                    };
-
-                    handler.postDelayed(sendData, 1000);
-
-                    }
+                    //cleanup(activity.getController(), activity.getSupportFragmentManager().getFragments());
+                }
             };
             supportFragmentManager.addOnBackStackChangedListener(listener);
         }
