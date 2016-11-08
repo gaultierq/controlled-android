@@ -85,8 +85,10 @@ public abstract class ImagePickerImpl {
 
         switch (requestCode) {
             case REQUEST_GALLERY_PHOTO:
-                client.setUri(data.getData());
                 ok = resultCode == Activity.RESULT_OK;
+                if (ok) {
+                    client.setUri(data.getData());
+                }
                 break;
             case REQUEST_TAKE_PHOTO:
                 ok = resultCode == Activity.RESULT_OK;

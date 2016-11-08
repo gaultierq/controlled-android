@@ -1,9 +1,11 @@
 package io.gaultier.controlledandroid.control;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -57,7 +60,11 @@ public class ControllerManager {
         manageAndAssignParent(mainController, new AbstractController());
     }
 
-    public static void make(int oldSessionId, int sessionId) {
+
+    public static void init(Context context) {
+        int oldSessionId = PreferenceManager.getDefaultSharedPreferences(context).getInt("sessionId", 0);
+        int sessionId = new Random().nextInt(100000);//oldSessionId + 1;
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putInt("sessionId", sessionId).apply();
         Assert.ensure(INSTANCE == null, "ControllerManager already init");
         INSTANCE = new ControllerManager(oldSessionId, sessionId);
     }
@@ -372,6 +379,7 @@ public class ControllerManager {
     AbstractController getMainController() {
         return mainController;
     }
+
 
 
     private static class ApplicationController extends AbstractController {
