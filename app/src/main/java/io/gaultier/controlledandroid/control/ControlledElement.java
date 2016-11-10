@@ -1,5 +1,7 @@
 package io.gaultier.controlledandroid.control;
 
+import android.support.v4.app.FragmentManager;
+
 /**
  * Created by q on 18/10/16.
  */
@@ -19,4 +21,7 @@ public interface ControlledElement<T extends AbstractController> {
 
     // return true if intercepted, false otherwise
     boolean interceptBackPressed();
+
+    // witch fragment manager should we use to add sub fragments
+    FragmentManager obtainFragmentManager();
 }

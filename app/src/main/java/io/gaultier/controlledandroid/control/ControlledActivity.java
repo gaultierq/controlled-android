@@ -1,6 +1,7 @@
 package io.gaultier.controlledandroid.control;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
 import io.gaultier.controlledandroid.util.Assert;
@@ -118,5 +119,10 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     @Override
     public boolean interceptBackPressed() {
         return false;
+    }
+
+    @Override
+    public FragmentManager obtainFragmentManager() {
+        return getSupportFragmentManager();
     }
 }

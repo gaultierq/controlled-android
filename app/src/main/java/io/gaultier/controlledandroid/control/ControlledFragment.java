@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -187,5 +188,10 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         getController().onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public FragmentManager obtainFragmentManager() {
+        return getChildFragmentManager();
     }
 }

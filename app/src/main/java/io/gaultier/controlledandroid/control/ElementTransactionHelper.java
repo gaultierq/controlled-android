@@ -1,8 +1,5 @@
 package io.gaultier.controlledandroid.control;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import io.gaultier.controlledandroid.util.Assert;
@@ -17,7 +14,6 @@ public class ElementTransactionHelper {
     private static final String TAG = "ElementTransactionHelper";
     private final ControlledElement parentEl;
     private FragmentTransaction fragmentTransaction;
-    private FragmentManager manager;
     int[] animation = new int[4];
 
     public ElementTransactionHelper(ControlledElement parentEl) {
@@ -65,7 +61,7 @@ public class ElementTransactionHelper {
 
             } else if (c.isAskBack()) {
                 c.getManagedElement().getManager().unmanage(c);
-                obtainerManager().popBackStack();
+                parentEl.obtainFragmentManager().popBackStack();
             } else {
                 Assert.thrown();
             }
@@ -80,25 +76,9 @@ public class ElementTransactionHelper {
 
     private FragmentTransaction obtainOpenedFragmentTrans() {
         if (fragmentTransaction == null) {
-            fragmentTransaction = obtainerManager().beginTransaction();
+            fragmentTransaction = parentEl.obtainFragmentManager().beginTransaction();
         }
         return fragmentTransaction;
-    }
-
-    private FragmentManager obtainerManager() {
-        if (manager == null) {
-            if (parentEl instanceof FragmentActivity) {
-                manager = ((FragmentActivity)parentEl).getSupportFragmentManager();
-            }
-            else if (parentEl instanceof Fragment) {
-                manager = ((Fragment)parentEl).getChildFragmentManager();
-            }
-            else {
-                Assert.thrown(""+parentEl);
-            }
-
-        }
-        return manager;
     }
 
     public void commit() {
