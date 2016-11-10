@@ -22,6 +22,8 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     protected int[] animation = new int[4];
 
+    private boolean addToBackstack = true;
+
     @Override
     public final void onCreate(Bundle savedInstanceState) {
 
@@ -134,8 +136,12 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         return animation;
     }
 
-    public boolean shouldAddToBackStack(PendingOperationType operation) {
-        return operation == PendingOperationType.ADD;
+    public boolean shouldAddToBackStack() {
+        return addToBackstack;
+    }
+
+    public void setAddToBackStack(boolean add) {
+        addToBackstack = add;
     }
 
     @Override

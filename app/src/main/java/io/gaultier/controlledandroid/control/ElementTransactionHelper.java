@@ -35,7 +35,7 @@ public class ElementTransactionHelper {
             makeAnimation(trans);
 
             trans.add(addIn, f, f.tag());
-            if (f.shouldAddToBackStack(PendingOperationType.ADD)) {
+            if (f.shouldAddToBackStack()) {
                 trans.addToBackStack(f.tag());
             }
         } else {
