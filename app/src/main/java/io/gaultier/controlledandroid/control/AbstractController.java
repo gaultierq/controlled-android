@@ -112,7 +112,7 @@ public class AbstractController implements SubChangeListener {
     }
 
 
-    protected ControlledElement getManagedElement() {
+    public ControlledElement getManagedElement() {
         return managedElement;
     }
 
@@ -148,6 +148,9 @@ public class AbstractController implements SubChangeListener {
     }
 
     void assignParentController(AbstractController p) {
+        if (parentController != null && p != null) {
+            Log.w(tag(), "Assigning new parent on", this, parentController, "<-", p);
+        }
         this.parentController = p;
         if (p != null) {
             p.subControllers.add(this);
@@ -229,7 +232,7 @@ public class AbstractController implements SubChangeListener {
     }
 
     //notify change to parent controller
-    protected final void notifyChange() {
+    public final void notifyChange() {
         AbstractController p = getParentController();
         if (p != null) {
             p.onSubChangeInternal(this);
@@ -283,6 +286,20 @@ public class AbstractController implements SubChangeListener {
         }
 
         return getManagedElement().interceptBackPressed();
+    }
+
+    protected ControlledElement makeElement() {
+        Assert.thrown("not implemented yet");
+        return null;
+    }
+
+    //utility method to add a fragment
+    protected void addFragment(AbstractController controller, int target, boolean addToBackStack) {
+        controller.askAddIn(target);
+        ControlledFragment frag = (ControlledFragment) controller.makeElement();
+        frag.setAddToBackStack(addToBackStack);
+        getManagedElement().getManager().managedNewFragment(frag, controller, this);
+        notifyChange();
     }
 }
 
