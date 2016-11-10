@@ -8,7 +8,6 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import org.parceler.Parcels;
@@ -16,13 +15,10 @@ import org.parceler.Parcels;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.gaultier.controlledandroid.util.Assert;
@@ -111,7 +107,7 @@ public class ControllerManager {
             listener = new FragmentManager.OnBackStackChangedListener() {
                 public void onBackStackChanged() {
                     Log.d(TAG, "On back stack change");
-                    //cleanup(activity.getController(), activity.getSupportFragmentManager().getFragments());
+                    //cleanupInternal(activity.getController(), activity.getSupportFragmentManager().getFragments());
                 }
             };
             supportFragmentManager.addOnBackStackChangedListener(listener);
@@ -278,20 +274,20 @@ public class ControllerManager {
 
     }
 
-    private boolean cleanup(AbstractController controller, List<Fragment> frags) {
-        Set<AbstractController> subcontrollers = new HashSet<>(controller.subControllers);
-        boolean cleaned = false;
-        for (AbstractController sc : subcontrollers) {
-            ControlledElement e = sc.getManagedElement();
-            if (e instanceof ControlledFragment && !frags.contains(e)) {
-                Log.e(TAG, sc, "has been cleaned");
-                this.unmanage(sc);
-                cleaned = true;
-            }
-            cleaned |= cleanup(sc, frags);
-        }
-        return cleaned;
-    }
+    //private boolean cleanup(AbstractController controller, List<Fragment> frags) {
+    //    Set<AbstractController> subcontrollers = new HashSet<>(controller.subControllers);
+    //    boolean cleaned = false;
+    //    for (AbstractController sc : subcontrollers) {
+    //        ControlledElement e = sc.getManagedElement();
+    //        if (e instanceof ControlledFragment && !frags.contains(e)) {
+    //            Log.e(TAG, sc, "has been cleaned");
+    //            this.unmanage(sc);
+    //            cleaned = true;
+    //        }
+    //        cleaned |= cleanup(sc, frags);
+    //    }
+    //    return cleaned;
+    //}
 
 
     public <U extends AbstractController, T extends ControlledFragment<U>> T managedNewFragment(
@@ -319,7 +315,7 @@ public class ControllerManager {
         AbstractController unmanaged = managedControllers.remove(id);
         Assert.ensure(unmanaged == controller, "Controller not found:" + controller + " in " + this);
 
-        unmanaged.cleanup();
+        unmanaged.cleanupInternal();
         unmanaged.setManaged(false);
         Log.i(TAG, "--: ", controller, "manager:", this);
     }

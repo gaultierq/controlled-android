@@ -100,11 +100,15 @@ public class AbstractController implements SubChangeListener {
         return isValidId(controllerId);
     }
 
-    void cleanup() {
+    void cleanupInternal() {
         boolean removed = parentController.subControllers.remove(this);
         Assert.ensure(removed, "cleaning up an unmanaged controller:" + this);
         parentController = null;
-        //parentControllerId = null;
+        cleanup();
+    }
+
+    protected void cleanup() {
+        //you can for eg. clear all listeners here
     }
 
 
@@ -117,7 +121,7 @@ public class AbstractController implements SubChangeListener {
         this.managedElement = managedElement;
     }
 
-    // cleanup all states from previous displays
+    // cleanupInternal all states from previous displays
     // the view is about to be displayed again
     public void reset() {
     }
