@@ -35,13 +35,14 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     @Override
     public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return createView(inflater, container);
+        View view = createView(inflater, container);
+        refreshInternal(view);
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        refresh(view);
     }
 
     protected abstract View createView(LayoutInflater inflater, @Nullable ViewGroup container);
@@ -50,14 +51,25 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     protected void refresh(View v) {
     }
 
-    public final void refresh() {
+    private void refreshInternal(View view) {
         ControllerManager.refreshPendings(getController());
-        if (isAdded()) {
-            refresh(getView());
-        }
-        else {
+        if (view != null //exemple: refreshing in createView
+                && isAdded()
+                ) {
+            if (getController() == null) {
+                Log.w(tag(), "skipping fragment refreshing with null controller");
+            } else {
+                Log.v(tag(), "refreshing");
+                refresh(view);
+            }
+
+        } else {
             Log.w(tag(), "Skipping a refresh as the fragment is not added.");
         }
+    }
+
+    public final void refresh() {
+        refreshInternal(getView());
     }
 
     private void prepareViewInternal(View fragmentView, T fragmentController) {
