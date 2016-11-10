@@ -1,5 +1,7 @@
 package io.gaultier.controlledandroid.control;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
@@ -85,7 +87,16 @@ public class ElementTransactionHelper {
 
     private FragmentManager obtainerManager() {
         if (manager == null) {
-            manager = parentEl.getControlledActivity().getSupportFragmentManager();
+            if (parentEl instanceof FragmentActivity) {
+                manager = ((FragmentActivity)parentEl).getSupportFragmentManager();
+            }
+            else if (parentEl instanceof Fragment) {
+                manager = ((Fragment)parentEl).getChildFragmentManager();
+            }
+            else {
+                Assert.thrown(""+parentEl);
+            }
+
         }
         return manager;
     }

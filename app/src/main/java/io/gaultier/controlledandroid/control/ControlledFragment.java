@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import io.gaultier.controlledandroid.util.Assert;
 import io.gaultier.controlledandroid.util.Log;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Created by q on 16/10/16.
  */
@@ -170,11 +172,16 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
 
     @Override
     public boolean interceptBackPressed() {
-        if (isAdded()) {
-            getController().goBack();
-            return true;
+        if (!isAdded()) {
+            Log.w(TAG, "Fragment not added, interceptBackPressed skipped");
+            return false;
         }
-        return false;
+        if (!addToBackstack) {
+            Log.i(TAG, "Fragment not in backstack, not intercepting back");
+            return false;
+        }
+        getController().goBack();
+        return true;
     }
 
     @Override
