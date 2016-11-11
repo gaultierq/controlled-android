@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,12 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
     @Override
     public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        int theme = getController().callGetOverrideTheme();
+        if (theme > 0) {
+            inflater = inflater.cloneInContext(new ContextThemeWrapper(getActivity(), theme));
+        }
+
         View view = createView(inflater, container);
         refreshInternal(view);
         return view;
