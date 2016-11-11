@@ -289,17 +289,26 @@ public class AbstractController implements SubChangeListener {
     }
 
     protected ControlledElement makeElement() {
-        Assert.thrown("not implemented yet");
+        Assert.thrown("not implemented yet for: " + tag());
         return null;
     }
 
     //utility method to add a fragment
-    protected void addFragment(AbstractController controller, int target, boolean addToBackStack) {
-        controller.askAddIn(target);
+    public void addFragment(AbstractFragmentController controller, int target, boolean addToBackStack, boolean nestedFragment) {
+        controller.askAddIn(target, nestedFragment);
         ControlledFragment frag = (ControlledFragment) controller.makeElement();
-        frag.setAddToBackStack(addToBackStack);
-        getManagedElement().getManager().managedNewFragment(frag, controller, this);
+        controller.addToBackstack = addToBackStack;
+        getManagedElement().getManager().manageNewFragment(frag, controller, this);
         notifyChange();
+    }
+
+    public <T extends AbstractController> boolean isDisplaying(Class<T> clazz) {
+        for (AbstractController sub : snapSubControllers()) {
+            if (sub.tag().equals(clazz.getSimpleName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

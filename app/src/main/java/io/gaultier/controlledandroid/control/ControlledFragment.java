@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 
 import io.gaultier.controlledandroid.util.Assert;
 import io.gaultier.controlledandroid.util.Log;
@@ -18,14 +20,10 @@ import static android.content.ContentValues.TAG;
  * Created by q on 16/10/16.
  */
 
-public abstract class ControlledFragment<T extends AbstractController> extends Fragment implements ControlledElement<T> {
+public abstract class ControlledFragment<T extends AbstractFragmentController> extends Fragment implements ControlledElement<T> {
 
 
     private ControllerAccessor<T> ctrlAccessor = new ControllerAccessor<>();
-
-    protected int[] animation = new int[4];
-
-    private boolean addToBackstack = true;
 
     @Override
     public final void onCreate(Bundle savedInstanceState) {
@@ -135,18 +133,6 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
         ctrlAccessor.set(controller);
     }
 
-    public int[] getAnimation() {
-        return animation;
-    }
-
-    public boolean shouldAddToBackStack() {
-        return addToBackstack;
-    }
-
-    public void setAddToBackStack(boolean add) {
-        addToBackstack = add;
-    }
-
     @Override
     public final T makeController() {
         T res = makeFragmentController();
@@ -177,7 +163,7 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
             Log.w(TAG, "Fragment not added, interceptBackPressed skipped");
             return false;
         }
-        if (!addToBackstack) {
+        if (!getController().addToBackstack) {
             Log.i(TAG, "Fragment not in backstack, not intercepting back");
             return false;
         }
@@ -191,7 +177,32 @@ public abstract class ControlledFragment<T extends AbstractController> extends F
     }
 
     @Override
-    public FragmentManager obtainFragmentManager() {
-        return getChildFragmentManager();
+    public final FragmentManager obtainFragmentManager(AbstractController child) {
+        //TODO : all fragment should extend AFC
+        if (child instanceof AbstractFragmentController) {
+            if (((AbstractFragmentController) child).nestedFragment) {
+                return getChildFragmentManager();
+            }
+        }
+        return getFragmentManager();
     }
+
+    //HACK regarding the thread:
+    // http://stackoverflow.com/questions/14900738/nested-fragments-disappear-during-transition-animation
+    private static final Animation dummyAnimation = new AlphaAnimation(1, 1);
+
+    static {
+        dummyAnimation.setDuration(500);
+    }
+
+    @Override
+    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
+        if (!enter && getParentFragment() != null && nextAnim <= 0) {
+            return dummyAnimation;
+        }
+        return super.onCreateAnimation(transit, enter, nextAnim);
+    }
+
 }
+
+

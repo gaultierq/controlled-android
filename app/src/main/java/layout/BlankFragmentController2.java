@@ -7,14 +7,14 @@ import org.parceler.Parcel;
 import java.util.Date;
 import java.util.Random;
 
-import io.gaultier.controlledandroid.control.AbstractController;
+import io.gaultier.controlledandroid.control.AbstractFragmentController;
 
 /**
  * Created by q on 17/10/16.
  */
 
 @Parcel
-public class BlankFragmentController2 extends AbstractController {
+public class BlankFragmentController2 extends AbstractFragmentController {
 
     int clicknumber = 0;
     Date creationDate = new Date();

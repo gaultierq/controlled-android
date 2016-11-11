@@ -122,7 +122,7 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     }
 
     @Override
-    public FragmentManager obtainFragmentManager() {
+    public FragmentManager obtainFragmentManager(AbstractController child) {
         return getSupportFragmentManager();
     }
 }

@@ -77,23 +77,27 @@ public class ControllerManager {
     protected static <U extends AbstractController> void refreshPendings(U controller) {
         ControlledElement parentEl = controller.getManagedElement();
 
-        ElementTransactionHelper helper = new ElementTransactionHelper(parentEl);
+        FragmentTransactionHelper helper = new FragmentTransactionHelper(parentEl);
 
-        for (AbstractController c : controller.snapSubControllers()) {
+        for (AbstractController sub : controller.snapSubControllers()) {
+            Assert.ensure(sub instanceof AbstractFragmentController, ""+sub);
+
+            AbstractFragmentController c = (AbstractFragmentController) sub;
+
             if (c.isAskRemove()) {
-                helper.removeManagedElement(c.getManagedElement());
+                helper.removeManagedElement(c);
                 c.unsetPending();
             } else if (c.isAskAdd()) {
-                helper.addSub(c.getManagedElement(), c.getAddIn());
+                helper.displaySub(c);
                 c.unsetPending();
             }
         }
         helper.commit();
     }
 
-    public static void addFragment(ControlledFragment f, AbstractController controller, int container, AbstractController parent) {
+    public static void addFragment(ControlledFragment f, AbstractFragmentController controller, int container, AbstractController parent) {
         controller.askAddIn(container);
-        parent.getManagedElement().getManager().managedNewFragment(f, controller, parent);
+        parent.getManagedElement().getManager().manageNewFragment(f, controller, parent);
         parent.getManagedElement().refresh();
     }
 
@@ -160,8 +164,6 @@ public class ControllerManager {
         }
         Assert.ensure(controller.isManaged());
         controller.setManagedElement(element);
-        controller.ensureInitialized();
-
         return controller;
     }
 
@@ -290,7 +292,7 @@ public class ControllerManager {
     //}
 
 
-    public <U extends AbstractController, T extends ControlledFragment<U>> T managedNewFragment(
+    public <U extends AbstractFragmentController, T extends ControlledFragment<U>> T manageNewFragment(
             T frag, U fragmentController, AbstractController parent) {
         try {
             Assert.ensure(!fragmentController.hasId());
@@ -300,7 +302,12 @@ public class ControllerManager {
             fragmentController.setManagedElement(frag);
 
             frag.setArguments(ControllerManager.saveController(new Bundle(), fragmentController));
-            frag.setController(null);
+
+
+            //why null?
+            //when adding, to choose the good fragment manager, I d like to know if nested fragment
+            // this info cann be held by fragment, but it -and animations- can be usefull after killed
+            // frag.setController(null);
             return frag;
         } catch (Exception e) {
             throw new RuntimeException(e);

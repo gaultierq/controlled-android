@@ -15,6 +15,7 @@ public class ControllerAccessor<T extends AbstractController> {
     public void obtain(ControlledElement<T> element, Bundle savedInstanceState, Bundle extras) {
         if (controllerInternal == null) {
             controllerInternal = ControllerManager.obtainIt(element, savedInstanceState, extras);
+            controllerInternal.ensureInitialized();
         }
     }
 
