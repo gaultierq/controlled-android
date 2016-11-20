@@ -301,7 +301,7 @@ public class AbstractController implements SubChangeListener {
         getManagedElement().getManager().manageNewFragment(frag, controller, this);
         notifyChange();
     }
-
+    //TODO: try to remove
     public <T extends AbstractController> boolean isDisplaying(Class<T> clazz) {
         for (AbstractController sub : snapSubControllers()) {
             if (sub.tag().equals(clazz.getSimpleName())) {
