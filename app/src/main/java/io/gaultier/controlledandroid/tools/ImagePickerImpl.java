@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -80,14 +81,14 @@ public abstract class ImagePickerImpl {
         }
     }
 
-    public boolean onActivityResult(ImagePickerClient client, int requestCode, int resultCode, Intent data) {
+    public boolean onActivityResult(ImagePickerClient client, Activity activity, int requestCode, int resultCode, Intent data) {
         Boolean ok = null;
 
         switch (requestCode) {
             case REQUEST_GALLERY_PHOTO:
                 ok = resultCode == Activity.RESULT_OK;
                 if (ok) {
-                    client.setUri(data.getData());
+                    client.setUri(getPath(activity, data.getData()));
                 }
                 break;
             case REQUEST_TAKE_PHOTO:
@@ -100,6 +101,36 @@ public abstract class ImagePickerImpl {
             return true;
         }
         return false;
+    }
+
+    /**
+     * helper to retrieve the path of an image URI
+     */
+    public Uri getPath(Activity activity, Uri uri) {
+        // just some safety built in
+        if( uri == null ) {
+            // TODO perform some logging or show user feedback
+            return null;
+        }
+        // try to retrieve the image from the media store first
+        // this will only work for images selected from gallery
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = activity.managedQuery(uri, projection, null, null, null);
+        if( cursor != null ){
+            int column_index = cursor
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String path = cursor.getString(column_index);
+            cursor.close();
+            if (path != null) {
+                File file = new File(path);
+                if (file.exists()) {
+                    return Uri.fromFile(file);
+                }
+            }
+        }
+        // this is our fallback here
+        return uri;
     }
 
     public void onResult(ImagePickerClient client, boolean ok) {
