@@ -1,8 +1,8 @@
 package io.gaultier.controlledandroid.tools;
 
-import android.net.Uri;
-
 import org.parceler.Parcel;
+
+import java.io.File;
 
 
 /**
@@ -13,7 +13,7 @@ import org.parceler.Parcel;
 public class ImagePickerClientParcelable implements ImagePickerClient {
 
     int id;
-    Uri uri;
+    File file;
 
     ImagePickerClientParcelable() {
     }
@@ -29,12 +29,13 @@ public class ImagePickerClientParcelable implements ImagePickerClient {
     }
 
     @Override
-    public Uri getUri() {
-        return uri;
+    public File getFile() {
+        return file;
     }
 
     @Override
-    public void setUri(Uri uri) {
-        this.uri = uri;
+    public void setFile(File file) {
+        this.file = file;
     }
+
 }

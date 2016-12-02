@@ -1,8 +1,9 @@
 package io.gaultier.controlledandroid.tools;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+
+import java.io.File;
 
 import io.gaultier.controlledandroid.control.AbstractController;
 import io.gaultier.controlledandroid.util.Assert;
@@ -17,6 +18,7 @@ public abstract class FragmentImagePickerImpl extends ImagePickerImpl {
     public static final int UNIQ_CLIENT_ID = 33;
     protected final AbstractController parent;
     protected final int container;
+
     protected ImagePickerClientParcelable imageClient;
 
     public FragmentImagePickerImpl(AbstractController parent, final int container) {
@@ -30,7 +32,7 @@ public abstract class FragmentImagePickerImpl extends ImagePickerImpl {
             case UNIQ_CLIENT_ID:
                 return new ImagePickerImpl.Callback() {
                     @Override
-                    public void onImageFound(Uri imageUri) {
+                    public void onImageFound(File imageUri) {
                         onImage(imageUri);
                     }
 
@@ -44,7 +46,7 @@ public abstract class FragmentImagePickerImpl extends ImagePickerImpl {
         return null;
     }
 
-    public abstract void onImage(Uri imageUri);
+    public abstract void onImage(File imageUri);
 
     public final void provideImage(Fragment fragment) {
         imageClient = new ImagePickerClientParcelable();

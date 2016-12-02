@@ -1,6 +1,6 @@
 package io.gaultier.controlledandroid.tools;
 
-import android.net.Uri;
+import java.io.File;
 
 /**
  * Created by q on 01/11/16.
@@ -10,7 +10,7 @@ public interface ImagePickerClient {
 
     void setId(int id);
 
-    Uri getUri();
+    File getFile();
 
-    void setUri(Uri uri);
+    void setFile(File file);
 }

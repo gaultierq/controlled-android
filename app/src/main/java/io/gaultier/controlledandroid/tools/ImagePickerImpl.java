@@ -5,15 +5,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -28,10 +32,24 @@ public abstract class ImagePickerImpl {
 
     protected static final int REQUEST_TAKE_PHOTO = 100;
     protected static final int REQUEST_GALLERY_PHOTO = 200;
+    private static final String TAG = "ImagePickerImpl";
+
+    private File mTempFile;
 
     public abstract void provideImage(final Fragment frag, final ImagePickerClient client);
 
     protected void executeBasedOnCode(Fragment frag, int code, ImagePickerClient client) {
+        // Create the File where the photo should go
+        try {
+            mTempFile = createImageFile(frag.getContext());
+        } catch (IOException ex) {
+            // Error occurred while creating the File
+            onCantCreateFile(frag.getContext());
+            return;
+        }
+        //saving the uri where the picture will be stored
+        client.setFile(mTempFile);
+
         switch (code) {
             case REQUEST_GALLERY_PHOTO: {
                 if (ContextCompat.checkSelfPermission(frag.getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -43,21 +61,6 @@ public abstract class ImagePickerImpl {
                 break;
             }
             case REQUEST_TAKE_PHOTO: {
-
-                // Ensure that there's a camera frag to handle the intent
-
-                // Create the File where the photo should go
-                File mTempFile;
-                try {
-                    mTempFile = createImageFile(frag.getContext());
-                } catch (IOException ex) {
-                    // Error occurred while creating the File
-                    onCantCreateFile(frag.getContext());
-                    return;
-                }
-                //saving the uri where the picture will be stored
-                client.setUri(Uri.fromFile(mTempFile));
-
                 if (ContextCompat.checkSelfPermission(frag.getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     frag.requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_TAKE_PHOTO);
                 } else {
@@ -86,10 +89,10 @@ public abstract class ImagePickerImpl {
 
         switch (requestCode) {
             case REQUEST_GALLERY_PHOTO:
-                ok = resultCode == Activity.RESULT_OK;
-                if (ok) {
-                    client.setUri(getPath(activity, data.getData()));
-                }
+                ok = resultCode == Activity.RESULT_OK && copyToTempFile(activity, data.getData());
+//                if (ok) {
+//                    client.setUri(getPath(activity, data.getData()));
+//                }
                 break;
             case REQUEST_TAKE_PHOTO:
                 ok = resultCode == Activity.RESULT_OK;
@@ -103,40 +106,30 @@ public abstract class ImagePickerImpl {
         return false;
     }
 
-    /**
-     * helper to retrieve the path of an image URI
-     */
-    public Uri getPath(Activity activity, Uri uri) {
-        // just some safety built in
-        if( uri == null ) {
-            // TODO perform some logging or show user feedback
-            return null;
-        }
-        // try to retrieve the image from the media store first
-        // this will only work for images selected from gallery
-        String[] projection = { MediaStore.Images.Media.DATA };
-        Cursor cursor = activity.managedQuery(uri, projection, null, null, null);
-        if( cursor != null ){
-            int column_index = cursor
-                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            String path = cursor.getString(column_index);
-            cursor.close();
-            if (path != null) {
-                File file = new File(path);
-                if (file.exists()) {
-                    return Uri.fromFile(file);
-                }
+    boolean copyToTempFile(Context context, Uri uri) {
+        InputStream inputStream = null;
+        boolean okk = false;
+        try {
+            inputStream = context.getContentResolver().openInputStream(uri);
+            if (inputStream != null) {
+                IOUtils.copy(inputStream, new FileOutputStream(mTempFile));
+                okk = true;
             }
+
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, e, "unable to open stream for uri", uri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly(inputStream);
         }
-        // this is our fallback here
-        return uri;
+        return okk;
     }
 
     public void onResult(ImagePickerClient client, boolean ok) {
         Callback callback = makeCallback(client.getId());
         if (ok) {
-            callback.onImageFound(client.getUri());
+            callback.onImageFound(client.getFile());
         } else {
             callback.onError();
         }
@@ -177,7 +170,7 @@ public abstract class ImagePickerImpl {
 
 
     interface Callback {
-        void onImageFound(Uri imageUri);
+        void onImageFound(File imageFile);
 
         void onError();
     }

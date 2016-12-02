@@ -125,4 +125,8 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
     public FragmentManager obtainFragmentManager(AbstractController child) {
         return getSupportFragmentManager();
     }
+
+    public <T extends AbstractController, A extends ControlledActivity<T>> void launchActivity(T ctrl, Class<A> activityClass) {
+        getManager().startActivity(this, activityClass, ctrl);
+    }
 }
