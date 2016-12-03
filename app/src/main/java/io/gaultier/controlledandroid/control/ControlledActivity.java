@@ -1,5 +1,6 @@
 package io.gaultier.controlledandroid.control;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -114,6 +115,11 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
         if (!getController().onBackPressed()) {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        getController().onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

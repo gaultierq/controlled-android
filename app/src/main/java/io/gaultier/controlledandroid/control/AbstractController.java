@@ -275,8 +275,8 @@ public class AbstractController implements SubChangeListener {
         return this.activityResultCallbacks.add(listener);
     }
 
-    public boolean removeSubListener(SubChangeListener listener) {
-        return subChangeListeners.remove(listener);
+    public boolean removeOnActivityResultCallback(OnActivityResultListener listener) {
+        return activityResultCallbacks.remove(listener);
     }
 
     //check if intercepted by subcontroller first
