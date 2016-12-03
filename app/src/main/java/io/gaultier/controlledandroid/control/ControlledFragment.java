@@ -180,6 +180,7 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         getController().onActivityResult(requestCode, resultCode, data);
     }
 

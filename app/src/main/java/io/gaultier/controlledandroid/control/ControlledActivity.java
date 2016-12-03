@@ -119,6 +119,7 @@ public abstract class ControlledActivity<T extends AbstractController> extends A
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         getController().onActivityResult(requestCode, resultCode, data);
     }
 
