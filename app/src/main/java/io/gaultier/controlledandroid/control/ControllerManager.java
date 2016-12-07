@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 
 import org.parceler.Parcels;
@@ -119,7 +118,7 @@ public class ControllerManager {
 
     }
 
-    @Nullable
+    @NonNull
     static <T extends AbstractController> T obtainIt(ControlledElement<T> element, Bundle savedInstanceState, Bundle arguments) {
         ControllerManager manager = element.getManager();
         String controllerId;
@@ -267,7 +266,7 @@ public class ControllerManager {
         Intent intent = new Intent(fromActivity, toActivityClass);
 
         ControllerManager manager = getInstance(fromActivity);
-        Assert.ensure(fromActivity.getController().isOrphan() == false, "no parent for :" + fromActivity.getController());
+        Assert.ensure(!fromActivity.getController().isOrphan(), "no parent for :" + fromActivity.getController());
         manager.manageAndAssignParent(toActivityController, fromActivity.getController().getParentController());
         // to unmanage, can finish the previous activity
         //manager.unmanage(fromActivity.getController());

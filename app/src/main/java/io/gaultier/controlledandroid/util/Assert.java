@@ -5,6 +5,7 @@ package io.gaultier.controlledandroid.util;
  * assertions are not enabled on non rooted android devices
  * this class acts as a replacement
  */
+@SuppressWarnings("ConstantConditions")
 public final class Assert {
 
     public static void ensureNotNull(Object object) {
@@ -19,20 +20,24 @@ public final class Assert {
         }
     }
 
+
     public static void ensure(boolean flag) {
-        if (flag == false) {
+        assert flag : "";
+        if (!flag) {
             thrown("");
         }
     }
 
+
     public static void ensure(boolean flag, String message) {
-        if (flag == false) {
+        assert flag : message;
+        if (!flag) {
             thrown(message);
         }
     }
 
     public static void thrown() {
-        thrown(new String());
+        thrown("");
     }
 
     public static void thrown(String message) {

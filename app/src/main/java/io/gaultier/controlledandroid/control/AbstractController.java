@@ -37,7 +37,7 @@ public class AbstractController implements SubChangeListener {
     String debugmode;
 
     @Transient
-    List<AbstractController> subControllers = new ArrayList<AbstractController>();
+    List<AbstractController> subControllers = new ArrayList<>();
 
     @Transient
     private AbstractController parentController;
