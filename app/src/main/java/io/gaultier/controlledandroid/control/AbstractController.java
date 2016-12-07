@@ -2,6 +2,7 @@ package io.gaultier.controlledandroid.control;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
 import org.parceler.Transient;
 
@@ -61,9 +62,22 @@ public class AbstractController implements SubChangeListener {
     @Transient
     List<OnActivityResultListener> activityResultCallbacks = new ArrayList<>();
 
+    @Transient
+    List<OnRequestPermissionsResultCallback> requestPermissionsResultCallbacks = new ArrayList<>();
+
+
+
+
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         for (int i = activityResultCallbacks.size(); i --> 0;) {
             activityResultCallbacks.get(i).onActivityResult(getManagedElement().getControlledActivity(), requestCode, resultCode, data);
+        }
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        for (int i = requestPermissionsResultCallbacks.size(); i --> 0;) {
+            requestPermissionsResultCallbacks.get(i).onRequestPermissionsResult(getManagedElement().getControlledActivity(), requestCode, permissions, grantResults);
         }
     }
 
@@ -266,9 +280,16 @@ public class AbstractController implements SubChangeListener {
         return subChangeListeners.add(listener);
     }
 
+
     public interface OnActivityResultListener {
 
         boolean onActivityResult(Activity activity, int requestCode, int resultCode, Intent data);
+    }
+
+    public interface OnRequestPermissionsResultCallback<T extends AbstractController> {
+
+        void onRequestPermissionsResult(ControlledActivity<T> activity, int requestCode, @NonNull String[] permissions,
+                                               @NonNull int[] grantResults);
     }
 
     public boolean addOnActivityResultCallback(OnActivityResultListener listener) {
@@ -277,6 +298,14 @@ public class AbstractController implements SubChangeListener {
 
     public boolean removeOnActivityResultCallback(OnActivityResultListener listener) {
         return activityResultCallbacks.remove(listener);
+    }
+
+    public boolean addOnRequestPermissionsResultCallback(OnRequestPermissionsResultCallback listener) {
+        return this.requestPermissionsResultCallbacks.add(listener);
+    }
+
+    public boolean removeOnRequestPermissionsResultCallback(OnRequestPermissionsResultCallback listener) {
+        return requestPermissionsResultCallbacks.remove(listener);
     }
 
     //check if intercepted by subcontroller first
