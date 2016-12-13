@@ -313,7 +313,7 @@ public class ControllerManager {
         }
     }
 
-    void unmanage(AbstractController controller) {
+    public void unmanage(AbstractController controller) {
         unmanage(controller.snapSubControllers());
 
         String id = controller.getControllerId();

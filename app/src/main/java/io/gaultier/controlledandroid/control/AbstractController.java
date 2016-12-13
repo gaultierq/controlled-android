@@ -106,7 +106,7 @@ public class AbstractController implements SubChangeListener {
         return new ArrayList<>(subControllers);
     }
 
-    boolean isManaged() {
+    public boolean isManaged() {
         return managed;
     }
 
