@@ -82,10 +82,6 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
         refreshInternal(getView());
     }
 
-    private void prepareViewInternal(View fragmentView, T fragmentController) {
-        getController().reset();
-        prepareView(fragmentView, fragmentController);
-    }
 
     protected void prepareView(View fragmentView, T fragmentController) {
     }
@@ -110,7 +106,8 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
         // add comment pls
         //ctrlAccessor.bind(this);
-        getController().reset();
+        //getController().resetInternal();
+        getController().onResume();
         prepareView(getView(), getController());
     }
 

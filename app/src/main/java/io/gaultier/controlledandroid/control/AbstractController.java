@@ -65,13 +65,22 @@ public class AbstractController implements SubChangeListener {
     @Transient
     List<OnRequestPermissionsResultCallback> requestPermissionsResultCallbacks = new ArrayList<>();
 
-
-
+    @Transient
+    List<OnResumeCallback> onResumeCallbackCallbacks = new ArrayList<>();
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         for (int i = activityResultCallbacks.size(); i --> 0;) {
             activityResultCallbacks.get(i).onActivityResult(getManagedElement().getControlledActivity(), requestCode, resultCode, data);
+        }
+    }
+
+    public void onResume() {
+        reset();
+
+        for (int i = onResumeCallbackCallbacks.size(); i --> 0;) {
+            OnResumeCallback r = onResumeCallbackCallbacks.get(i);
+            r.onResume();
         }
     }
 
@@ -134,6 +143,7 @@ public class AbstractController implements SubChangeListener {
         Assert.ensure(isManaged());
         this.managedElement = managedElement;
     }
+
 
     // cleanupInternal all states from previous displays
     // the view is about to be displayed again
@@ -292,6 +302,11 @@ public class AbstractController implements SubChangeListener {
                                                @NonNull int[] grantResults);
     }
 
+    public interface OnResumeCallback<T extends AbstractController> {
+
+        void onResume();
+    }
+
     public boolean addOnActivityResultCallback(OnActivityResultListener listener) {
         return this.activityResultCallbacks.add(listener);
     }
@@ -302,6 +317,10 @@ public class AbstractController implements SubChangeListener {
 
     public boolean addOnRequestPermissionsResultCallback(OnRequestPermissionsResultCallback listener) {
         return this.requestPermissionsResultCallbacks.add(listener);
+    }
+
+    public boolean addOnResumeCallback(OnResumeCallback listener) {
+        return this.onResumeCallbackCallbacks.add(listener);
     }
 
     public boolean removeOnRequestPermissionsResultCallback(OnRequestPermissionsResultCallback listener) {
