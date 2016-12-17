@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import io.gaultier.controlledandroid.control.ControlledElement;
 import io.gaultier.controlledandroid.util.Log;
 
 /**
@@ -84,12 +85,12 @@ public abstract class ImagePickerImpl {
         }
     }
 
-    public boolean onActivityResult(ImagePickerClient client, Activity activity, int requestCode, int resultCode, Intent data) {
+    public boolean onActivityResult(ImagePickerClient client, ControlledElement activity, int requestCode, int resultCode, Intent data) {
         Boolean ok = null;
 
         switch (requestCode) {
             case REQUEST_GALLERY_PHOTO:
-                ok = resultCode == Activity.RESULT_OK && copyToTempFile(activity, data.getData());
+                ok = resultCode == Activity.RESULT_OK && copyToTempFile(activity.getControlledActivity(), data.getData());
 //                if (ok) {
 //                    client.setUri(getPath(activity, data.getData()));
 //                }

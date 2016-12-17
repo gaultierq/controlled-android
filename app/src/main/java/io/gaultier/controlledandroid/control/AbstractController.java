@@ -1,6 +1,5 @@
 package io.gaultier.controlledandroid.control;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
@@ -71,7 +70,7 @@ public class AbstractController implements SubChangeListener {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         for (int i = activityResultCallbacks.size(); i --> 0;) {
-            activityResultCallbacks.get(i).onActivityResult(getManagedElement().getControlledActivity(), requestCode, resultCode, data);
+            activityResultCallbacks.get(i).onActivityResult(getManagedElement(), requestCode, resultCode, data);
         }
     }
 
@@ -293,7 +292,7 @@ public class AbstractController implements SubChangeListener {
 
     public interface OnActivityResultListener {
 
-        boolean onActivityResult(Activity activity, int requestCode, int resultCode, Intent data);
+        boolean onActivityResult(ControlledElement activity, int requestCode, int resultCode, Intent data);
     }
 
     public interface OnRequestPermissionsResultCallback<T extends AbstractController> {
