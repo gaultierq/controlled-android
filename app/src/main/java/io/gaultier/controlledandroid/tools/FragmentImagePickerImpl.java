@@ -1,11 +1,11 @@
 package io.gaultier.controlledandroid.tools;
 
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 
 import java.io.File;
 
 import io.gaultier.controlledandroid.control.AbstractController;
+import io.gaultier.controlledandroid.control.ControlledElement;
 import io.gaultier.controlledandroid.util.Assert;
 import io.gaultier.controlledandroid.util.Log;
 
@@ -48,13 +48,13 @@ public abstract class FragmentImagePickerImpl extends ImagePickerImpl {
 
     public abstract void onImage(File imageUri);
 
-    public final void provideImage(Fragment fragment) {
+    public final void provideImage(ControlledElement fragment) {
         imageClient = new ImagePickerClientParcelable();
         imageClient.setId(UNIQ_CLIENT_ID);
         provideImage(fragment, imageClient);
     }
 
-    public void onRequestPermissionsResult(Fragment fragment, int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(ControlledElement fragment, int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         onRequestPermissionsResult(fragment, requestCode, permissions, grantResults, this.imageClient);
     }
 }

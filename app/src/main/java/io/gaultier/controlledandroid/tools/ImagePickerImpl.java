@@ -8,8 +8,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 
 import org.apache.commons.io.IOUtils;
 
@@ -23,6 +21,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import io.gaultier.controlledandroid.control.ControlledElement;
+import io.gaultier.controlledandroid.control.ControllerUtil;
 import io.gaultier.controlledandroid.util.Log;
 
 /**
@@ -35,41 +34,66 @@ public abstract class ImagePickerImpl {
     protected static final int REQUEST_GALLERY_PHOTO = 200;
     private static final String TAG = "ImagePickerImpl";
 
+
     private File mTempFile;
 
-    public abstract void provideImage(final Fragment frag, final ImagePickerClient client);
+    public abstract void provideImage(final ControlledElement frag, final ImagePickerClient client);
 
-    protected void executeBasedOnCode(Fragment frag, int code, ImagePickerClient client) {
+    protected void executeBasedOnCode(final ControlledElement frag, final int code, ImagePickerClient client) {
         // Create the File where the photo should go
+        Context context = ControllerUtil.getContext(frag);
         try {
-            mTempFile = createImageFile(frag.getContext());
+            mTempFile = createImageFile(context);
         } catch (IOException ex) {
             // Error occurred while creating the File
-            onCantCreateFile(frag.getContext());
+            onCantCreateFile(context);
             return;
         }
         //saving the uri where the picture will be stored
         client.setFile(mTempFile);
 
-        switch (code) {
-            case REQUEST_GALLERY_PHOTO: {
-                if (ContextCompat.checkSelfPermission(frag.getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    frag.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_GALLERY_PHOTO);
-                } else {
-                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    frag.startActivityForResult(intent, REQUEST_GALLERY_PHOTO);
+
+
+        ControllerUtil.exectuteWhenPermitted(frag, Manifest.permission.READ_CONTACTS, new ControllerUtil.OnPermitted() {
+
+            @Override
+            public void executeAction() {
+
+                switch (code) {
+                    case REQUEST_GALLERY_PHOTO: {
+                        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        ControllerUtil.startActivityForResult(intent, frag, REQUEST_GALLERY_PHOTO);
+                        break;
+                    }
+                    case REQUEST_TAKE_PHOTO: {
+                        launchTakePicture(frag, mTempFile);
+                        break;
+                    }
                 }
-                break;
+
             }
-            case REQUEST_TAKE_PHOTO: {
-                if (ContextCompat.checkSelfPermission(frag.getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    frag.requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_TAKE_PHOTO);
-                } else {
-                    launchTakePicture(frag, mTempFile);
-                }
-                break;
-            }
-        }
+
+        }, 0, 0);
+
+//        switch (code) {
+//            case REQUEST_GALLERY_PHOTO: {
+//                if (ContextCompat.checkSelfPermission(frag.getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//                    frag.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_GALLERY_PHOTO);
+//                } else {
+//                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//                    frag.startActivityForResult(intent, REQUEST_GALLERY_PHOTO);
+//                }
+//                break;
+//            }
+//            case REQUEST_TAKE_PHOTO: {
+//                if (ContextCompat.checkSelfPermission(frag.getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+//                    frag.requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_TAKE_PHOTO);
+//                } else {
+//                    launchTakePicture(frag, mTempFile);
+//                }
+//                break;
+//            }
+//        }
     }
 
     protected void onCantCreateFile(Context context) {
@@ -77,11 +101,11 @@ public abstract class ImagePickerImpl {
     }
 
     //default behaviour
-    protected void launchTakePicture(Fragment frag, File mTempFile) {
+    protected void launchTakePicture(ControlledElement element, File mTempFile) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (canIntentBeHandled(frag, intent)) {
+        if (canIntentBeHandled(element, intent)) {
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTempFile));
-            frag.startActivityForResult(intent, REQUEST_TAKE_PHOTO);
+            ControllerUtil.startActivityForResult(intent, element, REQUEST_TAKE_PHOTO);
         }
     }
 
@@ -136,23 +160,23 @@ public abstract class ImagePickerImpl {
         }
     }
 
-    public void onRequestPermissionsResult(Fragment fragment, int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults, ImagePickerClient client) {
+    public void onRequestPermissionsResult(ControlledElement element, int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults, ImagePickerClient client) {
         if (permissions.length > 0) {
             if (permissions[0].equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    executeBasedOnCode(fragment, requestCode, client);
+                    executeBasedOnCode(element, requestCode, client);
                 }
             } else if (permissions[0].equals(Manifest.permission.CAMERA)) {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    executeBasedOnCode(fragment, requestCode, client);
+                    executeBasedOnCode(element, requestCode, client);
                 }
             }
         }
     }
 
 
-    private static boolean canIntentBeHandled(Fragment frag, Intent takePictureIntent) {
-        return takePictureIntent.resolveActivity(frag.getActivity().getPackageManager()) != null;
+    private static boolean canIntentBeHandled(ControlledElement frag, Intent takePictureIntent) {
+        return takePictureIntent.resolveActivity(frag.getControlledActivity().getPackageManager()) != null;
     }
 
     private static File createImageFile(Context context) throws IOException {

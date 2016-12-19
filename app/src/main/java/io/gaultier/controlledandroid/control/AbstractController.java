@@ -314,6 +314,7 @@ public class AbstractController implements SubChangeListener {
         return activityResultCallbacks.remove(listener);
     }
 
+    //TODO: rm
     public boolean addOnRequestPermissionsResultCallback(OnRequestPermissionsResultCallback listener) {
         return this.requestPermissionsResultCallbacks.add(listener);
     }
