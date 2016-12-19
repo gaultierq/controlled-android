@@ -54,7 +54,7 @@ public abstract class ImagePickerImpl {
 
 
 
-        ControllerUtil.exectuteWhenPermitted(frag, Manifest.permission.READ_CONTACTS, new ControllerUtil.OnPermitted() {
+        ControllerUtil.exectuteWhenPermitted(frag, permission(code), new ControllerUtil.OnPermitted() {
 
             @Override
             public void executeAction() {
@@ -94,6 +94,20 @@ public abstract class ImagePickerImpl {
 //                break;
 //            }
 //        }
+    }
+
+    @NonNull
+    private static String permission(int code) {
+        switch (code) {
+            case REQUEST_GALLERY_PHOTO: {
+                return Manifest.permission.READ_EXTERNAL_STORAGE;
+            }
+            case REQUEST_TAKE_PHOTO: {
+                return Manifest.permission.CAMERA;
+            }
+        }
+        throw new IllegalStateException();
+
     }
 
     protected void onCantCreateFile(Context context) {

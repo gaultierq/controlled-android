@@ -2,6 +2,7 @@ package io.gaultier.controlledandroid.control;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -208,6 +209,11 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
         return super.onCreateAnimation(transit, enter, nextAnim);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        getController().onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
 }
 
 
