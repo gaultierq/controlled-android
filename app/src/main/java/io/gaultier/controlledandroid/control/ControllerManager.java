@@ -259,20 +259,19 @@ public class ControllerManager {
     public static <F extends ControlledActivity, C extends AbstractController, T extends ControlledActivity<C>> void startActivity(
             F fromActivity,
             Class<T> toActivityClass,
-            C toActivityController
+            C toController
 
     ) {
 
         Intent intent = new Intent(fromActivity, toActivityClass);
 
         ControllerManager manager = getInstance(fromActivity);
-        Assert.ensure(!fromActivity.getController().isOrphan(), "no parent for :" + fromActivity.getController());
-        manager.manageAndAssignParent(toActivityController, fromActivity.getController().getParentController());
-        // to unmanage, can finish the previous activity
-        //manager.unmanage(fromActivity.getController());
-        intent.putExtras(ControllerManager.saveController(new Bundle(), toActivityController));
+        AbstractController fromController = fromActivity.getController();
+        Assert.ensure(!fromController.isOrphan(), "no parent for :" + fromController);
+        manager.manageAndAssignParent(toController, fromController.getParentController());
+        intent.putExtras(ControllerManager.saveController(new Bundle(), toController));
         fromActivity.startActivity(intent);
-
+        fromActivity.overridePendingTransition(toController.animation[0], fromController.animation[1]);
     }
 
     //private boolean cleanup(AbstractController controller, List<Fragment> frags) {

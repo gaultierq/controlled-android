@@ -48,8 +48,12 @@ public class AbstractController implements SubChangeListener {
     private ControlledElement managedElement;
 
     String parentControllerId;
+
     boolean managed;
+
     boolean isInitialized;
+
+    protected int[] animation = new int[4];
 
     @Transient
     PendingOperation pendingOperation;

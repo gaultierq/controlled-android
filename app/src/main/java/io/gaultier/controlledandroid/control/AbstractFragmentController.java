@@ -14,8 +14,6 @@ public class AbstractFragmentController extends AbstractController {
 
     protected boolean addToBackstack = true;
 
-    protected int[] animation = new int[4];
-
     //fragment theme
     protected int overrideTheme;
 
