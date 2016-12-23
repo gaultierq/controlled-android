@@ -31,6 +31,7 @@ public class FragmentTransactionHelper {
         animation[3] = anim[3];
         makeAnimation(trans);
 
+
         trans.add(c.getAddIn(), f, f.tag(c.getControllerId()));
         if (c.addToBackstack) {
             trans.addToBackStack(f.tag(c.getControllerId()));

@@ -131,6 +131,9 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
     @NonNull
     public String tag(String id) {
+        if (getTag() != null) {
+            return getTag();
+        }
         return getClass().getSimpleName() + "-" + id;
     }
 

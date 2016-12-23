@@ -250,6 +250,7 @@ public class AbstractController implements SubChangeListener {
         return pendingOperation.addIn;
     }
 
+    @NonNull
     public final String tag() {
         return getClass().getSimpleName();
     }
