@@ -97,7 +97,7 @@ public class AbstractController implements SubChangeListener {
         subChangeListeners.add(this);
     }
 
-    String getControllerId() {
+    public String getControllerId() {
         return controllerId;
     }
 

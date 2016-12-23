@@ -31,9 +31,9 @@ public class FragmentTransactionHelper {
         animation[3] = anim[3];
         makeAnimation(trans);
 
-        trans.add(c.getAddIn(), f, f.tag());
+        trans.add(c.getAddIn(), f, f.tag(c.getControllerId()));
         if (c.addToBackstack) {
-            trans.addToBackStack(f.tag());
+            trans.addToBackStack(f.tag(c.getControllerId()));
         }
     }
 
@@ -48,7 +48,7 @@ public class FragmentTransactionHelper {
             animation[2] = anim[2];
             makeAnimation(trans);
             trans.remove(f);
-            trans.addToBackStack(f.tag());
+            trans.addToBackStack(f.tag(child.getControllerId()));
 
         } else if (child.isAskBack()) {
             child.getManagedElement().getManager().unmanage(child);

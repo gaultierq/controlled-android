@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 
 import org.parceler.Parcels;
@@ -345,8 +346,8 @@ public class ControllerManager {
         manage(controller);
     }
 
-    // can return null
-    private AbstractController getManagedController(String controllerId) {
+    @Nullable
+    public AbstractController getManagedController(String controllerId) {
         return managedControllers.get(controllerId);
     }
 

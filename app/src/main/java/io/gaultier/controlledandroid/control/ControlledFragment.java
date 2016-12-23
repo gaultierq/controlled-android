@@ -126,7 +126,12 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
     }
 
     public final String tag() {
-        return getClass().getSimpleName() + getControllerId();
+        return tag(getControllerId());
+    }
+
+    @NonNull
+    public String tag(String id) {
+        return getClass().getSimpleName() + "-" + id;
     }
 
     @Override
