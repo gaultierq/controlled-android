@@ -351,6 +351,7 @@ public class AbstractController implements SubChangeListener {
         return null;
     }
 
+    //TODO: bug: when parent is a fragment, I need to call refresh to have the new fragment displayed
     //utility method to add a fragment
     public void addFragment(AbstractFragmentController controller, int target, boolean addToBackStack, boolean nestedFragment) {
         controller.askAddIn(target, nestedFragment);

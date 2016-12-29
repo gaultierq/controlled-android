@@ -293,8 +293,9 @@ public class ControllerManager {
 
     public <U extends AbstractFragmentController, T extends ControlledFragment<U>> T manageNewFragment(
             T frag, U fragmentController, AbstractController parent) {
+
         try {
-            Assert.ensure(!fragmentController.hasId());
+            Assert.ensure(!fragmentController.hasId(), "Trying to manage a controller which already as an ID");
             manageAndAssignParent(fragmentController, parent);
 
             // this is a test, to let the parent controller element find frag, and add it
