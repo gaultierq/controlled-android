@@ -17,7 +17,7 @@ public class FirstActivity extends ControlledActivity<FirstActivityController> {
 
     public void lauchSecondActivity(View v) {
         SecondActivityController ctrl = new SecondActivityController();
-        ControllerManager.startActivity(this, SecondActivity.class, ctrl);
+        //ControllerManager.startActivity(this, SecondActivity.class, ctrl);
     }
 
     @Override

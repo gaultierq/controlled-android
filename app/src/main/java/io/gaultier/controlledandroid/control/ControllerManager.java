@@ -257,7 +257,7 @@ public class ControllerManager {
     }
 
 
-    public static <F extends ControlledActivity, C extends AbstractController, T extends ControlledActivity<C>> void startActivity(
+    public <F extends ControlledActivity, C extends AbstractController, T extends ControlledActivity<C>> void startActivity(
             F fromActivity,
             Class<T> toActivityClass,
             C toController
