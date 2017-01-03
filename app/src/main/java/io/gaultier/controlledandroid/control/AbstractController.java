@@ -346,7 +346,7 @@ public class AbstractController implements SubChangeListener {
         return getManagedElement().interceptBackPressed();
     }
 
-    protected ControlledElement makeElement() {
+    public ControlledElement makeElement() {
         Assert.thrown("not implemented yet for: " + tag());
         return null;
     }
