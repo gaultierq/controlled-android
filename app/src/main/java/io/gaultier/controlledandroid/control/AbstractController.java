@@ -118,6 +118,17 @@ public class AbstractController implements SubChangeListener {
         return new ArrayList<>(subControllers);
     }
 
+    //return the first matching subcontroller
+    public <T extends AbstractController> T getSubController(Class<T> clazz) {
+        List<AbstractController> subCon = snapSubControllers();
+        for (AbstractController abstractController : subCon) {
+            if (abstractController != null && abstractController.getClass() == clazz) {
+                return (T) abstractController;
+            }
+        }
+        return null;
+    }
+
     public boolean isManaged() {
         return managed;
     }
@@ -368,6 +379,13 @@ public class AbstractController implements SubChangeListener {
             }
         }
         return false;
+    }
+
+    public void refreshElement() {
+        ControlledElement el = getManagedElement();
+        if (el != null) {
+            el.refresh();
+        }
     }
 }
 
