@@ -1,13 +1,9 @@
 package io.gaultier.controlledandroid.control;
 
-import org.parceler.Parcel;
-
 /**
  * Created by q on 11/11/16.
  */
-
-@Parcel
-public class AbstractFragmentController extends AbstractController {
+public abstract class AbstractFragmentController extends AbstractController {
 
     //true if this fragment is nested in another fragment
     boolean nestedFragment = false;
@@ -34,4 +30,7 @@ public class AbstractFragmentController extends AbstractController {
         return 0;
     }
 
+
+    @Override
+    public abstract ControlledFragment makeElement();
 }

@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Random;
 
 import io.gaultier.controlledandroid.control.AbstractFragmentController;
+import io.gaultier.controlledandroid.control.ControlledFragment;
 
 /**
  * Created by q on 17/10/16.
@@ -25,4 +26,8 @@ public class BlankFragmentController2 extends AbstractFragmentController {
         color2 = Color.rgb(rand.nextInt(255), rand.nextInt(255), rand.nextInt(255));
     }
 
+    @Override
+    public ControlledFragment makeElement() {
+        return new BlankFragment2();
+    }
 }

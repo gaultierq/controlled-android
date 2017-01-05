@@ -21,7 +21,7 @@ import static io.gaultier.controlledandroid.control.PendingOperationType.REMOVE_
  * Created by q on 16/10/16.
  */
 
-public class AbstractController implements SubChangeListener {
+public abstract class AbstractController implements SubChangeListener {
     // getInstance all class transient
 
     static final String INVALID_CONTROLLER_ID = "0";
@@ -357,10 +357,7 @@ public class AbstractController implements SubChangeListener {
         return getManagedElement().interceptBackPressed();
     }
 
-    public ControlledElement makeElement() {
-        Assert.thrown("not implemented yet for: " + tag());
-        return null;
-    }
+    public abstract ControlledElement makeElement();
 
     //TODO: bug: when parent is a fragment, I need to call refresh to have the new fragment displayed
     //utility method to add a fragment

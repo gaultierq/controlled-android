@@ -53,9 +53,8 @@ public class ControllerManager {
         mainController = new ApplicationController();
         session = sessionId;
         mainController.setPreviousId("" + oldSessionId);
-        manageAndAssignParent(mainController, new AbstractController());
+        manageAndAssignParent(mainController, new ApplicationController());
     }
-
 
     public static void init(Context context) {
         int oldSessionId = PreferenceManager.getDefaultSharedPreferences(context).getInt("sessionId", 0);
@@ -375,6 +374,10 @@ public class ControllerManager {
 
 
     private static class ApplicationController extends AbstractController {
+        @Override
+        public ControlledElement makeElement() {
+            return null;
+        }
     }
 }
 

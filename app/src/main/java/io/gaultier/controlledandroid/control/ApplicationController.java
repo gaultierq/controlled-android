@@ -5,4 +5,8 @@ package io.gaultier.controlledandroid.control;
  */
 
 public class ApplicationController extends AbstractController {
+    @Override
+    public ControlledElement makeElement() {
+        return null;
+    }
 }
