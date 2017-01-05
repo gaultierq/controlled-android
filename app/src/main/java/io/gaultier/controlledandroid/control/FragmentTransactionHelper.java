@@ -21,7 +21,7 @@ public class FragmentTransactionHelper {
         this.parentEl = parentEl;
     }
 
-    protected void displaySub(AbstractFragmentController c) {
+    protected void add(AbstractFragmentController c) {
         ControlledElement managedElement = c.getManagedElement();
         ControlledFragment f = ((ControlledFragment) managedElement);
         FragmentTransaction trans = obtainOpenedFragmentTrans(c);

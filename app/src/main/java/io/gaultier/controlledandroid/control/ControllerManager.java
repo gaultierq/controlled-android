@@ -88,18 +88,18 @@ public class ControllerManager {
                 helper.removeManagedElement(c);
                 c.unsetPending();
             } else if (c.isAskAdd()) {
-                helper.displaySub(c);
+                helper.add(c);
                 c.unsetPending();
             }
         }
         helper.commit();
     }
 
-    public static void addFragment(ControlledFragment f, AbstractFragmentController controller, int container, AbstractController parent) {
-        controller.askAddIn(container);
-        parent.getManagedElement().getManager().manageNewFragment(f, controller, parent);
-        parent.getManagedElement().refresh();
-    }
+//    public static void addFragment(ControlledFragment f, AbstractFragmentController controller, int container, AbstractController parent) {
+//        controller.askAddIn(container);
+//        parent.getManagedElement().getManager().manageNewFragment(f, controller, parent);
+//        parent.getManagedElement().refresh();
+//    }
 
     private void attachActivity(final ControlledActivity activity) {
         if (currentActivity == null || currentActivity.get() != activity) {
@@ -291,27 +291,16 @@ public class ControllerManager {
     //}
 
 
-    public <U extends AbstractFragmentController, T extends ControlledFragment<U>> T manageNewFragment(
-            T frag, U fragmentController, AbstractController parent) {
+    public <U extends AbstractFragmentController, T extends ControlledFragment<U>> T manageNewFragment(U fragmentController, AbstractController parent) {
 
-        try {
-            Assert.ensure(!fragmentController.hasId(), "Trying to manage a controller which already as an ID");
-            manageAndAssignParent(fragmentController, parent);
+        Assert.ensure(!fragmentController.hasId(), "Trying to manage a controller which already as an ID");
+        manageAndAssignParent(fragmentController, parent);
 
-            // this is a test, to let the parent controller element find frag, and add it
-            fragmentController.setManagedElement(frag);
-
-            frag.setArguments(ControllerManager.saveController(new Bundle(), fragmentController));
-
-
-            //why null?
-            //when adding, to choose the good fragment manager, I d like to know if nested fragment
-            // this info cann be held by fragment, but it -and animations- can be usefull after killed
-            // frag.setController(null);
-            return frag;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        // this is a test, to let the parent controller element find frag, and add it
+        T fragment = (T) fragmentController.makeElement();
+        fragmentController.setManagedElement(fragment);
+        fragment.setArguments(ControllerManager.saveController(new Bundle(), fragmentController));
+        return fragment;
     }
 
     public void unmanage(AbstractController controller) {

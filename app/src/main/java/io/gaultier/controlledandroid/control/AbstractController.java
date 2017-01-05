@@ -366,9 +366,8 @@ public class AbstractController implements SubChangeListener {
     //utility method to add a fragment
     public void addFragment(AbstractFragmentController controller, int target, boolean addToBackStack, boolean nestedFragment) {
         controller.askAddIn(target, nestedFragment);
-        ControlledFragment frag = (ControlledFragment) controller.makeElement();
         controller.addToBackstack = addToBackStack;
-        getManagedElement().getManager().manageNewFragment(frag, controller, this);
+        getManagedElement().getManager().manageNewFragment(controller, this);
         notifyChange();
     }
     //TODO: try to remove
