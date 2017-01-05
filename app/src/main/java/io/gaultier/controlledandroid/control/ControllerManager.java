@@ -16,6 +16,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
@@ -78,19 +79,35 @@ public class ControllerManager {
 
         FragmentTransactionHelper helper = new FragmentTransactionHelper(parentEl);
 
+        List<AbstractFragmentController> controllersToRemove = new ArrayList<>();
+        List<AbstractFragmentController> controllersToAdd = new ArrayList<>();
         for (AbstractController sub : controller.snapSubControllers()) {
             Assert.ensure(sub instanceof AbstractFragmentController, ""+sub);
 
             AbstractFragmentController c = (AbstractFragmentController) sub;
 
             if (c.isAskRemove()) {
-                helper.removeManagedElement(c);
-                c.unsetPending();
+                controllersToRemove.add(c);
+//                helper.removeManagedElement(c);
+//                c.unsetPending();
             } else if (c.isAskAdd()) {
-                helper.add(c);
-                c.unsetPending();
+                controllersToAdd.add(c);
+//                helper.add(c);
+//                c.unsetPending();
             }
         }
+
+        for (AbstractFragmentController rm : controllersToRemove) {
+            helper.removeManagedElement(rm);
+            rm.unsetPending();
+        }
+        for (AbstractFragmentController ad : controllersToAdd) {
+            helper.add(ad);
+            ad.unsetPending();
+        }
+
+
+
         helper.commit();
     }
 
@@ -292,8 +309,11 @@ public class ControllerManager {
 
     public <U extends AbstractFragmentController, T extends ControlledFragment<U>> T manageNewFragment(U fragmentController, AbstractController parent) {
 
-        Assert.ensure(!fragmentController.hasId(), "Trying to manage a controller which already as an ID");
-        manageAndAssignParent(fragmentController, parent);
+//        Assert.ensure(!fragmentController.hasId(), "Trying to manage a controller which already as an ID");
+        //TODO: stink
+        if (!fragmentController.hasId()) {
+            manageAndAssignParent(fragmentController, parent);
+        }
 
         // this is a test, to let the parent controller element find frag, and add it
         T fragment = (T) fragmentController.makeElement();

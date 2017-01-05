@@ -32,9 +32,10 @@ public class FragmentTransactionHelper {
         makeAnimation(trans);
 
 
-        trans.add(c.getAddIn(), f, f.tag(c.getControllerId()));
+        String tag = f.tag(c.getControllerId());
+        trans.add(c.getAddIn(), f, tag);
         if (c.addToBackstack) {
-            trans.addToBackStack(f.tag(c.getControllerId()));
+            trans.addToBackStack(tag);
         }
     }
 
@@ -51,7 +52,8 @@ public class FragmentTransactionHelper {
             trans.remove(f);
             trans.addToBackStack(f.tag(child.getControllerId()));
 
-        } else if (child.isAskBack()) {
+        }
+        else if (child.isAskBack()) {
             child.getManagedElement().getManager().unmanage(child);
             //this is completely hacky. TODO: die
             //remove all childs
