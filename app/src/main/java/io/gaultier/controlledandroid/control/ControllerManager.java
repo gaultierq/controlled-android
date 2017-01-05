@@ -309,7 +309,6 @@ public class ControllerManager {
 
     public <U extends AbstractFragmentController, T extends ControlledFragment<U>> T manageNewFragment(U fragmentController, AbstractController parent) {
 
-//        Assert.ensure(!fragmentController.hasId(), "Trying to manage a controller which already as an ID");
         //TODO: stink
         if (!fragmentController.hasId()) {
             manageAndAssignParent(fragmentController, parent);
