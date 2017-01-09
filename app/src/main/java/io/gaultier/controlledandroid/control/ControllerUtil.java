@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 public class ControllerUtil {
 
-    public static <T extends AbstractController> void exectuteWhenPermitted(
+    public static <T extends AbstractActivityController> void exectuteWhenPermitted(
             final ControlledElement<T> element,
             final String thePermission,
             final OnPermitted onActionPermitted,

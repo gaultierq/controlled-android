@@ -8,7 +8,6 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 
 import org.parceler.Parcels;
 
@@ -43,7 +42,6 @@ public class ControllerManager {
     private final AtomicInteger counter = new AtomicInteger(-1);
 
     private final int session;
-    private FragmentManager.OnBackStackChangedListener listener;
 
     private final AbstractController mainController;
 
@@ -69,7 +67,7 @@ public class ControllerManager {
         if (INSTANCE == null) {
             throw new RuntimeException("ControllerManager not inited");
         }
-        INSTANCE.attachActivity(activity);
+
         return INSTANCE;
     }
 
@@ -105,34 +103,7 @@ public class ControllerManager {
             helper.add(ad);
             ad.unsetPending();
         }
-
-
-
         helper.commit();
-    }
-
-//    public static void addFragment(ControlledFragment f, AbstractFragmentController controller, int container, AbstractController parent) {
-//        controller.askAddIn(container);
-//        parent.getManagedElement().getManager().manageNewFragment(f, controller, parent);
-//        parent.getManagedElement().refresh();
-//    }
-
-    private void attachActivity(final ControlledActivity activity) {
-        if (currentActivity == null || currentActivity.get() != activity) {
-            FragmentManager supportFragmentManager = activity.getSupportFragmentManager();
-
-            if (listener != null) {
-                supportFragmentManager.removeOnBackStackChangedListener(listener);
-            }
-            listener = new FragmentManager.OnBackStackChangedListener() {
-                public void onBackStackChanged() {
-                    Log.d(TAG, "On back stack change");
-                    //cleanupInternal(activity.getController(), activity.getSupportFragmentManager().getFragments());
-                }
-            };
-            supportFragmentManager.addOnBackStackChangedListener(listener);
-        }
-
     }
 
     @NonNull
@@ -273,39 +244,36 @@ public class ControllerManager {
     }
 
 
-    public <F extends ControlledActivity, C extends AbstractController, T extends ControlledActivity<C>> void startActivity(
+    public <F extends ControlledActivity, C extends AbstractActivityController, T extends ControlledActivity<C>>
+    void startActivity(
             F fromActivity,
             Class<T> toActivityClass,
-            C toController
-
-    ) {
+            C to,
+            int requestCode) {
 
         Intent intent = new Intent(fromActivity, toActivityClass);
 
-        ControllerManager manager = getInstance(fromActivity);
-        AbstractController fromController = fromActivity.getController();
-        Assert.ensure(!fromController.isOrphan(), "no parent for :" + fromController);
-        manager.manageAndAssignParent(toController, fromController.getParentController());
-        intent.putExtras(ControllerManager.saveController(new Bundle(), toController));
-        fromActivity.startActivity(intent);
-        fromActivity.overridePendingTransition(toController.animation[0], fromController.animation[1]);
+        AbstractController from = fromActivity.getController();
+        AbstractController toParent = from.getParentController();
+
+
+        manageAndAssignParent(to, toParent);
+        intent.putExtras(ControllerManager.saveController(new Bundle(), to));
+
+        if (requestCode > 0 ) {
+            fromActivity.startActivityForResult(intent, requestCode);
+        }
+        else {
+            fromActivity.startActivity(intent);
+        }
+
+        int enterAnim = to.animation[0];
+        int exitAnim = from.animation[1];
+
+        if (enterAnim > 0 || exitAnim > 0) {
+            fromActivity.overridePendingTransition(enterAnim, exitAnim);
+        }
     }
-
-    //private boolean cleanup(AbstractController controller, List<Fragment> frags) {
-    //    Set<AbstractController> subcontrollers = new HashSet<>(controller.subControllers);
-    //    boolean cleaned = false;
-    //    for (AbstractController sc : subcontrollers) {
-    //        ControlledElement e = sc.getManagedElement();
-    //        if (e instanceof ControlledFragment && !frags.contains(e)) {
-    //            Log.e(TAG, sc, "has been cleaned");
-    //            this.unmanage(sc);
-    //            cleaned = true;
-    //        }
-    //        cleaned |= cleanup(sc, frags);
-    //    }
-    //    return cleaned;
-    //}
-
 
     public <U extends AbstractFragmentController, T extends ControlledFragment<U>> T manageNewFragment(U fragmentController, AbstractController parent) {
 
@@ -389,8 +357,6 @@ public class ControllerManager {
     AbstractController getMainController() {
         return mainController;
     }
-
-
 
     private static class ApplicationController extends AbstractController {
         @Override

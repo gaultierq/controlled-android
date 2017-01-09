@@ -153,6 +153,10 @@ public abstract class AbstractController implements SubChangeListener {
         return managedElement;
     }
 
+    public ControlledActivity getActivity() {
+        return managedElement == null ? null : managedElement.getControlledActivity();
+    }
+
     <T extends AbstractController> void setManagedElement(ControlledElement<T> managedElement) {
         Assert.ensure(isManaged());
         this.managedElement = managedElement;
@@ -311,7 +315,7 @@ public abstract class AbstractController implements SubChangeListener {
         boolean onActivityResult(ControlledElement activity, int requestCode, int resultCode, Intent data);
     }
 
-    public interface OnRequestPermissionsResultCallback<T extends AbstractController> {
+    public interface OnRequestPermissionsResultCallback<T extends AbstractActivityController> {
 
         void onRequestPermissionsResult(ControlledActivity<T> activity, int requestCode, @NonNull String[] permissions,
                                                @NonNull int[] grantResults);
