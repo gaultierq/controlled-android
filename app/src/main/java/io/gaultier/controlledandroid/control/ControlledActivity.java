@@ -141,11 +141,17 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
         return getSupportFragmentManager();
     }
 
-    public <T extends AbstractActivityController, A extends ControlledActivity<T>> void launchActivity(T ctrl, Class<A> activityClass) {
-        getManager().startActivity(this, activityClass, ctrl, 0);
+    public <L extends AbstractActivityController> void launchActivity(L ctrl) {
+
+        Intent intent = getManager().makeIntent(this, ctrl, getController().getParentController());
+
+        startActivity(intent);
     }
 
-    public <T extends AbstractActivityController, A extends ControlledActivity<T>> void launchActivityForResult(T ctrl, Class<A> activityClass, int requestCode) {
-        getManager().startActivity(this, activityClass, ctrl, requestCode);
+    public <L extends AbstractActivityController> void launchActivityForResult(L ctrl, int requestCode) {
+
+        Intent intent = getManager().makeIntent(this, ctrl, getController().getParentController());
+
+        startActivityForResult(intent, requestCode);
     }
 }

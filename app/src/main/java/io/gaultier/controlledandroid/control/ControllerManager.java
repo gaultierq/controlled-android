@@ -80,19 +80,16 @@ public class ControllerManager {
         List<AbstractFragmentController> controllersToRemove = new ArrayList<>();
         List<AbstractFragmentController> controllersToAdd = new ArrayList<>();
         for (AbstractController sub : controller.snapSubControllers()) {
-            Assert.ensure(sub instanceof AbstractFragmentController, ""+sub);
+            if (sub instanceof AbstractFragmentController) {
+                AbstractFragmentController c = (AbstractFragmentController) sub;
 
-            AbstractFragmentController c = (AbstractFragmentController) sub;
-
-            if (c.isAskRemove()) {
-                controllersToRemove.add(c);
-//                helper.removeManagedElement(c);
-//                c.unsetPending();
-            } else if (c.isAskAdd()) {
-                controllersToAdd.add(c);
-//                helper.add(c);
-//                c.unsetPending();
+                if (c.isAskRemove()) {
+                    controllersToRemove.add(c);
+                } else if (c.isAskAdd()) {
+                    controllersToAdd.add(c);
+                }
             }
+
         }
 
         for (AbstractFragmentController rm : controllersToRemove) {
@@ -244,31 +241,17 @@ public class ControllerManager {
     }
 
 
-    public <F extends ControlledActivity, C extends AbstractActivityController, T extends ControlledActivity<C>>
-    void startActivity(
-            F fromActivity,
-            Class<T> toActivityClass,
-            C to,
-            int requestCode) {
-
-        Intent intent = new Intent(fromActivity, toActivityClass);
-
-        AbstractController from = fromActivity.getController();
-        AbstractController toParent = from.getParentController();
-
-
+    @NonNull
+    protected <F extends ControlledActivity, C extends AbstractActivityController> Intent makeIntent(Context from, C to, AbstractController toParent) {
+        Intent intent = new Intent(from, to.makeElement().getClass());
         manageAndAssignParent(to, toParent);
         intent.putExtras(ControllerManager.saveController(new Bundle(), to));
+        return intent;
+    }
 
-        if (requestCode > 0 ) {
-            fromActivity.startActivityForResult(intent, requestCode);
-        }
-        else {
-            fromActivity.startActivity(intent);
-        }
-
-        int enterAnim = to.animation[0];
-        int exitAnim = from.animation[1];
+    protected <F extends ControlledActivity, C extends AbstractActivityController> void overridePendingTransition(F fromActivity, int i, int i1) {
+        int enterAnim = i;
+        int exitAnim = i1;
 
         if (enterAnim > 0 || exitAnim > 0) {
             fromActivity.overridePendingTransition(enterAnim, exitAnim);
