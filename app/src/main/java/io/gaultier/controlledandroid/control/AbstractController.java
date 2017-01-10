@@ -315,9 +315,9 @@ public abstract class AbstractController implements SubChangeListener {
         boolean onActivityResult(ControlledElement activity, int requestCode, int resultCode, Intent data);
     }
 
-    public interface OnRequestPermissionsResultCallback<T extends AbstractActivityController> {
+    public interface OnRequestPermissionsResultCallback {
 
-        void onRequestPermissionsResult(ControlledActivity<T> activity, int requestCode, @NonNull String[] permissions,
+        void onRequestPermissionsResult(ControlledActivity activity, int requestCode, @NonNull String[] permissions,
                                                @NonNull int[] grantResults);
     }
 

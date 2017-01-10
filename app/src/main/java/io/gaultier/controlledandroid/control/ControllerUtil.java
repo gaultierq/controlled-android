@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 public class ControllerUtil {
 
-    public static <T extends AbstractActivityController> void exectuteWhenPermitted(
+    public static <T extends AbstractController> void exectuteWhenPermitted(
             final ControlledElement<T> element,
             final String thePermission,
             final OnPermitted onActionPermitted,
@@ -24,10 +24,10 @@ public class ControllerUtil {
             final int deniedToast) {
 
 
-        element.getController().addOnRequestPermissionsResultCallback(new AbstractController.OnRequestPermissionsResultCallback<T>() {
+        element.getController().addOnRequestPermissionsResultCallback(new AbstractController.OnRequestPermissionsResultCallback() {
             @Override
             public void onRequestPermissionsResult(
-                    ControlledActivity<T> a,
+                    ControlledActivity a,
                     int requestCode,
                     @NonNull String[] permissions,
                     @NonNull int[] grantResults) {
