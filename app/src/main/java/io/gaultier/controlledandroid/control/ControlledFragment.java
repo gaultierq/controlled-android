@@ -13,8 +13,6 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import io.gaultier.controlledandroid.util.Assert;
 import io.gaultier.controlledandroid.util.Log;
 
@@ -64,33 +62,20 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
     protected void refresh(View v) {
     }
 
-    AtomicBoolean refreshing = new AtomicBoolean();
-
     private void refreshInternal(final View view) {
         //exemple: refreshing in createView
         if (view != null && isAdded()) {
+            AbstractController.update(
+                    getController(),
+                    new Runnable() {
 
-            if (getController() == null) {
-                Log.w(tag(), "skipping fragment refreshing with null controller");
-            }
-            else if (refreshing.compareAndSet(false, true)) {
-
-                activity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.v(tag(), "refreshing");
-                        ControllerManager.refreshPendings(getController());
-
-                        refresh(view);
-                        refreshing.set(false);
-                    }
-                });
-            }
-            else {
-                Log.w(tag(), "Already refreshing. Skipping nested refresh.");
-            }
-
-        } else {
+                        @Override
+                        public void run() {
+                            refresh(view);
+                        }
+                    });
+        }
+        else {
             Log.w(tag(), "Skipping a refresh as the fragment is not added.");
         }
     }

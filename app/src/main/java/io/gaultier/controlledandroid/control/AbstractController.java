@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.gaultier.controlledandroid.util.Assert;
 import io.gaultier.controlledandroid.util.Log;
@@ -27,6 +28,7 @@ public abstract class AbstractController implements SubChangeListener {
     static final String INVALID_CONTROLLER_ID = "0";
     static final String CONTROLLER_ID = "CONTROLLER_ID";
     static final String CONTROLLER = "CONTROLLER";
+    public static final String TAG = "AbstractController";
 
 
     @Transient
@@ -53,6 +55,8 @@ public abstract class AbstractController implements SubChangeListener {
 
     boolean isInitialized;
 
+    AtomicBoolean refreshing = new AtomicBoolean();
+
     protected int[] animation = new int[4];
 
     @Transient
@@ -70,6 +74,29 @@ public abstract class AbstractController implements SubChangeListener {
 
     @Transient
     List<OnResumeCallback> onResumeCallbackCallbacks = new ArrayList<>();
+
+    static <T extends AbstractController> void update(final T controller, final Runnable runMe) {
+        if (controller == null) {
+            Log.w(TAG, "skipping refresh: null controller");
+        }
+        else if (controller.refreshing.compareAndSet(false, true)) {
+
+            controller.getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.v(controller.tag(), "refreshing");
+                    ControllerManager.refreshPendings(controller);
+
+                    runMe.run();
+
+                    controller.refreshing.set(false);
+                }
+            });
+        }
+        else {
+            Log.w(controller.tag(), "Already refreshing. Skipping nested refresh.");
+        }
+    }
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

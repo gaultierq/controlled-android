@@ -46,8 +46,15 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
     }
 
     public final void refresh() {
-        ControllerManager.refreshPendings(getController());
-        refreshView();
+        AbstractController.update(
+                getController(),
+                new Runnable() {
+
+                    @Override
+                    public void run() {
+                        refreshView();
+                    }
+                });
     }
 
     public T getController() {
