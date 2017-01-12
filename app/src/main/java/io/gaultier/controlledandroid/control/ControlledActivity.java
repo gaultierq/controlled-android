@@ -128,7 +128,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
     }
 
     @Override
-    public void onBackPressed() {
+    public final void onBackPressed() {
         if (!getController().onBackPressed()) {
             super.onBackPressed();
         }

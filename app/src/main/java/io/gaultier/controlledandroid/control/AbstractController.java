@@ -386,7 +386,8 @@ public abstract class AbstractController implements SubChangeListener {
             }
         }
 
-        return getManagedElement().interceptBackPressed();
+        ControlledElement element = getManagedElement();
+        return element.interceptBackPressed();
     }
 
     public abstract ControlledElement makeElement();
