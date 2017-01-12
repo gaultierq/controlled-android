@@ -2,6 +2,7 @@ package io.gaultier.controlledandroid.control;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.StyleRes;
 
 import org.parceler.Transient;
 
@@ -413,6 +414,33 @@ public abstract class AbstractController implements SubChangeListener {
         if (el != null) {
             el.refresh();
         }
+    }
+
+
+
+    //theme override
+    protected int overrideTheme;
+
+
+
+    public int callGetOverrideTheme() {
+        return overrideTheme > 0 ? overrideTheme : callGetOverrideTheme(getParentController());
+    }
+
+    private static int callGetOverrideTheme(AbstractController p) {
+        if (p != null) {
+            return p.callGetOverrideTheme();
+        }
+        return 0;
+    }
+
+    public int getOverrideTheme() {
+        return overrideTheme;
+    }
+
+    public AbstractController setOverrideTheme(@StyleRes int overrideTheme) {
+        this.overrideTheme = overrideTheme;
+        return this;
     }
 }
 

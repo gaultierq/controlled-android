@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 
 import io.gaultier.controlledandroid.util.Assert;
 import io.gaultier.controlledandroid.util.Log;
@@ -21,11 +22,18 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
     private ControllerAccessor<T> ctrlAccessor = new ControllerAccessor<>();
 
+    private LayoutInflater inflater;
+
     // notes: android views do not have their savedStated restored yet (wait on resume)
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
 
         ctrlAccessor.obtain(this, savedInstanceState, getIntent().getExtras());
+
+        int theme = getController().getOverrideTheme();
+        if (theme > 0) {
+            setTheme(theme);
+        }
 
         super.onCreate(savedInstanceState);
 
