@@ -54,6 +54,7 @@ public abstract class AbstractController implements SubChangeListener {
 
     boolean managed;
 
+    @Transient
     boolean isInitialized;
 
     AtomicBoolean refreshing = new AtomicBoolean();
