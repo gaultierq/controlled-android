@@ -202,18 +202,19 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
         return getFragmentManager();
     }
 
-    //HACK regarding the thread:
-    // http://stackoverflow.com/questions/14900738/nested-fragments-disappear-during-transition-animation
-    private static final Animation dummyAnimation = new AlphaAnimation(1, 1);
-
-    static {
-        dummyAnimation.setDuration(500);
+    @NonNull
+    private static AlphaAnimation createAnimation() {
+        AlphaAnimation alphaAnimation = new AlphaAnimation(1, 1);
+        alphaAnimation.setDuration(500);
+        return alphaAnimation;
     }
 
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
         if (!enter && getParentFragment() != null && nextAnim <= 0) {
-            return dummyAnimation;
+            //HACK regarding the thread:
+            // http://stackoverflow.com/questions/14900738/nested-fragments-disappear-during-transition-animation
+            return createAnimation();
         }
         return super.onCreateAnimation(transit, enter, nextAnim);
     }
