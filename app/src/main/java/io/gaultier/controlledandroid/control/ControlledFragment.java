@@ -138,9 +138,8 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
         return getClass().getSimpleName() + "-" + id;
     }
 
-    @Override
     public ControllerManager getManager() {
-        return ((ControlledActivity) getActivity()).getManager();
+        return ControllerManager.getInstance(getControlledActivity());
     }
 
     public void setController(T controller) {

@@ -398,7 +398,7 @@ public abstract class AbstractController implements SubChangeListener {
     public void addFragment(AbstractFragmentController controller, int target, boolean addToBackStack, boolean nestedFragment) {
         controller.askAddIn(target, nestedFragment);
         controller.addToBackstack = addToBackStack;
-        getManagedElement().getManager().manageNewFragment(controller, this);
+        ControllerManager.getInstance(getManagedElement().getControlledActivity()).manageNewFragment(controller, this);
         notifyChange();
     }
     //TODO: try to remove

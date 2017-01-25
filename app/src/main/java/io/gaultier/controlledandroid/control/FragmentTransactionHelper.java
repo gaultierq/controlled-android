@@ -54,7 +54,8 @@ public class FragmentTransactionHelper {
 
         }
         else if (child.isAskBack()) {
-            child.getManagedElement().getManager().unmanage(child);
+            ControllerManager manager = ControllerManager.getInstance(child.getManagedElement().getControlledActivity());
+            manager.unmanage(child);
             //this is completely hacky. TODO: die
             //remove all childs
             FragmentManager cm = f.getChildFragmentManager();

@@ -105,7 +105,7 @@ public class ControllerManager {
 
     @NonNull
     static <T extends AbstractController> T obtainIt(ControlledElement<T> element, Bundle savedInstanceState, Bundle arguments) {
-        ControllerManager manager = element.getManager();
+        ControllerManager manager = ControllerManager.getInstance(element.getControlledActivity());
         String controllerId;
         T controller;
         if (isValidId(controllerId = readControllerId(savedInstanceState))) {
