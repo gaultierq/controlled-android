@@ -16,7 +16,8 @@ import static io.gaultier.controlledandroid.control.AbstractController.INVALID_C
  * Created by q on 16/10/16.
  */
 
-public abstract class ControlledActivity<T extends AbstractActivityController> extends AppCompatActivity implements ControlledElement<T> {
+public abstract class ControlledActivity<T extends AbstractActivityController> extends AppCompatActivity
+        implements ControlledElement<T>, ActivityLauncher {
 
     private static final String TAG = "ControlledActivity";
 
@@ -157,6 +158,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
         return getSupportFragmentManager();
     }
 
+    @Override
     public <L extends AbstractActivityController> void launchActivity(L ctrl) {
 
         Intent intent = getManager().makeIntent(this, ctrl, getController().getParentController());
@@ -164,6 +166,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
         startActivity(intent);
     }
 
+    @Override
     public <L extends AbstractActivityController> void launchActivityForResult(L ctrl, int requestCode) {
 
         Intent intent = getManager().makeIntent(this, ctrl, getController().getParentController());

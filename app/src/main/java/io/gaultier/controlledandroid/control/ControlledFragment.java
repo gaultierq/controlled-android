@@ -22,7 +22,8 @@ import static android.content.ContentValues.TAG;
  * Created by q on 16/10/16.
  */
 
-public abstract class ControlledFragment<T extends AbstractFragmentController> extends Fragment implements ControlledElement<T> {
+public abstract class ControlledFragment<T extends AbstractFragmentController> extends Fragment
+        implements ControlledElement<T>, ActivityLauncher  {
 
 
     private ControllerAccessor<T> ctrlAccessor = new ControllerAccessor<>();
