@@ -50,6 +50,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
         // nothing by default
     }
 
+    //TODO: protected
     public void refreshView() {
     }
 
