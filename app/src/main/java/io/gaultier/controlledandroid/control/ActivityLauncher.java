@@ -5,8 +5,4 @@ package io.gaultier.controlledandroid.control;
  */
 
 public interface ActivityLauncher {
-
-    <L extends AbstractActivityController> void launchActivity(L ctrl);
-
-    <L extends AbstractActivityController> void launchActivityForResult(L ctrl, int requestCode);
 }

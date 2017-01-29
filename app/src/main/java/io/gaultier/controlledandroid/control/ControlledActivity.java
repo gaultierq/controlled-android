@@ -17,7 +17,7 @@ import static io.gaultier.controlledandroid.control.AbstractController.INVALID_C
  */
 
 public abstract class ControlledActivity<T extends AbstractActivityController> extends AppCompatActivity
-        implements ControlledElement<T>, ActivityLauncher {
+        implements ControlledElement<T> {
 
     private static final String TAG = "ControlledActivity";
 
