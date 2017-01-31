@@ -105,8 +105,11 @@ public abstract class AbstractController {
     }
 
     public void onResume() {
+
+        //FIXME: remove !
         reset();
 
+        //FIXME: remove !
         for (int i = onResumeCallbackCallbacks.size(); i --> 0;) {
             OnResumeCallback r = onResumeCallbackCallbacks.get(i);
             r.onResume();
@@ -311,16 +314,22 @@ public abstract class AbstractController {
     //notify change to parent controller
     //TODO: protected
     public final void notifyChange() {
-        publishEvent(new ControllerStructureEvent(this));
+        publishEvent(new ControllerStructureEvent());
     }
 
 
     public final void publishEvent(ControllerEvent event) {
+        Assert.ensure(event.getPublisher() == null);
+        event.setPublisher(this);
+        publishEventInternal(event);
+    }
+
+    private void publishEventInternal(ControllerEvent event) {
         AbstractController p = getParentController();
         if (p != null) {
             boolean consumed = p.onEventInternal(event);
             if (!consumed) {
-                p.publishEvent(event);
+                p.publishEventInternal(event);
             }
         }
     }
@@ -330,7 +339,7 @@ public abstract class AbstractController {
     private boolean onEventInternal(ControllerEvent event) {
         //internal stuff
         if (event instanceof ControllerStructureEvent) {
-            getManagedElement().refresh();
+            refreshElement();
             return false;
         }
 

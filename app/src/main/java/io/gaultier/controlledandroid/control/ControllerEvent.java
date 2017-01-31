@@ -6,13 +6,16 @@ package io.gaultier.controlledandroid.control;
 
 public class ControllerEvent {
 
-    private AbstractController subcontroller;
+    private AbstractController publisher;
 
-    public ControllerEvent(AbstractController subcontroller) {
-        this.subcontroller = subcontroller;
+    ControllerEvent() {
     }
 
-    public AbstractController getSubcontroller() {
-        return subcontroller;
+    public AbstractController getPublisher() {
+        return publisher;
+    }
+
+    void setPublisher(AbstractController publisher) {
+        this.publisher = publisher;
     }
 }
