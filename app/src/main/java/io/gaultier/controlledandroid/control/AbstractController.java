@@ -77,6 +77,9 @@ public abstract class AbstractController implements SubChangeListener {
     @Transient
     List<OnResumeCallback> onResumeCallbackCallbacks = new ArrayList<>();
 
+    //theme override
+    protected int overrideTheme;
+
     static <T extends AbstractController> void update(final T controller, final Runnable runMe) {
         if (controller == null) {
             Log.w(TAG, "skipping refresh: null controller");
@@ -153,6 +156,17 @@ public abstract class AbstractController implements SubChangeListener {
         for (AbstractController abstractController : subCon) {
             if (abstractController != null && abstractController.getClass() == clazz) {
                 return (T) abstractController;
+            }
+        }
+        return null;
+    }
+
+    //return the first matching subcontroller
+    public <T extends AbstractController> T getSubController(String subId) {
+        List<AbstractController> subCon = snapSubControllers();
+        for (AbstractController sub : subCon) {
+            if (sub != null && subId.equals(sub.getControllerId())) {
+                return (T) sub;
             }
         }
         return null;
@@ -304,11 +318,13 @@ public abstract class AbstractController implements SubChangeListener {
     }
 
     //notify change to parent controller
+    //TODO: protected
     public final void notifyChange() {
         AbstractController p = getParentController();
         if (p != null) {
-            p.onSubChangeInternal(this);
+            p.onSubChangeInternal(new ControllerEvent(this));
 
+            //TODO: rm
             ControlledElement managedEl = p.getManagedElement();
             if (managedEl != null) {
                 p.getManagedElement().refresh();
@@ -318,15 +334,15 @@ public abstract class AbstractController implements SubChangeListener {
     }
 
 
-    // one of my sub-controller tells me to check something
+    // one of my sub-controller is notifying me
     @Override
-    public void onSubChange(AbstractController subController) {
+    public void onSubEvent(ControllerEvent event) {
 
     }
 
-    private void onSubChangeInternal(AbstractController subController) {
+    private void onSubChangeInternal(ControllerEvent subController) {
         for (SubChangeListener listener : snapSubListeners()) {
-            listener.onSubChange(subController);
+            listener.onSubEvent(subController);
         }
     }
 
@@ -334,6 +350,7 @@ public abstract class AbstractController implements SubChangeListener {
         return new LinkedHashSet<>(subChangeListeners);
     }
 
+    //TODO: rm
     public boolean addSubListeners(SubChangeListener listener) {
         return subChangeListeners.add(listener);
     }
@@ -417,12 +434,6 @@ public abstract class AbstractController implements SubChangeListener {
             el.refresh();
         }
     }
-
-
-
-    //theme override
-    protected int overrideTheme;
-
 
 
     public int callGetOverrideTheme() {

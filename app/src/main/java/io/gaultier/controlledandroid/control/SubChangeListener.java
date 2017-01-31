@@ -6,5 +6,5 @@ package io.gaultier.controlledandroid.control;
 public interface SubChangeListener {
 
     // one of my sub-controller tells me to check something
-    void onSubChange(AbstractController subcontroller);
+    void onSubEvent(ControllerEvent event);
 }
