@@ -7,8 +7,6 @@ import android.support.annotation.StyleRes;
 import org.parceler.Transient;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -64,9 +62,6 @@ public abstract class AbstractController implements SubChangeListener {
     @Transient
     PendingOperation pendingOperation;
 
-
-    @Transient
-    private Collection<SubChangeListener> subChangeListeners = new LinkedHashSet<>();
 
     @Transient
     List<OnActivityResultListener> activityResultCallbacks = new ArrayList<>();
@@ -126,7 +121,6 @@ public abstract class AbstractController implements SubChangeListener {
     }
 
     public AbstractController() {
-        subChangeListeners.add(this);
     }
 
     public String getControllerId() {
@@ -322,7 +316,7 @@ public abstract class AbstractController implements SubChangeListener {
     public final void notifyChange() {
         AbstractController p = getParentController();
         if (p != null) {
-            p.onSubChangeInternal(new ControllerEvent(this));
+            p.onSubEvent(new ControllerEvent(this));
 
             //TODO: rm
             ControlledElement managedEl = p.getManagedElement();
@@ -340,21 +334,6 @@ public abstract class AbstractController implements SubChangeListener {
 
     }
 
-    private void onSubChangeInternal(ControllerEvent subController) {
-        for (SubChangeListener listener : snapSubListeners()) {
-            listener.onSubEvent(subController);
-        }
-    }
-
-    private Collection<SubChangeListener> snapSubListeners() {
-        return new LinkedHashSet<>(subChangeListeners);
-    }
-
-    //TODO: rm
-    public boolean addSubListeners(SubChangeListener listener) {
-        return subChangeListeners.add(listener);
-    }
-
 
     public interface OnActivityResultListener {
 
@@ -364,7 +343,7 @@ public abstract class AbstractController implements SubChangeListener {
     public interface OnRequestPermissionsResultCallback {
 
         void onRequestPermissionsResult(ControlledActivity activity, int requestCode, @NonNull String[] permissions,
-                                               @NonNull int[] grantResults);
+                                        @NonNull int[] grantResults);
     }
 
     public interface OnResumeCallback<T extends AbstractController> {

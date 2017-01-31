@@ -48,10 +48,10 @@ public abstract class FragmentImagePickerImpl extends ImagePickerImpl {
 
     public abstract void onImage(File imageUri);
 
-    public final void provideImage(ControlledElement fragment) {
+    public final void provideImage(ControlledElement element) {
         imageClient = new ImagePickerClientParcelable();
         imageClient.setId(UNIQ_CLIENT_ID);
-        provideImage(fragment, imageClient);
+        provideImage(element, imageClient);
     }
 
     public void onRequestPermissionsResult(ControlledElement fragment, int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

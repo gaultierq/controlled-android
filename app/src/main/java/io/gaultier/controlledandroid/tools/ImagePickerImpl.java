@@ -129,9 +129,6 @@ public abstract class ImagePickerImpl {
         switch (requestCode) {
             case REQUEST_GALLERY_PHOTO:
                 ok = resultCode == Activity.RESULT_OK && copyToTempFile(activity.getControlledActivity(), data.getData());
-//                if (ok) {
-//                    client.setUri(getPath(activity, data.getData()));
-//                }
                 break;
             case REQUEST_TAKE_PHOTO:
                 ok = resultCode == Activity.RESULT_OK;
