@@ -21,14 +21,13 @@ import static io.gaultier.controlledandroid.control.PendingOperationType.REMOVE_
  * Created by q on 16/10/16.
  */
 
-public abstract class AbstractController implements SubChangeListener {
+public abstract class AbstractController {
     // getInstance all class transient
 
     static final String INVALID_CONTROLLER_ID = "0";
     static final String CONTROLLER_ID = "CONTROLLER_ID";
     static final String CONTROLLER = "CONTROLLER";
     public static final String TAG = "AbstractController";
-
 
     @Transient
     private String controllerId = INVALID_CONTROLLER_ID;
@@ -218,9 +217,7 @@ public abstract class AbstractController implements SubChangeListener {
 
     // first time this controller will be displayed
     protected void init() {
-
     }
-
 
     AbstractController getParentController() {
         return parentController;
@@ -314,24 +311,36 @@ public abstract class AbstractController implements SubChangeListener {
     //notify change to parent controller
     //TODO: protected
     public final void notifyChange() {
-        AbstractController p = getParentController();
-        if (p != null) {
-            p.onSubEvent(new ControllerEvent(this));
-
-            //TODO: rm
-            ControlledElement managedEl = p.getManagedElement();
-            if (managedEl != null) {
-                p.getManagedElement().refresh();
-            }
-            p.notifyChange();
-        }
+        publishEvent(new ControllerStructureEvent(this));
     }
 
 
-    // one of my sub-controller is notifying me
-    @Override
-    public void onSubEvent(ControllerEvent event) {
+    public final void publishEvent(ControllerEvent event) {
+        AbstractController p = getParentController();
+        if (p != null) {
+            boolean consumed = p.onEventInternal(event);
+            if (!consumed) {
+                p.publishEvent(event);
+            }
+        }
+    }
 
+    // one of my sub-controller is notifying me
+    //return: consumed
+    private boolean onEventInternal(ControllerEvent event) {
+        //internal stuff
+        if (event instanceof ControllerStructureEvent) {
+            getManagedElement().refresh();
+            return false;
+        }
+
+        return onEvent(event);
+    }
+
+    // one of my sub-controller is notifying me
+    //return: consumed
+    protected boolean onEvent(ControllerEvent event) {
+        return false;
     }
 
 
@@ -342,8 +351,11 @@ public abstract class AbstractController implements SubChangeListener {
 
     public interface OnRequestPermissionsResultCallback {
 
-        void onRequestPermissionsResult(ControlledActivity activity, int requestCode, @NonNull String[] permissions,
-                                        @NonNull int[] grantResults);
+        void onRequestPermissionsResult(
+                ControlledActivity activity,
+                int requestCode,
+                @NonNull String[] permissions,
+                @NonNull int[] grantResults);
     }
 
     public interface OnResumeCallback<T extends AbstractController> {
@@ -394,17 +406,9 @@ public abstract class AbstractController implements SubChangeListener {
     public void addFragment(AbstractFragmentController controller, int target, boolean addToBackStack, boolean nestedFragment) {
         controller.askAddIn(target, nestedFragment);
         controller.addToBackstack = addToBackStack;
-        ControllerManager.getInstance(getManagedElement().getControlledActivity()).manageNewFragment(controller, this);
+        ControllerManager instance = ControllerManager.getInstance(getManagedElement().getControlledActivity());
+        instance.manageNewFragment(controller, this);
         notifyChange();
-    }
-    //TODO: try to remove
-    public <T extends AbstractController> boolean isDisplaying(Class<T> clazz) {
-        for (AbstractController sub : snapSubControllers()) {
-            if (sub.tag().equals(clazz.getSimpleName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public void refreshElement() {

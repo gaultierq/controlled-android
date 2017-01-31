@@ -8,7 +8,7 @@ public class ControllerEvent {
 
     private AbstractController subcontroller;
 
-    ControllerEvent(AbstractController subcontroller) {
+    public ControllerEvent(AbstractController subcontroller) {
         this.subcontroller = subcontroller;
     }
 
