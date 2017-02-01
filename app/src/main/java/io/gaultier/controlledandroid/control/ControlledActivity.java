@@ -173,4 +173,8 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
         startActivityForResult(intent, requestCode);
     }
+
+    public String tag() {
+        return getClass().getSimpleName();
+    }
 }
