@@ -8,8 +8,6 @@ public class ControllerEvent {
 
     private AbstractController publisher;
 
-    ControllerEvent() {
-    }
 
     public AbstractController getPublisher() {
         return publisher;
