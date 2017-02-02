@@ -5,4 +5,8 @@ package io.gaultier.controlledandroid.control;
  */
 
 public class OnResumeEvent extends ControllerEvent {
+
+    public OnResumeEvent(AbstractController publisher) {
+        super(publisher);
+    }
 }

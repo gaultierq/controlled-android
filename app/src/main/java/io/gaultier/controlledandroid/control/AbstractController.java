@@ -6,6 +6,7 @@ import android.support.annotation.StyleRes;
 
 import org.parceler.Transient;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -231,7 +232,7 @@ public abstract class AbstractController {
             Log.w(tag(), "Assigning new parent on", this, parentController, "<-", p);
         }
         this.parentController = p;
-        if (p != null) {
+        if (parentController != null) {
             p.subControllers.add(this);
             parentControllerId = p.getControllerId();
         }
@@ -314,29 +315,48 @@ public abstract class AbstractController {
     //notify change to parent controller
     //TODO: protected
     public final void notifyChange() {
-        publishEvent(new ControllerStructureEvent());
+        publishEvent(new ControllerStructureEvent(this));
     }
 
 
-    public final void publishEvent(ControllerEvent event) {
-        Assert.ensure(event.getPublisher() == null);
-        event.setPublisher(this);
-        publishEventInternal(event);
+    //1st notified is parent
+    public final void publishEvent(Object event) {
+        publishEventOn(getParentController(), event);
     }
 
-    private void publishEventInternal(ControllerEvent event) {
-        AbstractController p = getParentController();
+    private static void publishEventOn(AbstractController p, Object event) {
         if (p != null) {
             boolean consumed = p.onEventInternal(event);
             if (!consumed) {
-                p.publishEventInternal(event);
+                publishEventOn(p.getParentController(), event);
             }
         }
     }
 
+    public interface EventBus {
+
+        void publishEvent(Object event);
+
+    }
+
+    public EventBus emitBus() {
+        return new EventBus() {
+
+            WeakReference<AbstractController> ref = new WeakReference<>(AbstractController.this);
+
+            @Override
+            public void publishEvent(Object event) {
+                AbstractController c = ref.get();
+                if (c == null) return;
+
+                publishEventOn(c, event);
+            }
+        };
+    }
+
     // one of my sub-controller is notifying me
     //return: consumed
-    private boolean onEventInternal(ControllerEvent event) {
+    private boolean onEventInternal(Object event) {
         //internal stuff
         if (event instanceof ControllerStructureEvent) {
             refreshElement();
@@ -348,7 +368,7 @@ public abstract class AbstractController {
 
     // one of my sub-controller is notifying me
     //return: consumed
-    protected boolean onEvent(ControllerEvent event) {
+    protected boolean onEvent(Object event) {
         return false;
     }
 

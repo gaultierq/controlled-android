@@ -6,14 +6,13 @@ package io.gaultier.controlledandroid.control;
 
 public class ControllerEvent {
 
-    private AbstractController publisher;
+    private final AbstractController publisher;
 
-
+    public ControllerEvent(AbstractController publisher) {
+        this.publisher = publisher;
+    }
     public AbstractController getPublisher() {
         return publisher;
     }
 
-    void setPublisher(AbstractController publisher) {
-        this.publisher = publisher;
-    }
 }

@@ -6,4 +6,7 @@ package io.gaultier.controlledandroid.control;
 
 public class ControllerStructureEvent extends ControllerEvent {
 
+    public ControllerStructureEvent(AbstractController publisher) {
+        super(publisher);
+    }
 }

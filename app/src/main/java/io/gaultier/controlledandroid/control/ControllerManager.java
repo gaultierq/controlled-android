@@ -103,6 +103,7 @@ public class ControllerManager {
         helper.commit();
     }
 
+    //this is where all the complexity is handled
     @NonNull
     static <T extends AbstractController> T obtainIt(ControlledElement<T> element, Bundle savedInstanceState, Bundle arguments) {
         ControllerManager manager = ControllerManager.getInstance(element.getControlledActivity());
@@ -168,7 +169,7 @@ public class ControllerManager {
         int o = logOrphanCount();
         for (AbstractController c : managedControllers.values()) {
             if (this.assignParent(c)) {
-                Log.i(TAG, "The net is working");
+                Log.w(TAG, "The net has caught an orphan");
             }
         }
         int n = logOrphanCount();
@@ -190,7 +191,7 @@ public class ControllerManager {
     private AbstractController findParent(AbstractController controller) {
         AbstractController parent = controller.getParentController();
         if (parent == null) {
-            //lets find your father
+            //lets find your parent
             String id = controller.parentControllerId;
             Assert.ensure(isValidId(id), "unexpected id " + id + " for controller " + controller);
             for (AbstractController c : managedControllers.values()) {
