@@ -27,6 +27,7 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
 
     private ControllerAccessor<T> ctrlAccessor = new ControllerAccessor<>();
+    private boolean viewCreated;
 
     @Override
     public final void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,7 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
         View view = createView(inflater, container);
         refreshInternal(view);
+        viewCreated = true;
         return view;
     }
 
@@ -237,6 +239,11 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
         Intent intent = getManager().makeIntent(getContext(), ctrl, getController());
 
         startActivityForResult(intent, requestCode);
+    }
+
+    @Override
+    public boolean isViewCreated() {
+        return viewCreated;
     }
 }
 

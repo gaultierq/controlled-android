@@ -15,6 +15,8 @@ public interface ControlledElement<T extends AbstractController> {
 
     String getControllerId();
 
+    boolean isViewCreated();
+
     void refresh();
 
     ControlledActivity getControlledActivity();

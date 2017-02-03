@@ -25,6 +25,8 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
     private LayoutInflater inflater;
 
+    private boolean viewCreated;
+
     // notes: android views do not have their savedStated restored yet (wait on resume)
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
@@ -40,7 +42,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
         createView();
 
-        //controller can be used by view from here
+        viewCreated = true;
     }
 
     //inflating the view "state-less" (controller not available yet)
@@ -176,5 +178,10 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
     public String tag() {
         return getClass().getSimpleName();
+    }
+
+    @Override
+    public boolean isViewCreated() {
+        return viewCreated;
     }
 }

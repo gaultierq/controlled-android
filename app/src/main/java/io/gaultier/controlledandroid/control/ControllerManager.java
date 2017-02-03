@@ -73,7 +73,16 @@ public class ControllerManager {
 
     //managed elements asked for display / removal
     protected static <U extends AbstractController> void refreshPendings(U controller) {
+
         ControlledElement parentEl = controller.getManagedElement();
+
+        //main controller
+        if (parentEl == null) return;
+
+        if (!parentEl.isViewCreated()) {
+            Log.w(TAG, "trying to refresh pendings fragments when parent view is not ready yet is a bad idea");
+            return;
+        }
 
         FragmentTransactionHelper helper = new FragmentTransactionHelper(parentEl);
 

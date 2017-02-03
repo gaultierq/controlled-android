@@ -359,7 +359,7 @@ public abstract class AbstractController {
     private boolean onEventInternal(Object event) {
         //internal stuff
         if (event instanceof ControllerStructureEvent) {
-            refreshElement();
+            ControllerManager.refreshPendings(this);
             return false;
         }
 
@@ -437,7 +437,7 @@ public abstract class AbstractController {
         controller.addToBackstack = addToBackStack;
         ControllerManager instance = ControllerManager.getInstance(getManagedElement().getControlledActivity());
         instance.manageNewFragment(controller, this);
-        notifyChange();
+        controller.notifyChange();
     }
 
     public void refreshElement() {

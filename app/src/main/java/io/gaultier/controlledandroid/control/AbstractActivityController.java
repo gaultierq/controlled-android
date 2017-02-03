@@ -7,4 +7,5 @@ public abstract class AbstractActivityController extends AbstractController {
 
     @Override
     public abstract ControlledActivity makeElement();
+
 }
