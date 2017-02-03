@@ -252,9 +252,9 @@ public class ControllerManager {
 
 
     @NonNull
-    protected <F extends ControlledActivity, C extends AbstractActivityController> Intent makeIntent(Context from, C to, AbstractController toParent) {
+    protected <F extends ControlledActivity, C extends AbstractActivityController> Intent makeIntent(Context from, C to, AbstractController parent) {
         Intent intent = new Intent(from, to.makeElement().getClass());
-        manageAndAssignParent(to, toParent);
+        manageAndAssignParent(to, parent);
         intent.putExtras(ControllerManager.saveController(new Bundle(), to));
         return intent;
     }
