@@ -5,10 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
+
+import java.util.List;
 
 /**
  * Created by qg on 07/12/16.
@@ -100,6 +103,16 @@ public class ControllerUtil {
         else {
             throw new IllegalStateException();
         }
+    }
+
+    @Nullable
+    static <T extends AbstractController> T getByClass(Class<T> clazz, List<AbstractController> subCon) {
+        for (AbstractController abstractController : subCon) {
+            if (abstractController != null && abstractController.getClass() == clazz) {
+                return (T) abstractController;
+            }
+        }
+        return null;
     }
 
     public interface OnPermitted {

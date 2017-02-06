@@ -99,7 +99,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
     }
 
     public ControllerManager getManager() {
-        return ControllerManager.getInstance(this);
+        return ControllerManager.getInstance();
     }
 
     @Override

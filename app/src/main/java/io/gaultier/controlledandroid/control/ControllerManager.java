@@ -1,6 +1,5 @@
 package io.gaultier.controlledandroid.control;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.support.annotation.Nullable;
 
 import org.parceler.Parcels;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -45,8 +43,6 @@ public class ControllerManager {
 
     private final AbstractController mainController;
 
-    private WeakReference<Activity> currentActivity;
-
     private ControllerManager(int oldSessionId, int sessionId) {
         Log.i(TAG, "Creating instance");
         mainController = new ApplicationController();
@@ -63,11 +59,8 @@ public class ControllerManager {
         INSTANCE = new ControllerManager(oldSessionId, sessionId);
     }
 
-    public static ControllerManager getInstance(ControlledActivity activity) {
-        if (INSTANCE == null) {
-            throw new RuntimeException("ControllerManager not inited");
-        }
-
+    public static ControllerManager getInstance() {
+        if (INSTANCE == null) throw new RuntimeException("ControllerManager not initialized");
         return INSTANCE;
     }
 
@@ -115,7 +108,7 @@ public class ControllerManager {
     //this is where all the complexity is handled
     @NonNull
     static <T extends AbstractController> T obtainIt(ControlledElement<T> element, Bundle savedInstanceState, Bundle arguments) {
-        ControllerManager manager = ControllerManager.getInstance(element.getControlledActivity());
+        ControllerManager manager = ControllerManager.getInstance();
         String controllerId;
         T controller;
         if (isValidId(controllerId = readControllerId(savedInstanceState))) {
@@ -252,10 +245,13 @@ public class ControllerManager {
 
 
     @NonNull
-    protected <F extends ControlledActivity, C extends AbstractActivityController> Intent makeIntent(Context from, C to, AbstractController parent) {
-        Intent intent = new Intent(from, to.makeElement().getClass());
-        manageAndAssignParent(to, parent);
-        intent.putExtras(ControllerManager.saveController(new Bundle(), to));
+    protected <F extends ControlledActivity, C extends AbstractActivityController> Intent makeIntent(Context from, C controller, AbstractController parent) {
+        Intent intent = new Intent(from, controller.makeElement().getClass());
+        boolean wasManaged = manageAndAssignParent(controller, parent);
+        if (wasManaged) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        }
+        intent.putExtras(ControllerManager.saveController(new Bundle(), controller));
         return intent;
     }
 
@@ -310,14 +306,25 @@ public class ControllerManager {
     }
 
     // manageAndAssignParent provide an id to the controller
-    private <T extends AbstractController> void manageAndAssignParent(T controller, AbstractController parentController) {
-        controller.assignParentController(parentController);
-        manage(controller);
+    private <T extends AbstractController> boolean manageAndAssignParent(T controller, AbstractController parentController) {
+        boolean was = true;
+        if (!controller.isManaged()) {
+            controller.assignParentController(parentController);
+            manage(controller);
+            was = false;
+        }
+        return was;
     }
 
     @Nullable
     public AbstractController getManagedController(String controllerId) {
         return managedControllers.get(controllerId);
+    }
+
+    @Nullable
+    public <T extends AbstractController> T getManagedController(Class<T> controllerId) {
+        List<AbstractController> values = new ArrayList<>(managedControllers.values());
+        return ControllerUtil.getByClass(controllerId, values);
     }
 
     private boolean isManaged(String controllerId) {

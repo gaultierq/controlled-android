@@ -150,12 +150,7 @@ public abstract class AbstractController {
     //return the first matching subcontroller
     public <T extends AbstractController> T getSubController(Class<T> clazz) {
         List<AbstractController> subCon = snapSubControllers();
-        for (AbstractController abstractController : subCon) {
-            if (abstractController != null && abstractController.getClass() == clazz) {
-                return (T) abstractController;
-            }
-        }
-        return null;
+        return ControllerUtil.getByClass(clazz, subCon);
     }
 
     //return the first matching subcontroller
@@ -435,7 +430,7 @@ public abstract class AbstractController {
     public void addFragment(AbstractFragmentController controller, int target, boolean addToBackStack, boolean nestedFragment) {
         controller.askAddIn(target, nestedFragment);
         controller.addToBackstack = addToBackStack;
-        ControllerManager instance = ControllerManager.getInstance(getManagedElement().getControlledActivity());
+        ControllerManager instance = ControllerManager.getInstance();
         instance.manageNewFragment(controller, this);
         controller.notifyChange();
     }

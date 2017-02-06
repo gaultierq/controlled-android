@@ -142,7 +142,7 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
     }
 
     public ControllerManager getManager() {
-        return ControllerManager.getInstance(getControlledActivity());
+        return ControllerManager.getInstance();
     }
 
     public void setController(T controller) {
