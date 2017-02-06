@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 
-import io.gaultier.controlledandroid.util.Assert;
 import io.gaultier.controlledandroid.util.Log;
 
 import static io.gaultier.controlledandroid.control.AbstractController.INVALID_CONTROLLER_ID;
@@ -47,11 +46,6 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
     //inflating the view "state-less" (controller not available yet)
     protected abstract void createView();
-
-    //use the controller and the state-full components (ex: a view pager), to configure the views
-    protected void prepareView(T controller) {
-        // nothing by default
-    }
 
     //TODO: protected
     public void refreshView() {
@@ -99,14 +93,8 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
     }
 
     @Override
-    protected final void onResume() {
+    protected void onResume() {
         super.onResume();
-        Assert.ensureNotNull(getController());
-        prepareViewInternal(getController());
-    }
-
-    private void prepareViewInternal(T controller) {
-        prepareView(controller);
         refresh();
     }
 
