@@ -59,6 +59,7 @@ public abstract class AbstractController {
 
     AtomicBoolean refreshing = new AtomicBoolean();
 
+    //enter, exit, popEnter, popExit;
     protected int[] animation = new int[4];
 
     @Transient

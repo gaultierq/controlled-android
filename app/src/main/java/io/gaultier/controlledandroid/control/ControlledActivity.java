@@ -154,11 +154,8 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
         Intent intent = getManager().makeIntent(this, ctrl, getController().getParentController());
 
         startActivity(intent);
-    }
 
-    public <L extends AbstractActivityController> void launchActivity2(L ctrl) {
-
-        ControllerUtil.launchActivities(ctrl, this);
+        overridePendingTransition(ctrl.animation[0], getController().animation[1]);
     }
 
     @Override
@@ -167,6 +164,8 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
         Intent intent = getManager().makeIntent(this, ctrl, getController().getParentController());
 
         startActivityForResult(intent, requestCode);
+
+        overridePendingTransition(ctrl.animation[0], getController().animation[1]);
     }
 
     public String tag() {

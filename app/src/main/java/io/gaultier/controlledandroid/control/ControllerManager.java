@@ -69,7 +69,7 @@ public class ControllerManager {
 
     //managed elements asked for display / removal
     protected static <U extends AbstractController> void refreshPendings(U controller) {
-
+        Log.v(TAG, "Refreshing", controller, "pendings");
         ControlledElement parentEl = controller.getManagedElement();
 
         //main controller
@@ -98,10 +98,12 @@ public class ControllerManager {
         }
 
         for (AbstractFragmentController rm : controllersToRemove) {
+            if (rm.getManagedElement() == null) continue;
             helper.removeManagedElement(rm);
             rm.unsetPending();
         }
         for (AbstractFragmentController ad : controllersToAdd) {
+            if (ad.getManagedElement() == null) continue;
             helper.add(ad);
             ad.unsetPending();
         }
