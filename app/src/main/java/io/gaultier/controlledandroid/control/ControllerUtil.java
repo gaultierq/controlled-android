@@ -117,7 +117,30 @@ public class ControllerUtil {
     }
 
     public static <L extends AbstractActivityController> void launchActivities(L ctrl, ControlledActivity from) {
-        TaskStackBuilder intent = from.getManager().makeIntentFull(from, ctrl, from.getController().getParentController());
+        Intent intent1 = from.getManager().makeIntent(from, ctrl, from.getController().getParentController());
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(from);
+
+        AbstractController p = ctrl;
+        int i = 0;
+        while (p instanceof AbstractActivityController) {
+            AbstractActivityController ctrl1 = (AbstractActivityController) p;
+
+            //creating the intent
+            Class<? extends ControlledActivity> clazz = ctrl1.makeElement().getClass();
+            stackBuilder.addParentStack(clazz);
+
+            if (stackBuilder.getIntents().length != i+1) break;
+            //changing the intent
+            Intent parentIntent = stackBuilder.editIntentAt(i);
+            AbstractController nextParent = p.getParentController();
+            from.getManager().manageAndPutExtras(ctrl1, nextParent, parentIntent);
+            p = nextParent;
+
+        }
+        stackBuilder.addNextIntent(intent1);
+
+
+        TaskStackBuilder intent = stackBuilder;
         intent.startActivities();
     }
 

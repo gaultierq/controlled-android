@@ -7,7 +7,6 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.TaskStackBuilder;
 
 import org.parceler.Parcels;
 
@@ -254,45 +253,16 @@ public class ControllerManager {
 
         Intent intent = new Intent(from, clazz);
         //managing the current controller if needed
-        putExtras(controllerToLaunch, parent, intent);
+        manageAndPutExtras(controllerToLaunch, parent, intent);
         return intent;
     }
 
-    private <C extends AbstractActivityController> void putExtras(C controllerToPrepare, AbstractController parent, Intent intent) {
+    <C extends AbstractActivityController> void manageAndPutExtras(C controllerToPrepare, AbstractController parent, Intent intent) {
         boolean wasManaged = manageAndAssignParent(controllerToPrepare, parent);
         if (wasManaged) {
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         }
         intent.putExtras(ControllerManager.saveController(new Bundle(), controllerToPrepare));
-    }
-
-    @NonNull
-    protected <C extends AbstractActivityController> TaskStackBuilder makeIntentFull(Context from, C controllerToLaunch, AbstractController parent) {
-        Intent intent = makeIntent(from, controllerToLaunch, parent);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(from);
-
-        AbstractController p = controllerToLaunch;
-        int i = 0;
-        while (p instanceof AbstractActivityController) {
-            AbstractActivityController ctrl = (AbstractActivityController) p;
-
-            //creating the intent
-            Class<? extends ControlledActivity> clazz = ctrl.makeElement().getClass();
-            stackBuilder.addParentStack(clazz);
-
-            if (stackBuilder.getIntents().length != i+1) break;
-            //changing the intent
-            Intent parentIntent = stackBuilder.editIntentAt(i);
-            AbstractController nextParent = p.getParentController();
-            putExtras(ctrl, nextParent, parentIntent);
-            p = nextParent;
-
-        }
-        stackBuilder.addNextIntent(intent);
-
-
-
-        return stackBuilder;
     }
 
     protected <F extends ControlledActivity, C extends AbstractActivityController> void overridePendingTransition(F fromActivity, int i, int i1) {
