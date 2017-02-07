@@ -176,11 +176,20 @@ public abstract class AbstractController {
 
     void cleanupInternal() {
         if (parentController != null) {
+            cleanupParentController();
+        }
+        else {
+            Log.w(TAG, "missed cleanup of", this);
+        }
+        cleanup();
+    }
+
+    private void cleanupParentController() {
+        if (parentController != null) {
             boolean removed = parentController.subControllers.remove(this);
             Assert.ensure(removed, "cleaning up an unmanaged controller:" + this);
             parentController = null;
         }
-        cleanup();
     }
 
     protected void cleanup() {
@@ -245,6 +254,9 @@ public abstract class AbstractController {
         if (parentController != null && p != null) {
             Log.w(tag(), "Changing parent on", this, parentController, "<-", p);
         }
+
+        cleanupParentController();
+
         this.parentController = p;
         if (parentController != null) {
             p.subControllers.add(this);
@@ -442,6 +454,7 @@ public abstract class AbstractController {
         }
 
         ControlledElement element = getManagedElement();
+        if (element == null) return false;
         return element.interceptBackPressed();
     }
 

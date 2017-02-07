@@ -335,13 +335,11 @@ public class ControllerManager {
         p = rootParentController;
 
         for (AbstractController c : ctrlChain) {
-            if (c.getParentController() != p) {
-                c.assignParentController(p);
-            }
             if (!c.isManaged()) {
                 manage(c);
                 if (controller == c) was = false;
             }
+            c.assignParentController(p);
             p = c;
         }
 //        if (!controller.isManaged()) {
