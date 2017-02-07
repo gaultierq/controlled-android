@@ -39,6 +39,8 @@ public abstract class AbstractController {
     @Transient
     List<AbstractController> subControllers = new ArrayList<>();
 
+    //can be null, when app is recovering from being killed. The parent is still in the
+    //savedInstanceState of the parent activity
     @Transient
     private AbstractController parentController;
 
@@ -46,7 +48,7 @@ public abstract class AbstractController {
     private String previousId;
 
     @Transient
-    private ControlledElement managedElement;
+    private WeakReference<ControlledElement> managedElement = new WeakReference<ControlledElement>(null);
 
     String parentControllerId;
 
@@ -173,9 +175,11 @@ public abstract class AbstractController {
     }
 
     void cleanupInternal() {
-        boolean removed = parentController.subControllers.remove(this);
-        Assert.ensure(removed, "cleaning up an unmanaged controller:" + this);
-        parentController = null;
+        if (parentController != null) {
+            boolean removed = parentController.subControllers.remove(this);
+            Assert.ensure(removed, "cleaning up an unmanaged controller:" + this);
+            parentController = null;
+        }
         cleanup();
     }
 
@@ -183,19 +187,34 @@ public abstract class AbstractController {
         //you can for eg. clear all listeners here
     }
 
-
     public ControlledElement getManagedElement() {
-        return managedElement;
+        return managedElement.get();
     }
 
     public ControlledActivity getActivity() {
-        return managedElement == null ? null : managedElement.getControlledActivity();
+        if (managedElement.get() == null) return null;
+        return managedElement.get().getControlledActivity();
     }
 
     <T extends AbstractController> void setManagedElement(ControlledElement<T> managedElement) {
         Assert.ensure(isManaged());
-        this.managedElement = managedElement;
+        this.managedElement = new WeakReference<ControlledElement>(managedElement);
     }
+
+//    public ControlledElement getManagedElement() {
+//        return managedElement;
+//    }
+//
+//    public ControlledActivity getActivity() {
+//        if (managedElement == null) return null;
+//        return managedElement.getControlledActivity();
+//    }
+//
+//    <T extends AbstractController> void setManagedElement(ControlledElement<T> managedElement) {
+//        Assert.ensure(isManaged());
+//        this.managedElement = managedElement;
+//    }
+
 
 
     // cleanupInternal all states from previous displays
@@ -222,9 +241,9 @@ public abstract class AbstractController {
         return parentController;
     }
 
-    void assignParentController(AbstractController p) {
+    public void assignParentController(AbstractController p) {
         if (parentController != null && p != null) {
-            Log.w(tag(), "Assigning new parent on", this, parentController, "<-", p);
+            Log.w(tag(), "Changing parent on", this, parentController, "<-", p);
         }
         this.parentController = p;
         if (parentController != null) {
@@ -320,10 +339,13 @@ public abstract class AbstractController {
     }
 
     private static void publishEventOn(AbstractController p, Object event) {
+        Log.v(TAG, "publishing", event, "on", p);
         if (p != null) {
             boolean consumed = p.onEventInternal(event);
             if (!consumed) {
-                publishEventOn(p.getParentController(), event);
+
+                AbstractController parentController = p.getParentController();
+                publishEventOn(parentController, event);
             }
         }
     }
@@ -351,7 +373,7 @@ public abstract class AbstractController {
 
     // one of my sub-controller is notifying me
     //return: consumed
-    private boolean onEventInternal(Object event) {
+    boolean onEventInternal(Object event) {
         //internal stuff
         if (event instanceof ControllerStructureEvent) {
             ControllerManager.refreshPendings(this);

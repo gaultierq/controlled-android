@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
@@ -113,6 +114,11 @@ public class ControllerUtil {
             }
         }
         return null;
+    }
+
+    public static <L extends AbstractActivityController> void launchActivities(L ctrl, ControlledActivity from) {
+        TaskStackBuilder intent = from.getManager().makeIntentFull(from, ctrl, from.getController().getParentController());
+        intent.startActivities();
     }
 
     public interface OnPermitted {

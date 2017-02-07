@@ -156,6 +156,11 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
         startActivity(intent);
     }
 
+    public <L extends AbstractActivityController> void launchActivity2(L ctrl) {
+
+        ControllerUtil.launchActivities(ctrl, this);
+    }
+
     @Override
     public <L extends AbstractActivityController> void launchActivityForResult(L ctrl, int requestCode) {
 

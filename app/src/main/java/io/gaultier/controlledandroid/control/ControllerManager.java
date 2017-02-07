@@ -7,16 +7,20 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.TaskStackBuilder;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.gaultier.controlledandroid.util.Assert;
@@ -143,7 +147,7 @@ public class ControllerManager {
 
         // binding
         controller.setPreviousId(controllerId);
-        if (manager.assignParent(controller)) {
+        if (!manager.assignParent(controller)) {
             manager.runParentNet();
         }
         if (controller.getParentController() == null) {
@@ -245,14 +249,50 @@ public class ControllerManager {
 
 
     @NonNull
-    protected <F extends ControlledActivity, C extends AbstractActivityController> Intent makeIntent(Context from, C controller, AbstractController parent) {
-        Intent intent = new Intent(from, controller.makeElement().getClass());
-        boolean wasManaged = manageAndAssignParent(controller, parent);
+    protected <C extends AbstractActivityController> Intent makeIntent(Context from, C controllerToLaunch, AbstractController parent) {
+        Class<? extends ControlledActivity> clazz = controllerToLaunch.makeElement().getClass();
+
+        Intent intent = new Intent(from, clazz);
+        //managing the current controller if needed
+        putExtras(controllerToLaunch, parent, intent);
+        return intent;
+    }
+
+    private <C extends AbstractActivityController> void putExtras(C controllerToPrepare, AbstractController parent, Intent intent) {
+        boolean wasManaged = manageAndAssignParent(controllerToPrepare, parent);
         if (wasManaged) {
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         }
-        intent.putExtras(ControllerManager.saveController(new Bundle(), controller));
-        return intent;
+        intent.putExtras(ControllerManager.saveController(new Bundle(), controllerToPrepare));
+    }
+
+    @NonNull
+    protected <C extends AbstractActivityController> TaskStackBuilder makeIntentFull(Context from, C controllerToLaunch, AbstractController parent) {
+        Intent intent = makeIntent(from, controllerToLaunch, parent);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(from);
+
+        AbstractController p = controllerToLaunch;
+        int i = 0;
+        while (p instanceof AbstractActivityController) {
+            AbstractActivityController ctrl = (AbstractActivityController) p;
+
+            //creating the intent
+            Class<? extends ControlledActivity> clazz = ctrl.makeElement().getClass();
+            stackBuilder.addParentStack(clazz);
+
+            if (stackBuilder.getIntents().length != i+1) break;
+            //changing the intent
+            Intent parentIntent = stackBuilder.editIntentAt(i);
+            AbstractController nextParent = p.getParentController();
+            putExtras(ctrl, nextParent, parentIntent);
+            p = nextParent;
+
+        }
+        stackBuilder.addNextIntent(intent);
+
+
+
+        return stackBuilder;
     }
 
     protected <F extends ControlledActivity, C extends AbstractActivityController> void overridePendingTransition(F fromActivity, int i, int i1) {
@@ -306,14 +346,61 @@ public class ControllerManager {
     }
 
     // manageAndAssignParent provide an id to the controller
-    private <T extends AbstractController> boolean manageAndAssignParent(T controller, AbstractController parentController) {
-        boolean was = true;
-        if (!controller.isManaged()) {
-            controller.assignParentController(parentController);
-            manage(controller);
-            was = false;
+    private <T extends AbstractController> boolean manageAndAssignParent(T controller, AbstractController rootParentController) {
+
+        List<AbstractController> ctrlChain = new ArrayList<>();
+
+        AbstractController p = controller;
+        while (p != null) {
+            if (ctrlChain.contains(p)) break; //avoid cycles
+            if (p == rootParentController) break;
+            ctrlChain.add(p);
+            p = p.getParentController();
         }
+
+        Collections.reverse(ctrlChain);
+
+        boolean was = true;
+
+        p = rootParentController;
+
+        for (AbstractController c : ctrlChain) {
+            if (c.getParentController() != p) {
+                c.assignParentController(p);
+            }
+            if (!c.isManaged()) {
+                manage(c);
+                if (controller == c) was = false;
+            }
+            p = c;
+        }
+//        if (!controller.isManaged()) {
+//            controller.assignParentController(rootParentController);
+//            manage(controller);
+//            was = false;
+//        }
         return was;
+    }
+
+    public void dumpAll() {
+        Set<AbstractController> already = new HashSet<>();
+        for (Map.Entry<String, AbstractController> entry : managedControllers.entrySet()) {
+            AbstractController v = entry.getValue();
+            dump(v, already, "managed");
+        }
+        dump(mainController, new HashSet<AbstractController>(), "root");
+    }
+
+
+    protected void dump(AbstractController v, Set<AbstractController> already, String tag) {
+        if (v == null) return;
+        if (already.add(v)) {
+            Log.d(TAG, "dump", tag, ": ", v, "element=", v.getManagedElement());
+            List<AbstractController> sub = v.snapSubControllers();
+            for (AbstractController s : sub) {
+                dump(s, already, tag);
+            }
+        }
     }
 
     @Nullable
@@ -362,6 +449,17 @@ public class ControllerManager {
         @Override
         public ControlledElement makeElement() {
             return null;
+        }
+
+        @Override
+        protected boolean onEvent(Object event) {
+            return true;
+        }
+
+        @Override
+        boolean onEventInternal(Object event) {
+            super.onEventInternal(event);
+            return true;
         }
     }
 }
