@@ -431,6 +431,16 @@ public class ControllerManager {
             super.onEventInternal(event);
             return true;
         }
+
+        @Override
+        public String toString() {
+            return "*" + super.toString();
+        }
+
+        @Override
+        public boolean isLinked() {
+            return true;
+        }
     }
 }
 

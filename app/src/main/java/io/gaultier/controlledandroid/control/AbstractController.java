@@ -138,8 +138,8 @@ public abstract class AbstractController {
     }
 
     @Override
-    public final String toString() {
-        return "[" + blaze() + "." + controllerId + "<-" + parentControllerId + "]" + "~" + previousId;
+    public String toString() {
+        return "[" + blaze() + "." + controllerId + ", p=" + parentControllerId + "]" + (previousId != null ? "~" + previousId : "") ;
     }
 
     private String blaze() {
@@ -252,8 +252,9 @@ public abstract class AbstractController {
     }
 
     public void assignParentController(AbstractController p) {
+        if (parentController == p) return;
         if (parentController != null && p != null) {
-            Log.w(tag(), "Changing parent on", this, parentController, "<-", p);
+            Log.w(tag(), "Changing parent on", this, "old=", parentController, "new=", p);
         }
 
         cleanupParentController();
@@ -361,6 +362,11 @@ public abstract class AbstractController {
                 publishEventOn(parentController, event);
             }
         }
+    }
+
+    public boolean isLinked() {
+        if (parentController != null) return parentController.isLinked();
+        return false;
     }
 
     public interface EventBus {
@@ -498,5 +504,6 @@ public abstract class AbstractController {
         this.overrideTheme = overrideTheme;
         return this;
     }
+
 }
 
