@@ -59,6 +59,11 @@ public abstract class AbstractController {
 
     AtomicBoolean refreshing = new AtomicBoolean();
 
+    public <T extends AbstractController> T withAnimation(int[] animation) {
+        this.animation = animation;
+        return (T) this;
+    }
+
     //enter, exit, popEnter, popExit;
     protected int[] animation = new int[4];
 

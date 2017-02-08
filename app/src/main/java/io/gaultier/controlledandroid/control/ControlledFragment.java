@@ -1,5 +1,6 @@
 package io.gaultier.controlledandroid.control;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -231,14 +232,18 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
         Intent intent = getManager().makeIntent(getContext(), ctrl, getController());
 
-        startActivity(intent);
+        Bundle bundle = ActivityOptions.makeCustomAnimation(getContext(), ctrl.animation[0], getController().animation[1]).toBundle();
+
+        startActivity(intent, bundle);
     }
 
     public <T extends AbstractActivityController> void launchActivityForResult(T ctrl, int requestCode) {
 
         Intent intent = getManager().makeIntent(getContext(), ctrl, getController());
 
-        startActivityForResult(intent, requestCode);
+        Bundle bundle = ActivityOptions.makeCustomAnimation(getContext(), ctrl.animation[0], getController().animation[1]).toBundle();
+
+        startActivityForResult(intent, requestCode, bundle);
     }
 
     @Override
