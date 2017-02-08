@@ -89,9 +89,6 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
     }
 
 
-    protected void prepareView(View fragmentView, T fragmentController) {
-    }
-
     @Override
     public String toString() {
         return ControllerManager.toString(this);
@@ -108,13 +105,7 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
     @Override
     public void onResume() {
         super.onResume();
-        Assert.ensureNotNull(getController());
-
-        // add comment pls
-        //ctrlAccessor.bind(this);
-        //getController().resetInternal();
         getController().onResume();
-        prepareView(getView(), getController());
     }
 
     @Override
