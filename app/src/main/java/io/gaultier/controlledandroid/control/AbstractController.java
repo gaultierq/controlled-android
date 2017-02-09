@@ -48,7 +48,8 @@ public abstract class AbstractController {
     private String previousId;
 
     @Transient
-    private WeakReference<ControlledElement> managedElement = new WeakReference<ControlledElement>(null);
+    //private WeakReference<ControlledElement> managedElement = new WeakReference<ControlledElement>(null);
+    private ControlledElement managedElement;
 
     String parentControllerId;
 
@@ -202,33 +203,33 @@ public abstract class AbstractController {
         //you can for eg. clear all listeners here
     }
 
-    public ControlledElement getManagedElement() {
-        return managedElement.get();
-    }
-
-    public ControlledActivity getActivity() {
-        if (managedElement.get() == null) return null;
-        return managedElement.get().getControlledActivity();
-    }
-
-    <T extends AbstractController> void setManagedElement(ControlledElement<T> managedElement) {
-        Assert.ensure(isManaged());
-        this.managedElement = new WeakReference<ControlledElement>(managedElement);
-    }
-
 //    public ControlledElement getManagedElement() {
-//        return managedElement;
+//        return managedElement.get();
 //    }
 //
 //    public ControlledActivity getActivity() {
-//        if (managedElement == null) return null;
-//        return managedElement.getControlledActivity();
+//        if (managedElement.get() == null) return null;
+//        return managedElement.get().getControlledActivity();
 //    }
 //
 //    <T extends AbstractController> void setManagedElement(ControlledElement<T> managedElement) {
 //        Assert.ensure(isManaged());
-//        this.managedElement = managedElement;
+//        this.managedElement = new WeakReference<ControlledElement>(managedElement);
 //    }
+
+    public ControlledElement getManagedElement() {
+        return managedElement;
+    }
+
+    public ControlledActivity getActivity() {
+        if (managedElement == null) return null;
+        return managedElement.getControlledActivity();
+    }
+
+    <T extends AbstractController> void setManagedElement(ControlledElement<T> managedElement) {
+        Assert.ensure(isManaged());
+        this.managedElement = managedElement;
+    }
 
 
 
