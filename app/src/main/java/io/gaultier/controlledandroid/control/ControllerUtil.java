@@ -45,12 +45,12 @@ public class ControllerUtil {
                         }
                         else if (grantResults[0] == PackageManager.PERMISSION_DENIED){
                             if (ActivityCompat.shouldShowRequestPermissionRationale(a, thePermission)) {
-                                Toast.makeText(element.getControlledActivity(), pleaseConsiderAllowing, Toast.LENGTH_LONG).show();
+                                if (pleaseConsiderAllowing != 0) Toast.makeText(element.getControlledActivity(), pleaseConsiderAllowing, Toast.LENGTH_LONG).show();
                             }
                             else {
                                 //Never ask again selected, or device policy prohibits the app from having that permission.
                                 //So, disable that feature, or fall back to another situation...
-                                Toast.makeText(element.getControlledActivity(), deniedToast, Toast.LENGTH_LONG).show();
+                                if (deniedToast != 0) Toast.makeText(element.getControlledActivity(), deniedToast, Toast.LENGTH_LONG).show();
                             }
                         }
                     }
