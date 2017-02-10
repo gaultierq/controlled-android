@@ -116,7 +116,8 @@ public class ControllerUtil {
         return null;
     }
 
-    public static <L extends AbstractActivityController> void launchActivities(L ctrl, ControlledActivity from) {
+    public static <L extends AbstractActivityController> void launchActivities(L ctrl, ControlledElement f) {
+        ControlledActivity from = f.getControlledActivity();
         Intent intent1 = from.getManager().makeIntent(from, ctrl, from.getController().getParentController());
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(from);
 

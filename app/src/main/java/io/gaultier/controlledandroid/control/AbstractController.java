@@ -117,13 +117,12 @@ public abstract class AbstractController {
     public void onResume() {
 
         //FIXME: remove !
-        reset();
-
-        //FIXME: remove !
         for (int i = onResumeCallbackCallbacks.size(); i --> 0;) {
             OnResumeCallback r = onResumeCallbackCallbacks.get(i);
             r.onResume();
         }
+
+        refreshElement();
     }
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -231,12 +230,6 @@ public abstract class AbstractController {
         this.managedElement = managedElement;
     }
 
-
-
-    // cleanupInternal all states from previous displays
-    // the view is about to be displayed again
-    public void reset() {
-    }
 
     void setManaged(boolean managed) {
         this.managed = managed;
