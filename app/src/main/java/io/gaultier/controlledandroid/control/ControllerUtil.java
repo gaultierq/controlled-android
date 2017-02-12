@@ -116,8 +116,7 @@ public class ControllerUtil {
         return null;
     }
 
-    public static <L extends AbstractActivityController> void launchActivities(L ctrl, ControlledElement f) {
-        ControlledActivity from = f.getControlledActivity();
+    public static <L extends AbstractActivityController> void launchActivitiesAndFinish(L ctrl, ControlledActivity from) {
         Intent intent1 = from.getManager().makeIntent(from, ctrl, from.getController().getParentController());
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(from);
 
@@ -143,6 +142,15 @@ public class ControllerUtil {
 
         TaskStackBuilder intent = stackBuilder;
         intent.startActivities();
+    }
+
+    public static void launchActivityAndFinish(AbstractActivityController controller, ControlledActivity activity) {
+
+        Intent intent = activity.getManager().makeIntent(activity, controller, activity.getController().getParentController());
+
+        activity.startActivity(intent);
+
+        activity.overridePendingTransition(controller.animation[0], activity.getController().animation[1]);
     }
 
     public interface OnPermitted {

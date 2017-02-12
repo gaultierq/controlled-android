@@ -151,7 +151,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
     @Override
     public <L extends AbstractActivityController> void launchActivity(L ctrl) {
 
-        Intent intent = getManager().makeIntent(this, ctrl, getController().getParentController());
+        Intent intent = getManager().makeIntent(this, ctrl, getController());
 
         startActivity(intent);
 
@@ -161,7 +161,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
     @Override
     public <L extends AbstractActivityController> void launchActivityForResult(L ctrl, int requestCode) {
 
-        Intent intent = getManager().makeIntent(this, ctrl, getController().getParentController());
+        Intent intent = getManager().makeIntent(this, ctrl, getController());
 
         startActivityForResult(intent, requestCode);
 
