@@ -315,26 +315,41 @@ public class ControllerManager {
         managedControllers.put(controller.getControllerId(), controller);
         controller.setManaged(true);
         Log.i(TAG, "++: ", "manager:", this);
+        controller.ensureNoCycle();
+    }
+
+    private static List<AbstractController> getControllerChain(AbstractController ctrl) {
+        List<AbstractController> chain = new ArrayList<>();
+        AbstractController p = ctrl;
+        do {
+            chain.add(p);
+            p = p.getParentController();
+        } while (p != null);
+        return chain;
     }
 
     // manageAndAssignParent provide an id to the controller
     private <T extends AbstractController> boolean manageAndAssignParent(T controller, AbstractController rootParentController) {
 
-        List<AbstractController> ctrlChain = new ArrayList<>();
+        List<AbstractController> ctrlChain = getControllerChain(controller);
+        List<AbstractController> rootChain = getControllerChain(rootParentController);
 
-        AbstractController p = controller;
-        while (p != null) {
-            if (ctrlChain.contains(p)) break; //avoid cycles
-            if (p == rootParentController) break;
-            ctrlChain.add(p);
-            p = p.getParentController();
+        ListIterator<AbstractController> it = ctrlChain.listIterator();
+        boolean among = false;
+        while (it.hasNext()) {
+            AbstractController n = it.next();
+            among = rootChain.contains(n);
+            if (among) {
+                it.remove();
+                Assert.ensure(rootChain.contains(n));
+            }
         }
 
         Collections.reverse(ctrlChain);
 
         boolean was = true;
 
-        p = rootParentController;
+        AbstractController p = rootParentController;
 
         for (AbstractController c : ctrlChain) {
             if (!c.isManaged()) {

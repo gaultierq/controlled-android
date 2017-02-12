@@ -142,6 +142,7 @@ public class ControllerUtil {
 
         TaskStackBuilder intent = stackBuilder;
         intent.startActivities();
+        from.finish();
     }
 
     public static void launchActivityAndFinish(AbstractActivityController controller, ControlledActivity activity) {
@@ -151,6 +152,8 @@ public class ControllerUtil {
         activity.startActivity(intent);
 
         activity.overridePendingTransition(controller.animation[0], activity.getController().animation[1]);
+
+        activity.finish();
     }
 
     public interface OnPermitted {

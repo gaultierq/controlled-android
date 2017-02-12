@@ -8,6 +8,7 @@ import org.parceler.Transient;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -267,6 +268,7 @@ public abstract class AbstractController {
             parentControllerId = "-1";
             Log.e("Manager", "null parent for", this);
         }
+        ensureNoCycle();
     }
 
     static boolean isValidId(String id) {
@@ -366,6 +368,16 @@ public abstract class AbstractController {
     public boolean isLinked() {
         if (parentController != null) return parentController.isLinked();
         return false;
+    }
+
+    void ensureNoCycle() {
+        HashSet<Object> already = new HashSet<>();
+        AbstractController c = this;
+        do {
+            Assert.ensure(already.add(c), String.format("cycle detected: for controller %s", c));
+            c = c.getParentController();
+        } while (c != null);
+
     }
 
     public interface EventBus {
