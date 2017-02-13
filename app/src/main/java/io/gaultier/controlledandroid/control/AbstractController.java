@@ -9,6 +9,7 @@ import org.parceler.Transient;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -60,6 +61,9 @@ public abstract class AbstractController {
     boolean isInitialized;
 
     AtomicBoolean refreshing = new AtomicBoolean();
+
+    @Transient
+    private EventBusImplem bus;
 
     public <T extends AbstractController> T withAnimation(int[] animation) {
         this.animation = animation;
@@ -384,21 +388,19 @@ public abstract class AbstractController {
 
         void publishEvent(Object event);
 
+
+        void registerListener(EventListener listener);
+
+    }
+
+    public interface EventListener {
+
+        boolean onEvent(Object event);
     }
 
     public EventBus emitBus() {
-        return new EventBus() {
-
-            WeakReference<AbstractController> ref = new WeakReference<>(AbstractController.this);
-
-            @Override
-            public void publishEvent(Object event) {
-                AbstractController c = ref.get();
-                if (c == null) return;
-
-                publishEventOn(c, event);
-            }
-        };
+        if (bus != null) return bus;
+        return bus = new EventBusImplem();
     }
 
     // one of my sub-controller is notifying me
@@ -409,7 +411,9 @@ public abstract class AbstractController {
             ControllerManager.refreshPendings(this);
             return false;
         }
-
+        if (bus != null) {
+            bus.onEvent(event);
+        }
         return onEvent(event);
     }
 
@@ -516,5 +520,45 @@ public abstract class AbstractController {
         return this;
     }
 
+    private class EventBusImplem implements EventBus {
+
+        List<WeakReference<EventListener>> listeners = new ArrayList<>();
+
+        WeakReference<AbstractController> ref = new WeakReference<>(AbstractController.this);
+
+        @Override
+        public void publishEvent(Object event) {
+            AbstractController c = ref.get();
+            if (c == null) return;
+
+            publishEventOn(c, event);
+        }
+
+        @Override
+        public void registerListener(EventListener listener) {
+            Iterator<WeakReference<EventListener>> iterator = listeners.listIterator();
+            while (iterator.hasNext()) {
+                WeakReference<EventListener> l = iterator.next();
+                EventListener c;
+                if (l == null || (c = l.get()) == null) {
+                    iterator.remove();
+                    continue;
+                }
+                if (c == listener) return;
+            }
+            listeners.add(new WeakReference<>(listener));
+        }
+
+        public boolean onEvent(Object event) {
+            for (WeakReference<EventListener> listener : listeners) {
+                EventListener l = listener.get();
+                if (l != null) {
+                    boolean consumed = l.onEvent(event);
+                    if (consumed) return true;
+                }
+            }
+            return false;
+        }
+    }
 }
 
