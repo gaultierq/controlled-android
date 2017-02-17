@@ -360,11 +360,13 @@ public abstract class AbstractController {
     private static void publishEventOn(AbstractController p, Object event) {
         Log.v(TAG, "publishing", event, "on", p);
         if (p != null) {
+            AbstractController parent = p.getParentController();
+
+            //consumption finish activity, but the event should dispatch to parent anyway
+            // => keep parent reference before onEvent
             boolean consumed = p.onEventInternal(event);
             if (!consumed) {
-
-                AbstractController parentController = p.getParentController();
-                publishEventOn(parentController, event);
+                publishEventOn(parent, event);
             }
         }
     }
