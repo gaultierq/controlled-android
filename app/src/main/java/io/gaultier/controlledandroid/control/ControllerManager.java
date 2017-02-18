@@ -80,6 +80,17 @@ public class ControllerManager {
             return;
         }
 
+        refreshPendingSubFragments(controller, parentEl);
+
+        //TODO: this should be done differently
+        if (controller instanceof AbstractActivityController && controller.isAskRemove()) {
+            controller.getActivity().finish();
+        }
+    }
+
+    //we refresh all fregments-subcontrollers who asked to be added or removed
+    //they dont (can't) do it themselves, they ask their parent controller to do it for them
+    private static <U extends AbstractController> void refreshPendingSubFragments(U controller, ControlledElement parentEl) {
         FragmentTransactionHelper helper = new FragmentTransactionHelper(parentEl);
 
         List<AbstractFragmentController> controllersToRemove = new ArrayList<>();

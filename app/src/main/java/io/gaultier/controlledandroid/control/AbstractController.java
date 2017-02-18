@@ -207,19 +207,6 @@ public abstract class AbstractController {
         //you can for eg. clear all listeners here
     }
 
-//    public ControlledElement getManagedElement() {
-//        return managedElement.get();
-//    }
-//
-//    public ControlledActivity getActivity() {
-//        if (managedElement.get() == null) return null;
-//        return managedElement.get().getControlledActivity();
-//    }
-//
-//    <T extends AbstractController> void setManagedElement(ControlledElement<T> managedElement) {
-//        Assert.ensure(isManaged());
-//        this.managedElement = new WeakReference<ControlledElement>(managedElement);
-//    }
 
     public ControlledElement getManagedElement() {
         return managedElement;
@@ -241,13 +228,12 @@ public abstract class AbstractController {
     }
 
     void ensureInitialized() {
-        if (!isInitialized) {
-            init();
-            isInitialized = true;
-        }
+        if (isInitialized) return;
+        init();
+        isInitialized = true;
     }
 
-    // first time this controller will be displayed
+    // intialize the controller, make the 1st requests & prepare the data
     protected void init() {
     }
 
@@ -312,11 +298,16 @@ public abstract class AbstractController {
         notifyChange();
     }
 
+
     public void askReplace() {
         assignPending(REMOVE_REPLACE, 0);
     }
 
-    protected void assignPending(PendingOperationType removeReplace, int addIn) {
+    public void askRemove() {
+        assignPending(REMOVE_BACK, 0);
+    }
+
+    private void assignPending(PendingOperationType removeReplace, int addIn) {
         pendingOperation = new PendingOperation(removeReplace, addIn);
     }
 
