@@ -1,16 +1,16 @@
 package layout;
 
+import android.os.Bundle;
 import android.view.View;
 
 import io.gaultier.controlledandroid.R;
 import io.gaultier.controlledandroid.control.ControlledActivity;
-import io.gaultier.controlledandroid.control.ControllerManager;
 
 public class FirstActivity extends ControlledActivity<FirstActivityController> {
 
 
     @Override
-    protected void createView() {
+    protected void createView(Bundle savedInstanceState) {
         setContentView(R.layout.activity_first);
     }
 

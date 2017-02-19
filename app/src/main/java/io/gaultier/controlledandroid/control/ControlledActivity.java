@@ -39,13 +39,13 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
         super.onCreate(savedInstanceState);
 
-        createView();
+        createView(savedInstanceState);
 
         viewCreated = true;
     }
 
     //inflating the view "state-less" (controller not available yet)
-    protected abstract void createView();
+    protected abstract void createView(Bundle savedInstanceState);
 
     //TODO: protected
     public void refreshView() {
