@@ -49,7 +49,7 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
             inflater = inflater.cloneInContext(new ContextThemeWrapper(getActivity(), theme));
         }
 
-        View view = createView(inflater, container);
+        View view = createView(inflater, container, savedInstanceState);
         refreshInternal(view);
         viewCreated = true;
         return view;
@@ -60,7 +60,7 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
         super.onViewCreated(view, savedInstanceState);
     }
 
-    protected abstract View createView(LayoutInflater inflater, @Nullable ViewGroup container);
+    protected abstract View createView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState);
 
 
     protected void refresh(View v) {
