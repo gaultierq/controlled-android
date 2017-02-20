@@ -229,6 +229,7 @@ public abstract class AbstractController {
 
     void ensureInitialized() {
         if (isInitialized) return;
+        Log.d(TAG, "initializing",this);
         init();
         isInitialized = true;
     }
