@@ -95,7 +95,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
     @Override
     protected void onResume() {
         super.onResume();
-        refresh();
+        getController().onResume();
     }
 
     public ControllerManager getManager() {

@@ -83,9 +83,6 @@ public abstract class AbstractController {
     @Transient
     List<OnRequestPermissionsResultCallback> requestPermissionsResultCallbacks = new ArrayList<>();
 
-    @Transient
-    List<OnResumeCallback> onResumeCallbackCallbacks = new ArrayList<>();
-
     //theme override
     protected int overrideTheme;
 
@@ -120,12 +117,6 @@ public abstract class AbstractController {
     }
 
     public void onResume() {
-
-        //FIXME: remove !
-        for (int i = onResumeCallbackCallbacks.size(); i --> 0;) {
-            OnResumeCallback r = onResumeCallbackCallbacks.get(i);
-            r.onResume();
-        }
 
         refreshElement();
     }
@@ -448,10 +439,6 @@ public abstract class AbstractController {
     //TODO: rm
     public boolean addOnRequestPermissionsResultCallback(OnRequestPermissionsResultCallback listener) {
         return this.requestPermissionsResultCallbacks.add(listener);
-    }
-
-    public boolean addOnResumeCallback(OnResumeCallback listener) {
-        return this.onResumeCallbackCallbacks.add(listener);
     }
 
     public boolean removeOnRequestPermissionsResultCallback(OnRequestPermissionsResultCallback listener) {
