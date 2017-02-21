@@ -30,7 +30,7 @@ public abstract class AbstractController {
     static final String INVALID_CONTROLLER_ID = "0";
     static final String CONTROLLER_ID = "CONTROLLER_ID";
     static final String CONTROLLER = "CONTROLLER";
-    public static final String TAG = "AbstractController";
+    private static final String TAG = "AbstractController";
 
     @Transient
     private String controllerId = INVALID_CONTROLLER_ID;
