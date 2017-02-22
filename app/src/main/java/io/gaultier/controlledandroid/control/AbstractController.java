@@ -8,6 +8,8 @@ import org.parceler.Transient;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -337,21 +339,33 @@ public abstract class AbstractController {
 
     //1st notified is parent
     public final void publishEvent(Object event) {
-        publishEventOn(getParentController(), event);
+        publishEvent(event, false);
     }
 
-    private static void publishEventOn(AbstractController p, Object event) {
-        Log.v(TAG, "publishing", event, "on", p);
-        if (p != null) {
-            AbstractController parent = p.getParentController();
+    //down = true -> dispatch to sub controllers
+    public void publishEvent(Object event, boolean down) {
+        AbstractController controller = this;
+        Collection<AbstractController> next = down ? controller.snapSubControllers() : Collections.singleton(controller.getParentController());
+        publishEventOn(event, down, next);
+    }
 
-            //consumption finish activity, but the event should dispatch to parent anyway
-            // => keep parent reference before onEvent
-            boolean consumed = p.onEventInternal(event);
-            if (!consumed) {
-                publishEventOn(parent, event);
+    private static void publishEventOn(Object event, boolean down, Collection<AbstractController> controllers) {
+        if (controllers == null) return;
+        for (AbstractController c : controllers) {
+            Log.v(TAG, "publishing", event, "on", c);
+            if (c != null) {
+                Collection<AbstractController> next = down ? Collections.singleton(c.getParentController()) : c.snapSubControllers();
+
+                //consumption finish activity, but the event should dispatch to parent anyway
+                // => keep parent reference before onEvent
+                boolean consumed = c.onEventInternal(event);
+
+                if (!consumed) {
+                    publishEventOn(event, down, next);
+                }
             }
         }
+
     }
 
     public boolean isLinked() {
@@ -512,7 +526,7 @@ public abstract class AbstractController {
             AbstractController c = ref.get();
             if (c == null) return;
 
-            publishEventOn(c, event);
+            publishEventOn(event, false, Collections.singleton(c));
         }
 
         @Override
