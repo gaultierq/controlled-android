@@ -81,7 +81,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
     }
 
     @Override
-    public void finish() {
+    public final void finish() {
         super.finish();
         overridePendingTransition(0, getController().animation[1]);
         getManager().unmanage(getController());

@@ -336,7 +336,6 @@ public abstract class AbstractController {
         publishEventOn(new ControllerStructureEvent(this), false, Collections.singleton(getParentController()));
     }
 
-
     //1st notified is parent
     public final void publishEvent(Object event) {
         publishEvent(event, false);

@@ -307,10 +307,15 @@ public class ControllerManager {
         String id = controller.getControllerId();
         Assert.ensure(isValidId(id), "Unexpected. " + controller + " in " + this);
         AbstractController unmanaged = managedControllers.remove(id);
-        Assert.ensure(unmanaged == controller, "Controller not found:" + controller + " in " + this);
+        if (unmanaged != null) {
+            Assert.ensure(unmanaged == controller, "Controller not found:" + controller + " in " + this);
 
-        unmanaged.cleanupInternal();
-        unmanaged.setManaged(false);
+            unmanaged.cleanupInternal();
+            unmanaged.setManaged(false);
+        }
+        else {
+            Log.w(TAG, "missed: this controller is not managed:", controller);
+        }
         Log.i(TAG, "--: ", controller, "manager:", this);
     }
 
