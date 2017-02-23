@@ -333,7 +333,7 @@ public abstract class AbstractController {
     //notify change to parent controller
     //TODO: protected
     public final void notifyChange() {
-        publishEvent(new ControllerStructureEvent(this));
+        publishEventOn(new ControllerStructureEvent(this), false, Collections.singleton(getParentController()));
     }
 
 
@@ -344,9 +344,7 @@ public abstract class AbstractController {
 
     //down = true -> dispatch to sub controllers
     public void publishEvent(Object event, boolean down) {
-        AbstractController controller = this;
-        Collection<AbstractController> next = down ? controller.snapSubControllers() : Collections.singleton(controller.getParentController());
-        publishEventOn(event, down, next);
+        publishEventOn(event, down, Collections.singleton(this));
     }
 
     private static void publishEventOn(Object event, boolean down, Collection<AbstractController> controllers) {
@@ -354,7 +352,7 @@ public abstract class AbstractController {
         for (AbstractController c : controllers) {
             Log.v(TAG, "publishing", event, "on", c);
             if (c != null) {
-                Collection<AbstractController> next = down ? Collections.singleton(c.getParentController()) : c.snapSubControllers();
+                Collection<AbstractController> next = !down ? Collections.singleton(c.getParentController()) : c.snapSubControllers();
 
                 //consumption finish activity, but the event should dispatch to parent anyway
                 // => keep parent reference before onEvent
@@ -402,10 +400,12 @@ public abstract class AbstractController {
         return bus = new EventBusImplem();
     }
 
-    // one of my sub-controller is notifying me
     //return: consumed
     boolean onEventInternal(Object event) {
-        //internal stuff
+        if (event instanceof ControllerRefreshEvent) {
+            refreshElement();
+            return false;
+        }
         if (event instanceof ControllerStructureEvent) {
             ControllerManager.refreshPendings(this);
             return false;
