@@ -89,7 +89,7 @@ public class FragmentTransactionHelper {
 
     public void commit() {
         if (fragmentTransaction != null) {
-            fragmentTransaction.commit();
+            fragmentTransaction.commitAllowingStateLoss();
         }
     }
 }
