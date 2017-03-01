@@ -219,7 +219,7 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
         getController().onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    public <T extends AbstractActivityController> void launchActivity(T ctrl) {
+    public <A extends AbstractActivityController> void launchActivity(A ctrl) {
 
         Intent intent = getManager().makeIntent(getContext(), ctrl, getController());
 

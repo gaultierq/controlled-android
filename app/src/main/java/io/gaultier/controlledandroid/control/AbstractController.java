@@ -366,8 +366,7 @@ public abstract class AbstractController {
     }
 
     public boolean isLinked() {
-        if (parentController != null) return parentController.isLinked();
-        return false;
+        return parentController != null && parentController.isLinked();
     }
 
     void ensureNoCycle() {
@@ -461,7 +460,7 @@ public abstract class AbstractController {
     //check if intercepted by subcontroller first
     final boolean onBackPressed() {
         List<AbstractController> sub = snapSubControllers();
-        for (int i = sub.size(); i --> 0;) {
+        for (int i = sub.size(); i-- > 0; ) {
             AbstractController el = sub.get(i);
             if (el.onBackPressed()) {
                 Log.d(tag(), "Back intercepted by", el);
@@ -470,8 +469,7 @@ public abstract class AbstractController {
         }
 
         ControlledElement element = getManagedElement();
-        if (element == null) return false;
-        return element.interceptBackPressed();
+        return element != null && element.interceptBackPressed();
     }
 
     public abstract ControlledElement makeElement();

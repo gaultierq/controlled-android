@@ -4,7 +4,7 @@ package io.gaultier.controlledandroid.util;
  * Created by q on 17/10/16.
  *
  * using this indirection we are able to strip string building and concatenation from the release version
- * @see http://stackoverflow.com/questions/7086920/removing-logging-with-proguard-doesnt-removeManagedElement-the-strings-being-logged
+ * @see "http://stackoverflow.com/questions/7086920/removing-logging-with-proguard-doesnt-removeManagedElement-the-strings-being-logged"
  */
 public final class Log {
 
