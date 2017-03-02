@@ -379,6 +379,10 @@ public abstract class AbstractController {
 
     }
 
+    public int[] getAnimation() {
+        return animation;
+    }
+
     public interface EventBus {
 
         void publishEvent(Object event);

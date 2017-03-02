@@ -151,9 +151,9 @@ public class ControllerUtil {
 
         activity.startActivity(intent);
 
-        activity.overridePendingTransition(controller.animation[0], activity.getController().animation[1]);
-
         activity.finish();
+
+        activity.overridePendingTransition(controller.animation[0], activity.getController().animation[1]);
     }
 
     public interface OnPermitted {
