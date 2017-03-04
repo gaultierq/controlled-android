@@ -156,6 +156,13 @@ public class ControllerUtil {
         activity.overridePendingTransition(controller.animation[0], activity.getController().animation[1]);
     }
 
+    public static void launchActivity(AbstractActivityController controller, Context context) {
+        ControllerManager manager = ControllerManager.getInstance();
+        Intent intent = manager.makeIntent(context, controller, manager.getMainController());
+
+        context.startActivity(intent);
+    }
+
     public interface OnPermitted {
 
         void executeAction();
