@@ -30,14 +30,23 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
 
-        ctrlAccessor.obtain(this, savedInstanceState, getIntent().getExtras());
+        boolean obtained = ctrlAccessor.obtain(this, savedInstanceState, getIntent().getExtras());
 
-        int theme = getController().getOverrideTheme();
-        if (theme > 0) {
-            setTheme(theme);
+
+        if (obtained) {
+            int theme = getController().getOverrideTheme();
+            if (theme > 0) {
+                setTheme(theme);
+            }
         }
 
         super.onCreate(savedInstanceState);
+
+        if (!obtained) {
+            Log.w(tag(), "impossible to obtain controller, finishing activity");
+            finish();
+            return;
+        }
 
         createView(savedInstanceState);
 
@@ -83,8 +92,14 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
     @Override
     public final void finish() {
         super.finish();
-        overridePendingTransition(0, getController().animation[1]);
-        getManager().unmanage(getController());
+        T controller = getController();
+
+        //controlled activities are finished (in onCreate) when controller is null.
+        //this is why controller can be null here
+        if (controller != null) {
+            overridePendingTransition(0, controller.animation[1]);
+            getManager().unmanage(controller);
+        }
     }
 
     @Override

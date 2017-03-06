@@ -33,12 +33,16 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
     @Override
     public final void onCreate(Bundle savedInstanceState) {
 
-        ctrlAccessor.obtain(this, savedInstanceState, getArguments());
+        boolean obtained = ctrlAccessor.obtain(this, savedInstanceState, getArguments());
 
         Assert.ensure(getActivity() instanceof ControlledActivity, "ControlledFragment can only exist in ControlledActivity");
 
         super.onCreate(savedInstanceState);
 
+        if (!obtained) {
+            Log.w(tag(), "impossible to obtain controller, finishing activity");
+            getActivity().finish();
+        }
     }
 
     @Override

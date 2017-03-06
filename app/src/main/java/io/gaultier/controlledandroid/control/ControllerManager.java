@@ -122,7 +122,7 @@ public class ControllerManager {
     }
 
     //this is where all the complexity is handled
-    @NonNull
+    @Nullable
     static <T extends AbstractController> T obtainIt(ControlledElement<T> element, Bundle savedInstanceState, Bundle arguments) {
         ControllerManager manager = ControllerManager.getInstance();
         String controllerId;
@@ -143,7 +143,11 @@ public class ControllerManager {
             // fragment created programatically (already managed)
             // -> find controller
             //clear data -> controller can be null
-            Assert.ensure(manager.isManaged(controllerId), "expecting a managed controller for id=" + controllerId + ", arguments=" + arguments);
+            boolean managed = manager.isManaged(controllerId);
+            if (!managed) {
+                Log.w(TAG, "expecting a managed controller for id=" + controllerId + ", arguments=" + arguments);
+                return null;
+            }
             controller = (T) manager.getManagedController(controllerId);
             Assert.ensure(!controller.isOrphan(), "unexpected orphan:" + controller);
 
