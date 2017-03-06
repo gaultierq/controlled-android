@@ -142,6 +142,7 @@ public class ControllerManager {
         } else if (isValidId(controllerId = readControllerId(arguments))) {
             // fragment created programatically (already managed)
             // -> find controller
+            //clear data -> controller can be null
             Assert.ensure(manager.isManaged(controllerId), "expecting a managed controller for id=" + controllerId + ", arguments=" + arguments);
             controller = (T) manager.getManagedController(controllerId);
             Assert.ensure(!controller.isOrphan(), "unexpected orphan:" + controller);
