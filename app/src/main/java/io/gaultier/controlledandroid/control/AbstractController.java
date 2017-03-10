@@ -231,7 +231,7 @@ public abstract class AbstractController {
     protected void init() {
     }
 
-    AbstractController getParentController() {
+    public AbstractController getParentController() {
         return parentController;
     }
 
