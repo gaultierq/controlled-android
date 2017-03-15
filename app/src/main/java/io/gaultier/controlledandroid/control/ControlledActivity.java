@@ -90,7 +90,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
     }
 
     @Override
-    public final void finish() {
+    public void finish() {
         super.finish();
         T controller = getController();
 
