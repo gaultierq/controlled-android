@@ -119,7 +119,7 @@ public abstract class AbstractController {
     }
 
     public void onResume() {
-
+        publishEvent(new OnResumeEvent(this));
         refreshElement();
     }
 
