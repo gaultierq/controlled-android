@@ -35,7 +35,7 @@ public abstract class ImagePickerImpl {
     private static final String TAG = "ImagePickerImpl";
 
 
-    private File mTempFile;
+    protected File mTempFile;
 
     public abstract void provideImage(final ControlledElement frag, final ImagePickerClient client);
 
@@ -124,16 +124,7 @@ public abstract class ImagePickerImpl {
     }
 
     public boolean onActivityResult(ImagePickerClient client, ControlledElement activity, int requestCode, int resultCode, Intent data) {
-        Boolean ok = null;
-
-        switch (requestCode) {
-            case REQUEST_GALLERY_PHOTO:
-                ok = resultCode == Activity.RESULT_OK && copyToTempFile(activity.getControlledActivity(), data.getData());
-                break;
-            case REQUEST_TAKE_PHOTO:
-                ok = resultCode == Activity.RESULT_OK;
-                break;
-        }
+        Boolean ok = resolveFile(activity, requestCode, resultCode, data);
 
         if (ok != null) {
             onResult(client, ok);
@@ -142,7 +133,27 @@ public abstract class ImagePickerImpl {
         return false;
     }
 
-    boolean copyToTempFile(Context context, Uri uri) {
+    //ensure the file has the data in it
+    protected Boolean resolveFile(ControlledElement activity, int requestCode, int resultCode, Intent data) {
+        Boolean ok = null;
+
+        switch (requestCode) {
+            case REQUEST_GALLERY_PHOTO:
+                if (resultCode == Activity.RESULT_OK) {
+                    ok = copyToTempFile(activity.getControlledActivity(), data.getData(), mTempFile);
+                }
+                else {
+                    ok = false;
+                }
+                break;
+            case REQUEST_TAKE_PHOTO:
+                ok = resultCode == Activity.RESULT_OK;
+                break;
+        }
+        return ok;
+    }
+
+    static boolean copyToTempFile(Context context, Uri uri, File mTempFile) {
         InputStream inputStream = null;
         boolean okk = false;
         try {
