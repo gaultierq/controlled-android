@@ -227,7 +227,7 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
         Intent intent = getManager().makeIntent(getContext(), ctrl, getController());
 
-        Bundle bundle = ActivityOptions.makeCustomAnimation(getContext(), ctrl.animation[0], getController().animation[1]).toBundle();
+        Bundle bundle = makeLaunchOptions(ctrl);
 
         startActivity(intent, bundle);
     }
@@ -236,7 +236,7 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
         Intent intent = getManager().makeIntent(getContext(), ctrl, getController());
 
-        Bundle bundle = ActivityOptions.makeCustomAnimation(getContext(), ctrl.animation[0], getController().animation[1]).toBundle();
+        Bundle bundle = makeLaunchOptions(ctrl);
 
         startActivityForResult(intent, requestCode, bundle);
     }
@@ -244,6 +244,11 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
     @Override
     public boolean isViewCreated() {
         return viewCreated;
+    }
+
+    protected <T extends AbstractActivityController> Bundle makeLaunchOptions(T ctrl) {
+        int enterResId = ctrl.animation[0];
+        return ActivityOptions.makeCustomAnimation(getContext(), enterResId, getController().animation[1]).toBundle();
     }
 }
 
