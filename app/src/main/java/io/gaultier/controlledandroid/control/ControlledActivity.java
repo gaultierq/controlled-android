@@ -28,7 +28,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
     // notes: android views do not have their savedStated restored yet (wait on resume)
     @Override
-    protected final void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
 
         boolean obtained = ctrlAccessor.obtain(this, savedInstanceState, getIntent().getExtras());
 
@@ -97,7 +97,7 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
         //controlled activities are finished (in onCreate) when controller is null.
         //this is why controller can be null here
         if (controller != null) {
-            overridePendingTransition(0, controller.animation[1]);
+            //overridePendingTransition(0, controller.animation[1]);
             getManager().unmanage(controller);
         }
     }
@@ -168,9 +168,14 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
         Intent intent = getManager().makeIntent(this, ctrl, getController());
 
-        startActivity(intent);
+        Bundle options = makeLaunchOptions(ctrl);
 
-        overridePendingTransition(ctrl.animation[0], getController().animation[1]);
+        startActivity(intent, options);
+    }
+
+
+    private <L extends AbstractActivityController> Bundle makeLaunchOptions(L ctrl) {
+        return null;
     }
 
     @Override
@@ -178,9 +183,9 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
         Intent intent = getManager().makeIntent(this, ctrl, getController());
 
-        startActivityForResult(intent, requestCode);
+        Bundle bundle = makeLaunchOptions(ctrl);
 
-        overridePendingTransition(ctrl.animation[0], getController().animation[1]);
+        startActivityForResult(intent, requestCode, bundle);
     }
 
     public String tag() {

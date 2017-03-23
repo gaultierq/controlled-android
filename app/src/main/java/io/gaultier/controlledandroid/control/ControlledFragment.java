@@ -1,6 +1,5 @@
 package io.gaultier.controlledandroid.control;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -227,18 +226,18 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
         Intent intent = getManager().makeIntent(getContext(), ctrl, getController());
 
-        Bundle bundle = makeLaunchOptions(ctrl);
+        Bundle options = makeLaunchOptions(ctrl);
 
-        startActivity(intent, bundle);
+        startActivity(intent, options);
     }
 
     public <T extends AbstractActivityController> void launchActivityForResult(T ctrl, int requestCode) {
 
         Intent intent = getManager().makeIntent(getContext(), ctrl, getController());
 
-        Bundle bundle = makeLaunchOptions(ctrl);
+        Bundle options = makeLaunchOptions(ctrl);
 
-        startActivityForResult(intent, requestCode, bundle);
+        startActivityForResult(intent, requestCode, options);
     }
 
     @Override
@@ -247,9 +246,9 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
     }
 
     protected <T extends AbstractActivityController> Bundle makeLaunchOptions(T ctrl) {
-        int enterResId = ctrl.animation[0];
-        return ActivityOptions.makeCustomAnimation(getContext(), enterResId, getController().animation[1]).toBundle();
+        return null;
     }
+
 }
 
 
