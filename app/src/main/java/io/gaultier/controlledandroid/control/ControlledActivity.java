@@ -165,27 +165,12 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
 
     @Override
     public <L extends AbstractActivityController> void launchActivity(L ctrl) {
-
-        Intent intent = getManager().makeIntent(this, ctrl, getController());
-
-        Bundle options = makeLaunchOptions(ctrl);
-
-        startActivity(intent, options);
-    }
-
-
-    private <L extends AbstractActivityController> Bundle makeLaunchOptions(L ctrl) {
-        return null;
+        ControllerUtil.launchActivity(getController(), ctrl);
     }
 
     @Override
     public <L extends AbstractActivityController> void launchActivityForResult(L ctrl, int requestCode) {
-
-        Intent intent = getManager().makeIntent(this, ctrl, getController());
-
-        Bundle bundle = makeLaunchOptions(ctrl);
-
-        startActivityForResult(intent, requestCode, bundle);
+        ControllerUtil.launchActivityForResult(getController(), ctrl, requestCode, null);
     }
 
     public String tag() {

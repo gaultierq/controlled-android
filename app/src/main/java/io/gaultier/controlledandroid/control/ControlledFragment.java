@@ -224,20 +224,13 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
     public <A extends AbstractActivityController> void launchActivity(A ctrl) {
 
-        Intent intent = getManager().makeIntent(getContext(), ctrl, getController());
+        ControllerUtil.launchActivity(getController(), ctrl);
 
-        Bundle options = makeLaunchOptions(ctrl);
-
-        startActivity(intent, options);
     }
 
     public <T extends AbstractActivityController> void launchActivityForResult(T ctrl, int requestCode) {
 
-        Intent intent = getManager().makeIntent(getContext(), ctrl, getController());
-
-        Bundle options = makeLaunchOptions(ctrl);
-
-        startActivityForResult(intent, requestCode, options);
+        ControllerUtil.launchActivity(getController(), ctrl);
     }
 
     @Override

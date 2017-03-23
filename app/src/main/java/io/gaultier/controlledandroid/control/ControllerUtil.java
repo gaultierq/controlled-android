@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -161,6 +162,29 @@ public class ControllerUtil {
         Intent intent = manager.makeIntent(context, controller, manager.getMainController());
 
         context.startActivity(intent);
+    }
+
+    //for result -> requestCode = -1
+    public static void launchActivity(AbstractController from, AbstractActivityController to) {
+
+        launchActivityForResult(from, to, -1, null);
+    }
+
+    public static void launchActivityForResult(AbstractController from, AbstractActivityController to, int requestCode, Bundle options) {
+        ControlledElement element = from.getManagedElement();
+
+        ControllerManager manager = ControllerManager.getInstance();
+
+        Intent intent = manager.makeIntent(element.getControlledActivity(), to, from);
+
+
+        if (element instanceof ControlledActivity) {
+            ((ControlledActivity) element).startActivityForResult(intent, requestCode, options);
+        }
+        else if (element instanceof ControlledFragment) {
+            ((ControlledFragment) element).startActivityForResult(intent, requestCode, options);
+        }
+        else throw new IllegalArgumentException();
     }
 
     public interface OnPermitted {
