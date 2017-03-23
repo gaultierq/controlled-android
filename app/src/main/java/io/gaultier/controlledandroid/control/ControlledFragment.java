@@ -222,17 +222,6 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
         getController().onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    public <A extends AbstractActivityController> void launchActivity(A ctrl) {
-
-        ControllerUtil.launchActivity(getController(), ctrl);
-
-    }
-
-    public <T extends AbstractActivityController> void launchActivityForResult(T ctrl, int requestCode) {
-
-        ControllerUtil.launchActivity(getController(), ctrl);
-    }
-
     @Override
     public boolean isViewCreated() {
         return viewCreated;

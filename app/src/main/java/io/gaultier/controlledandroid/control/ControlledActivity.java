@@ -163,16 +163,6 @@ public abstract class ControlledActivity<T extends AbstractActivityController> e
         return getSupportFragmentManager();
     }
 
-    @Override
-    public <L extends AbstractActivityController> void launchActivity(L ctrl) {
-        ControllerUtil.launchActivity(getController(), ctrl);
-    }
-
-    @Override
-    public <L extends AbstractActivityController> void launchActivityForResult(L ctrl, int requestCode) {
-        ControllerUtil.launchActivityForResult(getController(), ctrl, requestCode, null);
-    }
-
     public String tag() {
         return getClass().getSimpleName();
     }

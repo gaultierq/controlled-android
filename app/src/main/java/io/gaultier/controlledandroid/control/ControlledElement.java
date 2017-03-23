@@ -26,8 +26,4 @@ public interface ControlledElement<T extends AbstractController> {
 
     // witch fragment manager should we use to add fragment child
     android.support.v4.app.FragmentManager obtainFragmentManager(AbstractController child);
-
-    <L extends AbstractActivityController> void launchActivity(L ctrl);
-
-    <L extends AbstractActivityController> void launchActivityForResult(L ctrl, int requestCode);
 }

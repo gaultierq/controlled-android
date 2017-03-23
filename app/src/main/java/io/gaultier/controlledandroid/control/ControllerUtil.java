@@ -165,17 +165,21 @@ public class ControllerUtil {
     }
 
     //for result -> requestCode = -1
-    public static void launchActivity(AbstractController from, AbstractActivityController to) {
+    public static void launchActivity(AbstractController from, AbstractController to) {
 
         launchActivityForResult(from, to, -1, null);
     }
 
-    public static void launchActivityForResult(AbstractController from, AbstractActivityController to, int requestCode, Bundle options) {
+    public static void launchActivityForResult(AbstractController from, AbstractController to, int requestCode) {
+        launchActivityForResult(from, to, requestCode, null);
+    }
+
+    public static void launchActivityForResult(AbstractController from, AbstractController to, int requestCode, Bundle options) {
         ControlledElement element = from.getManagedElement();
 
         ControllerManager manager = ControllerManager.getInstance();
 
-        Intent intent = manager.makeIntent(element.getControlledActivity(), to, from);
+        Intent intent = manager.makeIntent(element.getControlledActivity(), (AbstractActivityController) to, from);
 
 
         if (element instanceof ControlledActivity) {
