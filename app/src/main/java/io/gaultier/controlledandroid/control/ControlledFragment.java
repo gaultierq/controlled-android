@@ -45,7 +45,7 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
     }
 
     @Override
-    public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         int theme = getController().callGetOverrideTheme();
         if (theme > 0) {
