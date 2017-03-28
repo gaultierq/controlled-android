@@ -28,6 +28,16 @@ public final class Assert {
         }
     }
 
+    public static void ensureEquals(Object a, Object b) {
+        if (!areEquals(a, b)) {
+            thrown(a + " != " + b);
+        }
+    }
+
+    public static boolean areEquals(Object o1, Object o2) {
+        return o1 == o2 || ((o1 != null) && o1.equals(o2));
+    }
+
 
     public static void ensure(boolean flag, String message) {
         assert flag : message;
