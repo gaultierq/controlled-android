@@ -154,7 +154,7 @@ public class ControllerUtil {
 
         activity.finish();
 
-        activity.overridePendingTransition(controller.animation[0], activity.getController().animation[1]);
+        //activity.overridePendingTransition(controller.animation[0], activity.getController().animation[1]);
     }
 
     public static void launchActivity(AbstractActivityController controller, Context context) {
