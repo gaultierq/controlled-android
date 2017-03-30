@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 
 import org.parceler.Parcels;
 
@@ -292,7 +293,7 @@ public class ControllerManager {
         }
     }
 
-    public <U extends AbstractFragmentController, T extends ControlledFragment<U>> T manageNewFragment(U fragmentController, AbstractController parent) {
+    public <U extends AbstractController, T extends Fragment & ControlledElement<U>> T manageNewFragment(U fragmentController, AbstractController parent) {
 
         //TODO: stink
         if (!fragmentController.hasId()) {

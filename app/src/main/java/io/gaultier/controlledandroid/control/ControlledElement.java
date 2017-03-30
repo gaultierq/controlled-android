@@ -1,6 +1,8 @@
 package io.gaultier.controlledandroid.control;
 
 
+import android.os.Bundle;
+
 /**
  * Created by q on 18/10/16.
  */
@@ -26,4 +28,5 @@ public interface ControlledElement<T extends AbstractController> {
 
     // witch fragment manager should we use to add fragment child
     android.support.v4.app.FragmentManager obtainFragmentManager(AbstractController child);
+
 }

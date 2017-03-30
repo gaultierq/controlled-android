@@ -17,5 +17,5 @@ public abstract class AbstractFragmentController extends AbstractController {
     }
 
     @Override
-    public abstract ControlledFragment makeElement();
+    public abstract ControlledElement makeElement();
 }
