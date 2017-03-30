@@ -4,14 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 
 import io.gaultier.controlledandroid.util.Assert;
 import io.gaultier.controlledandroid.util.Log;
@@ -22,7 +20,7 @@ import static android.content.ContentValues.TAG;
  * Created by q on 16/10/16.
  */
 
-public abstract class ControlledFragment<T extends AbstractFragmentController> extends Fragment
+public abstract class ControlledDialogFragment<T extends AbstractFragmentController> extends DialogFragment
         implements ControlledElement<T> {
 
 
@@ -177,36 +175,7 @@ public abstract class ControlledFragment<T extends AbstractFragmentController> e
 
     @Override
     public final FragmentManager obtainFragmentManager(AbstractController child) {
-        //TODO : all fragment should extend AFC
-        if (child instanceof AbstractFragmentController) {
-            if (((AbstractFragmentController) child).nestedFragment) {
-                return getChildFragmentManager();
-            }
-        }
         return getFragmentManager();
-    }
-
-    @NonNull
-    private static AlphaAnimation createAnimation() {
-        AlphaAnimation alphaAnimation = new AlphaAnimation(1, 1);
-        alphaAnimation.setDuration(500);
-        return alphaAnimation;
-    }
-
-    @Override
-    public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
-        if (!enter && getParentFragment() != null && nextAnim <= 0) {
-            //HACK regarding the thread:
-            // http://stackoverflow.com/questions/14900738/nested-fragments-disappear-during-transition-animation
-            return createAnimation();
-        }
-        return super.onCreateAnimation(transit, enter, nextAnim);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        getController().onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
