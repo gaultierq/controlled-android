@@ -28,7 +28,7 @@ public abstract class ControlledDialogFragment<T extends AbstractFragmentControl
     private boolean viewCreated;
 
     @Override
-    public final void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
 
         boolean obtained = ctrlAccessor.obtain(this, savedInstanceState, getArguments());
 
