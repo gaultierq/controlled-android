@@ -410,6 +410,7 @@ public abstract class AbstractController {
         }
         if (event instanceof ControllerStructureEvent) {
             ControllerManager.refreshPendings(this);
+            refreshElement();
             return false;
         }
         if (bus != null) {
