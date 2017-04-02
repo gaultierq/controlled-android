@@ -64,7 +64,12 @@ public abstract class ControlledDialogFragment<T extends AbstractFragmentControl
 
     private void refreshInternal(final View view) {
         //exemple: refreshing in createView
+
         if (view != null && isAdded()) {
+            if (getController().isAskRemove()) {
+                super.dismiss();
+                getController().unsetPending();
+            }
             AbstractController.update(
                     getController(),
                     new Runnable() {
