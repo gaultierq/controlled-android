@@ -33,7 +33,9 @@ public abstract class FragmentImagePickerImpl extends ImagePickerImpl {
                 return new ImagePickerImpl.Callback() {
                     @Override
                     public void onImageFound(File imageUri) {
-                        onImage(imageUri);
+                        if (imageUri != null) {
+                            onImage(imageUri);
+                        }
                     }
 
                     @Override
