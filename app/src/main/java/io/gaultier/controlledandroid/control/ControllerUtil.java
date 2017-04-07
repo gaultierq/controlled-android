@@ -118,7 +118,7 @@ public class ControllerUtil {
     }
 
     public static <L extends AbstractActivityController> void launchActivitiesAndFinish(L ctrl, ControlledActivity from) {
-        Intent intent1 = from.getManager().makeIntent(from, ctrl, from.getController().getParentController());
+        Intent intent1 = from.getManager().prepareIntent(from, ctrl, from.getController().getParentController());
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(from);
 
         AbstractController p = ctrl;
@@ -148,7 +148,7 @@ public class ControllerUtil {
 
     public static void launchActivityAndFinish(AbstractActivityController controller, ControlledActivity activity) {
 
-        Intent intent = activity.getManager().makeIntent(activity, controller, activity.getController().getParentController());
+        Intent intent = activity.getManager().prepareIntent(activity, controller, activity.getController().getParentController());
 
         activity.startActivity(intent);
 
@@ -159,7 +159,7 @@ public class ControllerUtil {
 
     public static void launchActivity(AbstractActivityController controller, Context context) {
         ControllerManager manager = ControllerManager.getInstance();
-        Intent intent = manager.makeIntent(context, controller, manager.getMainController());
+        Intent intent = manager.prepareIntent(context, controller, manager.getMainController());
 
         context.startActivity(intent);
     }
@@ -179,7 +179,7 @@ public class ControllerUtil {
 
         ControllerManager manager = ControllerManager.getInstance();
 
-        Intent intent = manager.makeIntent(element.getControlledActivity(), (AbstractActivityController) to, from);
+        Intent intent = manager.prepareIntent(element.getControlledActivity(), (AbstractActivityController) to, from);
 
 
         if (element instanceof ControlledActivity) {

@@ -557,5 +557,10 @@ public abstract class AbstractController {
             return false;
         }
     }
+
+    //can be initialized before the element
+    protected boolean isPreInitializable() {
+        return true;
+    }
 }
 

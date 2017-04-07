@@ -267,12 +267,17 @@ public class ControllerManager {
 
 
     @NonNull
-    protected <C extends AbstractActivityController> Intent makeIntent(Context from, C controllerToLaunch, AbstractController parent) {
+    protected <C extends AbstractActivityController> Intent prepareIntent(Context from, C controllerToLaunch, AbstractController parent) {
         Class<? extends ControlledActivity> clazz = controllerToLaunch.makeElement().getClass();
 
         Intent intent = new Intent(from, clazz);
         //managing the current controller if needed
         manageAndPutExtras(controllerToLaunch, parent, intent);
+
+        if (controllerToLaunch.isPreInitializable()) {
+            controllerToLaunch.ensureInitialized();
+        }
+
         return intent;
     }
 
